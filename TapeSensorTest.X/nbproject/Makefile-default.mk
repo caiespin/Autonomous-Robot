@@ -85,7 +85,7 @@ FIXDEPS=fixDeps
 
 # The following macros may be used in the pre and post step lines
 Device=PIC32MX320F128H
-ProjectDir="C:\Users\igonzalo\Desktop\git\Autonomous-Robot\TapeSensorTest.X"
+ProjectDir="C:\Users\wchen38\Desktop\git\Autonomous-Robot\TapeSensorTest.X"
 ConfName=default
 ImagePath="dist\default\${IMAGE_TYPE}\TapeSensorTest.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}"
 ImageDir="dist\default\${IMAGE_TYPE}"

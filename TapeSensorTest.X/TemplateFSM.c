@@ -45,7 +45,7 @@
 /*******************************************************************************
  * MODULE #DEFINES                                                             *
  ******************************************************************************/
-#define TAPE_PIN_1 AD_PORTW3
+#define TAPE_PIN_1 AD_PORTV4
 
 
 #define LED_PIN PIN3
@@ -297,7 +297,7 @@ ES_Event RunTemplateFSM(ES_Event ThisEvent) {
                         LED_OffBank(LED_BANK1, ALL_LEDS);
                     }
 
-
+                    printf("diff-----------------> %d \r\n", diff);
                     break;
                 case ES_TIMEOUT:
                     // this is where you would put any actions associated with the
