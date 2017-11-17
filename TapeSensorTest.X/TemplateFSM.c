@@ -45,16 +45,20 @@
 /*******************************************************************************
  * MODULE #DEFINES                                                             *
  ******************************************************************************/
-#define TAPE_PIN_1 AD_PORTV4
+#define TAPE_PIN_1 AD_PORTW3
+#define TAPE_PIN_2 AD_PORTW4
+#define TAPE_PIN_3 AD_PORTW5
+#define TAPE_PIN_4 AD_PORTW6
+#define TAPE_PIN_5 AD_PORTW7
 
 
 #define LED_PIN PIN3
-#define TAPE_HIGH_THRESHOLD 25
-#define TAPE_LOW_THRESHOLD 5
+#define TAPE_HIGH_THRESHOLD 400
+#define TAPE_LOW_THRESHOLD 300
 #define ALL_LEDS 0xF
 
 #define ONE_MILLISECOND 2
-#define FIFTY_MILLISECOND 50
+#define FIFTY_MILLISECOND 25
 /*******************************************************************************
  * PRIVATE FUNCTION PROTOTYPES                                                 *
  ******************************************************************************/
@@ -78,12 +82,19 @@ typedef enum {
 } TemplateFSMState_t;
 
 static const char *StateNames[] = {
-	"InitPState",
-	"On",
-	"OnReading",
-	"Off",
-	"OffReading",
+    "InitPState",
+    "On",
+    "OnReading",
+    "Off",
+    "OffReading",
 };
+
+struct {
+    int pin;
+    int high_val;
+    int low_val;
+    int last;
+}tape_sensor;
 
 
 static TemplateFSMState_t CurrentState = InitPState; // <- change enum name to match ENUM
@@ -163,6 +174,11 @@ ES_Event RunTemplateFSM(ES_Event ThisEvent) {
                 //Initialize Analog inputs
                 AD_Init();
                 AD_AddPins(TAPE_PIN_1);
+                AD_AddPins(TAPE_PIN_2);
+                AD_AddPins(TAPE_PIN_3);
+                AD_AddPins(TAPE_PIN_4);
+                AD_AddPins(TAPE_PIN_5);
+                
                 ES_Timer_Init();
                 IO_PortsSetPortOutputs(PORTX, LED_PIN);
 
@@ -291,9 +307,9 @@ ES_Event RunTemplateFSM(ES_Event ThisEvent) {
 
 
                     diff = tape1AdcValLow - tape1AdcValHigh;
-                    if (diff < TAPE_HIGH_THRESHOLD && diff > TAPE_LOW_THRESHOLD) {
+                    if (diff < TAPE_LOW_THRESHOLD) {
                         LED_SetBank(LED_BANK1, ALL_LEDS);
-                    } else {
+                    } else if (diff > TAPE_HIGH_THRESHOLD) {
                         LED_OffBank(LED_BANK1, ALL_LEDS);
                     }
 
