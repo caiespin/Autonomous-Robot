@@ -43,11 +43,17 @@ typedef enum {
     ES_TIMEOUT, /* signals that the timer has expired */
     ES_TIMERACTIVE, /* signals that a timer has become active */
     ES_TIMERSTOPPED, /* signals that a timer has stopped*/
+    NUMBEROFEVENTS,
     /* User-defined events start here */
     BATTERY_CONNECTED,
     BATTERY_DISCONNECTED,
-            TAPE_DETECTED,
-    NUMBEROFEVENTS,
+    TAPE_DETECTED,
+            TAPE_LOST,
+            BUMPER_PRESSED,
+            BUMPER_RELEASED,
+            
+
+
 } ES_EventTyp_t;
 
 static const char *EventNames[] = {
@@ -61,10 +67,13 @@ static const char *EventNames[] = {
 	"ES_TIMEOUT",
 	"ES_TIMERACTIVE",
 	"ES_TIMERSTOPPED",
+	"NUMBEROFEVENTS",
 	"BATTERY_CONNECTED",
 	"BATTERY_DISCONNECTED",
 	"TAPE_DETECTED",
-	"NUMBEROFEVENTS",
+	"TAPE_LOST",
+	"BUMPER_PRESSED",
+	"BUMPER_RELEASED",
 };
 
 
@@ -84,7 +93,7 @@ static const char *EventNames[] = {
 // a timers, then you can use TIMER_UNUSED
 #define TIMER_UNUSED ((pPostFunc)0)
 #define TIMER0_RESP_FUNC PostTapeDetectorFSMService
-#define TIMER1_RESP_FUNC TIMER_UNUSED
+#define TIMER1_RESP_FUNC PostBumperService
 #define TIMER2_RESP_FUNC TIMER_UNUSED
 #define TIMER3_RESP_FUNC TIMER_UNUSED
 #define TIMER4_RESP_FUNC TIMER_UNUSED
@@ -108,6 +117,7 @@ static const char *EventNames[] = {
 // the timer number matches where the timer event will be routed
 
 #define TAPE_SENSOR_TIMER 0 /*make sure this is enabled above and posting to the correct state machine*/
+#define BUMPER_SENSOR_TIMER 1 /*make sure this is enabled above and posting to the correct state machine*/
 
 
 /****************************************************************************/
@@ -119,7 +129,7 @@ static const char *EventNames[] = {
 /****************************************************************************/
 // This macro determines that nuber of services that are *actually* used in
 // a particular application. It will vary in value from 1 to MAX_NUM_SERVICES
-#define NUM_SERVICES 1
+#define NUM_SERVICES 2
 
 /****************************************************************************/
 // These are the definitions for Service 0, the lowest priority service
@@ -139,11 +149,11 @@ static const char *EventNames[] = {
 // These are the definitions for Service 1
 #if NUM_SERVICES > 1
 // the header file with the public fuction prototypes
-#define SERV_1_HEADER "TestService.h"
+#define SERV_1_HEADER "bumper_service.h"
 // the name of the Init function
-#define SERV_1_INIT TestServiceInit
+#define SERV_1_INIT InitBumperService
 // the name of the run function
-#define SERV_1_RUN TestServiceRun
+#define SERV_1_RUN RunBumperService
 // How big should this services Queue be?
 #define SERV_1_QUEUE_SIZE 3
 #endif

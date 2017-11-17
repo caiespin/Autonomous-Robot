@@ -16,10 +16,16 @@
 
 //#define TEST_TAPE_SENSOR
 #define TEST_TAPE_SENSOR_WITH_ES_FRAMEWORK
-
+//#define TEST_BUMPER
 
 
 #define TAPE_PIN_1 AD_PORTW3
+
+#define  FRONT_LEFT_BUMPER_PIN PIN3
+#define  FRONT_RIGHT_BUMPER_PIN PIN4
+#define  BACK_LEFT_BUMPER_PIN PIN5
+#define  BACK_RIGHT_BUMPER_PIN PIN6
+
 
 
 #define LED_PIN PIN3
@@ -90,11 +96,14 @@ int main() {
 
 #ifdef TEST_TAPE_SENSOR_WITH_ES_FRAMEWORK
 
+
 int main() {
 
     ES_Return_t ErrorType;
 
     BOARD_Init();
+    
+
 
     printf("Starting ES Framework Template\r\n");
     printf("using the 2nd Generation Events & Services Framework\r\n");
@@ -125,3 +134,39 @@ int main() {
 }
 #endif
 
+
+#ifdef TEST_BUMPER
+#define  FRONT_LEFT_BUMPER_PIN PIN3
+#define  FRONT_RIGHT_BUMPER_PIN PIN4
+#define  BACK_LEFT_BUMPER_PIN PIN5
+#define  BACK_RIGHT_BUMPER_PIN PIN6
+
+#define  SHIFT_AMOUNT 3
+
+#define BUMPER_PORT PORTY
+
+#define ALL_BUMPER_PINS (FRONT_LEFT_BUMPER_PIN | FRONT_RIGHT_BUMPER_PIN | BACK_LEFT_BUMPER_PIN |  BACK_RIGHT_BUMPER_PIN)
+
+
+void delay(int x) {
+    int i = 0;
+    while (i < x) {
+        i++;
+    }
+}
+
+int main() {
+    BOARD_Init();
+    IO_PortsSetPortInputs(BUMPER_PORT,  FRONT_LEFT_BUMPER_PIN);
+    IO_PortsSetPortInputs(BUMPER_PORT,   FRONT_RIGHT_BUMPER_PIN);
+    IO_PortsSetPortInputs(BUMPER_PORT,  BACK_LEFT_BUMPER_PIN);
+    IO_PortsSetPortInputs(BUMPER_PORT,  BACK_RIGHT_BUMPER_PIN);
+
+    while (1) {
+        printf("Status:%d \r\n", ((IO_PortsReadPort(BUMPER_PORT)) & ALL_BUMPER_PINS) >> SHIFT_AMOUNT );
+        delay(1000000);
+    }
+    for (;;)
+        ;
+}
+#endif

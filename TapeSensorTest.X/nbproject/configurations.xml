@@ -30,6 +30,7 @@
       <itemPath>ES_Configure.h</itemPath>
       <itemPath>TemplateEventChecker.h</itemPath>
       <itemPath>tape_detector_fsm_service.h</itemPath>
+      <itemPath>bumper_service.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -59,6 +60,7 @@
       <itemPath>C:/CMPE118/src/ES_Timers.c</itemPath>
       <itemPath>TemplateEventChecker.c</itemPath>
       <itemPath>tape_detector_fsm_service.c</itemPath>
+      <itemPath>bumper_service.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

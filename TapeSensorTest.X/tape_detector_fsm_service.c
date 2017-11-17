@@ -184,7 +184,7 @@ ES_Event RunTapeDetectorFSMService(ES_Event ThisEvent) {
     uint8_t makeTransition = FALSE; // use to flag transition
     TapeDetectorFSMState_t nextState; // <- need to change enum type here
 
-    ES_Tattle(); // trace call stack
+   // ES_Tattle(); // trace call stack
 
     switch (CurrentState) {
 
@@ -226,7 +226,7 @@ ES_Event RunTapeDetectorFSMService(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
 
                 case ES_ENTRY:
-                    printf("enter on_entry\r\n");
+                  //  printf("enter on_entry\r\n");
                     IO_PortsSetPortBits(PORTX, LED_PIN); //turn on the LED on the IR sensor
 
                     int rc = ES_Timer_InitTimer(TAPE_SENSOR_TIMER, ONE_MILLISECOND);
@@ -246,7 +246,7 @@ ES_Event RunTapeDetectorFSMService(ES_Event ThisEvent) {
                 case ES_EXIT: // If current state is initial Psedudo State
 
                 case ES_TIMERACTIVE:
-                    printf("enter on_ES_TIMERACTIVE\r\n");
+                   // printf("enter on_ES_TIMERACTIVE\r\n");
                 case ES_TIMERSTOPPED:
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
@@ -291,7 +291,7 @@ ES_Event RunTapeDetectorFSMService(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
 
                 case ES_ENTRY:
-                    printf("Off_enter on_entry\r\n");
+                   // printf("Off_enter on_entry\r\n");
                     IO_PortsClearPortBits(PORTX, LED_PIN); //turn on the LED on the IR sensor
                     int rc = ES_Timer_InitTimer(TAPE_SENSOR_TIMER, ONE_MILLISECOND);
 
@@ -360,7 +360,7 @@ ES_Event RunTapeDetectorFSMService(ES_Event ThisEvent) {
         CurrentState = nextState;
         RunTapeDetectorFSMService(ENTRY_EVENT);
     }
-    ES_Tail(); // trace call stack end
+  //  ES_Tail(); // trace call stack end
     return ThisEvent;
 }
 
@@ -402,7 +402,7 @@ void detect_tape_event() {
     int index = 0;
     for (index = 0; index < TAPE_SENSOR_COUNT; index++) {
         int diff = tape_sensors[index].low_val - tape_sensors[index].high_val;
-        printf("diff-----------------> %d \r\n", diff);
+       // printf("diff-----------------> %d \r\n", diff);
         if (diff < TAPE_LOW_THRESHOLD) {
             if (tape_sensors[index].status != on_tape) {
                 tape_sensors[index].status = on_tape;
