@@ -59,19 +59,15 @@
 
 #define ONE_MILLISECOND 2
 #define FIFTY_MILLISECOND 25
+
+#define TAPE_SENSOR_COUNT 5
+
 /*******************************************************************************
  * PRIVATE FUNCTION PROTOTYPES                                                 *
  ******************************************************************************/
+
 /* Prototypes for private functions for this machine. They should be functions
    relevant to the behavior of this state machine.*/
-
-
-/*******************************************************************************
- * PRIVATE MODULE VARIABLES                                                            *
- ******************************************************************************/
-
-/* You will need MyPriority and the state variable; you may need others as well.
- * The type of state variable should match that of enum in header file. */
 
 typedef enum {
     InitPState,
@@ -82,28 +78,53 @@ typedef enum {
 } TemplateFSMState_t;
 
 static const char *StateNames[] = {
-    "InitPState",
-    "On",
-    "OnReading",
-    "Off",
-    "OffReading",
+	"InitPState",
+	"On",
+	"OnReading",
+	"Off",
+	"OffReading",
 };
 
-struct {
+typedef enum {
+    on_tape,
+    off_tape
+} tape_sensor_status;
+
+void read_tape_sensors(TemplateFSMState_t state);
+void init_tape_sensors();
+void detect_tape_event();
+
+/*******************************************************************************
+ * PRIVATE MODULE VARIABLES                                                            *
+ ******************************************************************************/
+
+/* You will need MyPriority and the state variable; you may need others as well.
+ * The type of state variable should match that of enum in header file. */
+
+
+typedef enum {
+    front,
+    left,
+    right,
+    center,
+    back,
+} tape_position;
+
+const int tape_sensor_pins[TAPE_SENSOR_COUNT] = {TAPE_PIN_1, TAPE_PIN_2, TAPE_PIN_3, TAPE_PIN_4, TAPE_PIN_5};
+
+typedef struct {
     int pin;
+    int direction;
     int high_val;
     int low_val;
-    int last;
-}tape_sensor;
+    tape_sensor_status status;
+} tape_sensor;
 
+
+tape_sensor tape_sensors[TAPE_SENSOR_COUNT];
 
 static TemplateFSMState_t CurrentState = InitPState; // <- change enum name to match ENUM
 static uint8_t MyPriority;
-
-
-static int tape1AdcValHigh = 0;
-static int tape1AdcValLow = 0;
-static int diff = 0;
 
 
 
@@ -171,20 +192,18 @@ ES_Event RunTemplateFSM(ES_Event ThisEvent) {
             if (ThisEvent.EventType == ES_INIT)// only respond to ES_Init
             {
                 LED_Init();
-                //Initialize Analog inputs
-                AD_Init();
-                AD_AddPins(TAPE_PIN_1);
-                AD_AddPins(TAPE_PIN_2);
-                AD_AddPins(TAPE_PIN_3);
-                AD_AddPins(TAPE_PIN_4);
-                AD_AddPins(TAPE_PIN_5);
-                
+
+                init_tape_sensors();
+
                 ES_Timer_Init();
                 IO_PortsSetPortOutputs(PORTX, LED_PIN);
 
 
                 LED_AddBanks(LED_BANK1);
+                LED_AddBanks(LED_BANK2);
                 LED_OffBank(LED_BANK1, ALL_LEDS);
+                LED_OffBank(LED_BANK2, ALL_LEDS);
+
                 ThisEvent.EventType = ES_NO_EVENT;
 
 
@@ -241,7 +260,8 @@ ES_Event RunTemplateFSM(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
 
                 case ES_ENTRY:
-                    tape1AdcValHigh = AD_ReadADPin(TAPE_PIN_1);
+                    read_tape_sensors(OnReading);
+
                     ES_Timer_InitTimer(TAPE_SENSOR_TIMER, FIFTY_MILLISECOND);
 
                     ThisEvent.EventType = ES_NO_EVENT;
@@ -300,20 +320,16 @@ ES_Event RunTemplateFSM(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
 
                 case ES_ENTRY:
-                    tape1AdcValLow = AD_ReadADPin(TAPE_PIN_1);
+                    read_tape_sensors(OffReading);
+
                     ES_Timer_InitTimer(TAPE_SENSOR_TIMER, FIFTY_MILLISECOND);
                     ThisEvent.EventType = ES_NO_EVENT;
 
+                    detect_tape_event();
 
 
-                    diff = tape1AdcValLow - tape1AdcValHigh;
-                    if (diff < TAPE_LOW_THRESHOLD) {
-                        LED_SetBank(LED_BANK1, ALL_LEDS);
-                    } else if (diff > TAPE_HIGH_THRESHOLD) {
-                        LED_OffBank(LED_BANK1, ALL_LEDS);
-                    }
 
-                    printf("diff-----------------> %d \r\n", diff);
+
                     break;
                 case ES_TIMEOUT:
                     // this is where you would put any actions associated with the
@@ -348,7 +364,79 @@ ES_Event RunTemplateFSM(ES_Event ThisEvent) {
     return ThisEvent;
 }
 
-
 /*******************************************************************************
  * PRIVATE FUNCTIONS                                                           *
  ******************************************************************************/
+void read_tape_sensors(TemplateFSMState_t state) {
+    int index;
+    if (state == OnReading) {
+
+        for (index = 0; index < TAPE_SENSOR_COUNT; index++) {
+            tape_sensors[index].high_val = AD_ReadADPin(tape_sensors[index].pin);
+        }
+    } else if (state == OffReading) {
+        for (index = 0; index < TAPE_SENSOR_COUNT; index++) {
+            tape_sensors[index].low_val = AD_ReadADPin(tape_sensors[index].pin);
+        }
+    }
+
+}
+
+void init_tape_sensors() {
+    int index = 0;
+    //Initialize Analog inputs
+    AD_Init();
+    printf("Initializing Tape pins\r\n");
+    for (index = 0; index < TAPE_SENSOR_COUNT; index++) {
+        printf("Pin:%d done\r\n", index);
+        tape_sensors[index].direction = index;
+        tape_sensors[index].pin = tape_sensor_pins[index];
+        int rc = AD_AddPins(tape_sensors[index].pin);
+        //printf("rc=%d\r\n",rc);
+
+    }
+
+}
+
+void detect_tape_event() {
+    int index = 0;
+    for (index = 0; index < TAPE_SENSOR_COUNT; index++) {
+        int diff = tape_sensors[index].low_val - tape_sensors[index].high_val;
+        printf("diff-----------------> %d \r\n", diff);
+        if (diff < TAPE_LOW_THRESHOLD) {
+            if (tape_sensors[index].status != on_tape) {
+                tape_sensors[index].status = on_tape;
+
+                if (index < 4) {
+                    int current = LED_GetBank(LED_BANK1);
+
+                    LED_SetBank(LED_BANK1, current | (1 << index ));
+                } else {
+                    int current = LED_GetBank(LED_BANK2);
+
+
+                    LED_SetBank(LED_BANK2, current | (1 << (index - 4)));
+
+                }
+            }
+        } else if (diff > TAPE_HIGH_THRESHOLD) {
+
+            if (tape_sensors[index].status != off_tape) {
+                tape_sensors[index].status = off_tape;
+                if (index < 4) {
+                    int current = LED_GetBank(LED_BANK1);
+
+                    LED_OffBank(LED_BANK1, current | (1 << index ));
+                } else {
+                    int current = LED_GetBank(LED_BANK2);
+
+
+                    LED_OffBank(LED_BANK2, current | (1 << (index - 4)));
+                }
+            }
+        }
+
+
+    }
+
+}
