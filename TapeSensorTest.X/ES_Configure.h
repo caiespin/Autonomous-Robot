@@ -83,7 +83,7 @@ static const char *EventNames[] = {
 // corresponding timer expires. All 16 must be defined. If you are not using
 // a timers, then you can use TIMER_UNUSED
 #define TIMER_UNUSED ((pPostFunc)0)
-#define TIMER0_RESP_FUNC PostTemplateFSM
+#define TIMER0_RESP_FUNC PostTapeDetectorFSMService
 #define TIMER1_RESP_FUNC TIMER_UNUSED
 #define TIMER2_RESP_FUNC TIMER_UNUSED
 #define TIMER3_RESP_FUNC TIMER_UNUSED
@@ -127,11 +127,11 @@ static const char *EventNames[] = {
 // services are added in numeric sequence (1,2,3,...) with increasing 
 // priorities
 // the header file with the public fuction prototypes
-#define SERV_0_HEADER "TemplateFSM.h"
+#define SERV_0_HEADER "tape_detector_fsm_service.h"
 // the name of the Init function
-#define SERV_0_INIT InitTemplateFSM
+#define SERV_0_INIT InitTapeDetectorFSMService
 // the name of the run function
-#define SERV_0_RUN RunTemplateFSM
+#define SERV_0_RUN RunTapeDetectorFSMService
 // How big should this service's Queue be?
 #define SERV_0_QUEUE_SIZE 9
 

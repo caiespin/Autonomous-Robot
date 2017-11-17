@@ -15,8 +15,8 @@
  * Modified by MaxL on 8/11/2014
  */
 
-#ifndef FSM_Template_H  // <- This should be changed to your own guard on both
-#define FSM_Template_H  //    of these lines
+#ifndef TAPE_DETECTOR_FSM_SERVICE_H  // <- This should be changed to your own guard on both
+#define TAPE_DETECTOR_FSM_SERVICE_H  //    of these lines
 
 
 /*******************************************************************************
@@ -50,7 +50,7 @@
  *        to rename this to something appropriate.
  *        Returns TRUE if successful, FALSE otherwise
  * @author J. Edward Carryer, 2011.10.23 19:25 */
-uint8_t InitTemplateFSM(uint8_t Priority);
+uint8_t InitTapeDetectorFSMService(uint8_t Priority);
 
 /**
  * @Function PostTemplateFSM(ES_Event ThisEvent)
@@ -61,7 +61,7 @@ uint8_t InitTemplateFSM(uint8_t Priority);
  *        be posted to. Remember to rename to something appropriate.
  *        Returns TRUE if successful, FALSE otherwise
  * @author J. Edward Carryer, 2011.10.23 19:25 */
-uint8_t PostTemplateFSM(ES_Event ThisEvent);
+uint8_t PostTapeDetectorFSMService(ES_Event ThisEvent);
 
 
 /**
@@ -76,7 +76,7 @@ uint8_t PostTemplateFSM(ES_Event ThisEvent);
  * @note Remember to rename to something appropriate.
  *       Returns ES_NO_EVENT if the event have been "consumed." 
  * @author J. Edward Carryer, 2011.10.23 19:25 */
-ES_Event RunTemplateFSM(ES_Event ThisEvent);
+ES_Event RunTapeDetectorFSMService(ES_Event ThisEvent);
 
-#endif /* FSM_Template_H */
+#endif /* TAPE_DETECTOR_FSM_SERVICE_H */
 

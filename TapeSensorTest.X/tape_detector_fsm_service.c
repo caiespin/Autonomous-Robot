@@ -33,7 +33,7 @@
 #include "ES_Framework.h"
 #include "IO_Ports.h"
 #include "LED.h"
-#include "TemplateFSM.h"
+#include "tape_detector_fsm_service.h"
 
 #include <AD.h>
 //Uncomment these for the Roaches
@@ -75,7 +75,7 @@ typedef enum {
     OnReading,
     Off,
     OffReading,
-} TemplateFSMState_t;
+} TapeDetectorFSMState_t;
 
 static const char *StateNames[] = {
 	"InitPState",
@@ -90,7 +90,7 @@ typedef enum {
     off_tape
 } tape_sensor_status;
 
-void read_tape_sensors(TemplateFSMState_t state);
+void read_tape_sensors(TapeDetectorFSMState_t state);
 void init_tape_sensors();
 void detect_tape_event();
 
@@ -123,7 +123,7 @@ typedef struct {
 
 tape_sensor tape_sensors[TAPE_SENSOR_COUNT];
 
-static TemplateFSMState_t CurrentState = InitPState; // <- change enum name to match ENUM
+static TapeDetectorFSMState_t CurrentState = InitPState; // <- change enum name to match ENUM
 static uint8_t MyPriority;
 
 
@@ -142,7 +142,7 @@ static uint8_t MyPriority;
  *        to rename this to something appropriate.
  *        Returns TRUE if successful, FALSE otherwise
  * @author J. Edward Carryer, 2011.10.23 19:25 */
-uint8_t InitTemplateFSM(uint8_t Priority) {
+uint8_t InitTapeDetectorFSMService(uint8_t Priority) {
     MyPriority = Priority;
     // put us into the Initial PseudoState
     CurrentState = InitPState;
@@ -164,7 +164,7 @@ uint8_t InitTemplateFSM(uint8_t Priority) {
  *        be posted to. Remember to rename to something appropriate.
  *        Returns TRUE if successful, FALSE otherwise
  * @author J. Edward Carryer, 2011.10.23 19:25 */
-uint8_t PostTemplateFSM(ES_Event ThisEvent) {
+uint8_t PostTapeDetectorFSMService(ES_Event ThisEvent) {
     return ES_PostToService(MyPriority, ThisEvent);
 }
 
@@ -180,9 +180,9 @@ uint8_t PostTemplateFSM(ES_Event ThisEvent) {
  * @note Remember to rename to something appropriate.
  *       Returns ES_NO_EVENT if the event have been "consumed."
  * @author J. Edward Carryer, 2011.10.23 19:25 */
-ES_Event RunTemplateFSM(ES_Event ThisEvent) {
+ES_Event RunTapeDetectorFSMService(ES_Event ThisEvent) {
     uint8_t makeTransition = FALSE; // use to flag transition
-    TemplateFSMState_t nextState; // <- need to change enum type here
+    TapeDetectorFSMState_t nextState; // <- need to change enum type here
 
     ES_Tattle(); // trace call stack
 
@@ -356,9 +356,9 @@ ES_Event RunTemplateFSM(ES_Event ThisEvent) {
     } // end switch on Current State
     if (makeTransition == TRUE) { // making a state transition, send EXIT and ENTRY
         // recursively call the current state with an exit event
-        RunTemplateFSM(EXIT_EVENT);
+        RunTapeDetectorFSMService(EXIT_EVENT);
         CurrentState = nextState;
-        RunTemplateFSM(ENTRY_EVENT);
+        RunTapeDetectorFSMService(ENTRY_EVENT);
     }
     ES_Tail(); // trace call stack end
     return ThisEvent;
@@ -367,7 +367,7 @@ ES_Event RunTemplateFSM(ES_Event ThisEvent) {
 /*******************************************************************************
  * PRIVATE FUNCTIONS                                                           *
  ******************************************************************************/
-void read_tape_sensors(TemplateFSMState_t state) {
+void read_tape_sensors(TapeDetectorFSMState_t state) {
     int index;
     if (state == OnReading) {
 
