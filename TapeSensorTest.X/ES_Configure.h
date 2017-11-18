@@ -48,10 +48,12 @@ typedef enum {
     BATTERY_CONNECTED,
     BATTERY_DISCONNECTED,
     TAPE_DETECTED,
-            TAPE_LOST,
-            BUMPER_PRESSED,
-            BUMPER_RELEASED,
-            
+    TAPE_LOST,
+    BUMPER_PRESSED,
+    BUMPER_RELEASED,
+    REN_BUMPER_PRESSED,
+    REN_BUMPER_RELEASE,
+
 
 
 } ES_EventTyp_t;
@@ -74,6 +76,8 @@ static const char *EventNames[] = {
 	"TAPE_LOST",
 	"BUMPER_PRESSED",
 	"BUMPER_RELEASED",
+	"REN_BUMPER_PRESSED",
+	"REN_BUMPER_RELEASE",
 };
 
 

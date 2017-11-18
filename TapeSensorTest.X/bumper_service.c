@@ -31,18 +31,7 @@
  ******************************************************************************/
 #define DEBUG
 
-#define REN_RIGHT_BUMPER 256 // PIN11   2^11 >>3=256
-#define REN_CENTER_BUMPER 64 // PIN9 2^9 >>3=64
-#define  REN_LEFT_BUMPER 16 //PIN7 2^7 >>3=16
 
-
-
-#define  FRONT_LEFT_BUMPER 1 //PIN3 2^3 >>3=1
-#define  FRONT_RIGHT_BUMPER 2 //PIN4 2^4 >>3=2
-#define  BACK_LEFT_BUMPER 4   // PIN5 2^5 >>3=4 
-#define  BACK_RIGHT_BUMPER 8 // PIN6 2^6 >>3=8 
-#define  FRONT_BUMPERS (FRONT_LEFT_BUMPER | FRONT_RIGHT_BUMPER)
-#define  BACK_BUMPERS (BACK_LEFT_BUMPER | BACK_RIGHT_BUMPER)
 
 #define  FRONT_LEFT_BUMPER_PIN PIN3
 #define  FRONT_RIGHT_BUMPER_PIN PIN4
@@ -53,7 +42,15 @@
 #define  REN_CENTER_PIN PIN9
 #define  REN_RIGHT_PIN PIN11
 
-#define  SHIFT_AMOUNT 3
+
+#define  FRONT_BUMPERS (FRONT_LEFT_BUMPER_PIN | FRONT_RIGHT_BUMPER_PIN)
+#define  BACK_BUMPERS (BACK_LEFT_BUMPER_PIN | BACK_RIGHT_BUMPER_PIN)
+
+#define ALL_BIG_BUMPERS (FRONT_BUMPERS | BACK_BUMPERS)
+#define ALL_REN_BUMPERS (REN_LEFT_PIN | REN_CENTER_PIN | REN_RIGHT_PIN)
+
+
+//#define  SHIFT_AMOUNT 3
 
 #define BUMPER_PORT PORTZ
 
@@ -77,7 +74,7 @@ uint8_t CheckBumpers(void);
 typedef union {
 
     struct {
-        
+         unsigned : 3;
         unsigned front_left_bumper : 1;
         unsigned front_right_bumper : 1;
         unsigned back_left_bumper : 1;
@@ -92,7 +89,7 @@ typedef union {
         unsigned bit9 : 1;
         unsigned bit10 : 1;
         unsigned bit11 : 1;
-        unsigned : 4;
+        unsigned : 1;
     };
     uint16_t value;
 } Bumper_Bank_t;
@@ -219,7 +216,7 @@ int checkBumper(int* flag, int counter, int param) {
         ES_Event thisEvent;
         thisEvent.EventType = BUMPER_PRESSED;
         //thisEvent.EventParam = param;
-        thisEvent.EventParam = all_bumpers.value;
+        thisEvent.EventParam = all_bumpers.value & ALL_BIG_BUMPERS;
         returnVal = TRUE;
         PostFSMService(thisEvent);
 
@@ -228,7 +225,33 @@ int checkBumper(int* flag, int counter, int param) {
         ES_Event thisEvent;
         thisEvent.EventType = BUMPER_RELEASED;
         // thisEvent.EventParam = param;
-        thisEvent.EventParam = all_bumpers.value;
+        thisEvent.EventParam = all_bumpers.value & ALL_BIG_BUMPERS;
+        returnVal = TRUE;
+        PostFSMService(thisEvent);
+
+    }
+    return returnVal;
+}
+
+
+
+int checkRenBumper(int* flag, int counter, int param) {
+    int returnVal = FALSE;
+    if ((*flag == FALSE) && (counter > MAX_HISTORY_SIZE - 2)) {
+        *flag = TRUE;
+        ES_Event thisEvent;
+        thisEvent.EventType = REN_BUMPER_PRESSED;
+        //thisEvent.EventParam = param;
+        thisEvent.EventParam = all_bumpers.value & ALL_REN_BUMPERS;
+        returnVal = TRUE;
+        PostFSMService(thisEvent);
+
+    } else if ((*flag == TRUE) &&(counter < (-MAX_HISTORY_SIZE) + 2)) {
+        *flag = FALSE;
+        ES_Event thisEvent;
+        thisEvent.EventType = REN_BUMPER_RELEASE;
+        // thisEvent.EventParam = param;
+        thisEvent.EventParam = all_bumpers.value & ALL_REN_BUMPERS;
         returnVal = TRUE;
         PostFSMService(thisEvent);
 
@@ -351,15 +374,15 @@ uint8_t CheckBumpers(void) {
     checkBumper(&Rear_Left_Pressed_Flag, Rear_Left_Pressed_Counter, Rear_Left);
 
 
-    checkBumper(& Ren_Left_Pressed_Flag, Left_Ren_Bumper_Pressed_Counter, Left_Ren);
-    checkBumper(&Ren_Center_Pressed_Flag, Center_Ren_Bumper_Pressed_Counter, Center_Ren);
-    checkBumper(&Ren_Right_Pressed_Flag, Right_Ren_Bumper_Pressed_Counter, Right_Ren);
+    checkRenBumper(& Ren_Left_Pressed_Flag, Left_Ren_Bumper_Pressed_Counter, Left_Ren);
+    checkRenBumper(&Ren_Center_Pressed_Flag, Center_Ren_Bumper_Pressed_Counter, Center_Ren);
+    checkRenBumper(&Ren_Right_Pressed_Flag, Right_Ren_Bumper_Pressed_Counter, Right_Ren);
 
     return (returnVal);
 }
 
 int read_all_bumpers() {
-    return (((IO_PortsReadPort(BUMPER_PORT)) & ALL_BUMPER_PINS) >> SHIFT_AMOUNT);
+    return (((IO_PortsReadPort(BUMPER_PORT)) & ALL_BUMPER_PINS) /*>> SHIFT_AMOUNT*/);
 }
 
 int ReadFrontRightBumper() {
