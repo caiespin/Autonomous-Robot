@@ -3,10 +3,13 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/CMPE118/src/ES_CheckEvents.c</file>
-            <file>file:/C:/CMPE118/include/LED.h</file>
+            <file>file:/C:/Users/igonzalo/Desktop/git/Autonomous-Robot/TapeSensorTest.X/tape_detector_fsm_service.c</file>
+            <file>file:/C:/Users/igonzalo/Desktop/git/Autonomous-Robot/TapeSensorTest.X/ES_Configure.h</file>
+            <file>file:/C:/Users/igonzalo/Desktop/git/Autonomous-Robot/TapeSensorTest.X/bumper_service.h</file>
+            <file>file:/C:/Users/igonzalo/Desktop/git/Autonomous-Robot/TapeSensorTest.X/main.c</file>
+            <file>file:/C:/Users/igonzalo/Desktop/git/Autonomous-Robot/TapeSensorTest.X/bumper_service.c</file>
+            <file>file:/C:/Users/igonzalo/Desktop/git/Autonomous-Robot/TapeSensorTest.X/IO_Ports.c</file>
             <file>file:/C:/CMPE118/include/IO_Ports.h</file>
-            <file>file:/C:/Users/igonzalo/Desktop/git/Autonomous-Robot/TapeSensorTest.X/TemplateFSM.c</file>
         </group>
     </open-files>
 </project-private>
