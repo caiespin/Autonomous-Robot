@@ -31,14 +31,27 @@
  ******************************************************************************/
 #define DEBUG
 
+#define REN_RIGHT_BUMPER 256 // PIN11   2^11 >>3=256
+#define REN_CENTER_BUMPER 64 // PIN9 2^9 >>3=64
+#define  REN_LEFT_BUMPER 16 //PIN7 2^7 >>3=16
+
+
+
+#define  FRONT_LEFT_BUMPER 1 //PIN3 2^3 >>3=1
+#define  FRONT_RIGHT_BUMPER 2 //PIN4 2^4 >>3=2
+#define  BACK_LEFT_BUMPER 4   // PIN5 2^5 >>3=4 
+#define  BACK_RIGHT_BUMPER 8 // PIN6 2^6 >>3=8 
+#define  FRONT_BUMPERS (FRONT_LEFT_BUMPER | FRONT_RIGHT_BUMPER)
+#define  BACK_BUMPERS (BACK_LEFT_BUMPER | BACK_RIGHT_BUMPER)
+
 #define  FRONT_LEFT_BUMPER_PIN PIN3
 #define  FRONT_RIGHT_BUMPER_PIN PIN4
 #define  BACK_LEFT_BUMPER_PIN PIN5
 #define  BACK_RIGHT_BUMPER_PIN PIN6
 
 #define  REN_LEFT_PIN PIN7
-#define  REN_CENTER_PIN PIN8
-#define  REN_RIGHT_PIN PIN9
+#define  REN_CENTER_PIN PIN9
+#define  REN_RIGHT_PIN PIN11
 
 #define  SHIFT_AMOUNT 3
 
@@ -68,10 +81,12 @@ typedef union {
         unsigned front_left_bumper : 1;
         unsigned front_right_bumper : 1;
         unsigned back_left_bumper : 1;
-        unsigned back_right_bumper : 1;
-        unsigned ren_left : 1;
-        unsigned ren_center : 1;
-        unsigned ren_right : 1;
+        unsigned back_right_bumper : 1;//6
+        unsigned ren_left : 1;//7
+         unsigned : 1;
+        unsigned ren_center : 1;//9
+         unsigned : 1;
+        unsigned ren_right : 1;//11
         unsigned bit7 : 1;
         unsigned bit8 : 1;
         unsigned bit9 : 1;
