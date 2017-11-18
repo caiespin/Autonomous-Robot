@@ -44,7 +44,7 @@
 
 #define BUMPER_PORT PORTZ
 
-#define ALL_BUMPER_PINS (FRONT_LEFT_BUMPER_PIN | FRONT_RIGHT_BUMPER_PIN | BACK_LEFT_BUMPER_PIN |  BACK_RIGHT_BUMPER_PIN)
+#define ALL_BUMPER_PINS (FRONT_LEFT_BUMPER_PIN | FRONT_RIGHT_BUMPER_PIN | BACK_LEFT_BUMPER_PIN |  BACK_RIGHT_BUMPER_PIN |REN_LEFT_PIN | REN_CENTER_PIN |REN_RIGHT_PIN )
 
 
 #define TIMER_BUMPER_TICKS 10 //100Hz (More than enough))
@@ -64,6 +64,7 @@ uint8_t CheckBumpers(void);
 typedef union {
 
     struct {
+        
         unsigned front_left_bumper : 1;
         unsigned front_right_bumper : 1;
         unsigned back_left_bumper : 1;
@@ -113,9 +114,9 @@ uint8_t InitBumperService(uint8_t Priority) {
     ES_Timer_InitTimer(BUMPER_SENSOR_TIMER, TIMER_BUMPER_TICKS);
 
     //Initialize Bumper
-  
-    IO_PortsSetPortInputs(BUMPER_PORT,ALL_BUMPER_PINS );
-   
+
+    IO_PortsSetPortInputs(BUMPER_PORT, ALL_BUMPER_PINS);
+
 
 
 
@@ -170,14 +171,13 @@ ES_Event RunBumperService(ES_Event ThisEvent) {
 
         case ES_TIMEOUT:
             ES_Timer_InitTimer(BUMPER_SENSOR_TIMER, TIMER_BUMPER_TICKS);
-           
-            
-            
-            //printf("Status2:%d \r\n", ((IO_PortsReadPort(BUMPER_PORT)) & ALL_BUMPER_PINS) >> SHIFT_AMOUNT);
-             all_bumpers.value = ((IO_PortsReadPort(BUMPER_PORT)) & ALL_BUMPER_PINS) >> SHIFT_AMOUNT;
-           //   printf("value2=%d\r\n", all_bumpers.value);
-              //printf("digital=%d\r\n", IO_PortsReadPort(BUMPER_PORT));
-              CheckBumpers();
+
+
+
+
+            all_bumpers.value = read_all_bumpers();
+
+            CheckBumpers();
             break;
     }
 
@@ -212,7 +212,7 @@ int checkBumper(int* flag, int counter, int param) {
         *flag = FALSE;
         ES_Event thisEvent;
         thisEvent.EventType = BUMPER_RELEASED;
-      // thisEvent.EventParam = param;
+        // thisEvent.EventParam = param;
         thisEvent.EventParam = all_bumpers.value;
         returnVal = TRUE;
         PostFSMService(thisEvent);
@@ -228,6 +228,10 @@ int checkBumper(int* flag, int counter, int param) {
 #define Rear_Right 4
 #define Rear_Left 8
 
+#define Left_Ren 16
+#define Center_Ren 32
+#define Right_Ren 64
+
 uint8_t CheckBumpers(void) {
     ES_Event thisEvent;
     uint8_t returnVal = FALSE;
@@ -236,10 +240,20 @@ uint8_t CheckBumpers(void) {
     static int Rear_Right_Pressed_Flag = FALSE;
     static int Rear_Left_Pressed_Flag = FALSE;
 
+    static int Ren_Left_Pressed_Flag = FALSE;
+    static int Ren_Center_Pressed_Flag = FALSE;
+    static int Ren_Right_Pressed_Flag = FALSE;
+
     static int Front_Right_Pressed_Counter = 0;
     static int Front_Left_Pressed_Counter = 0;
     static int Rear_Right_Pressed_Counter = 0;
     static int Rear_Left_Pressed_Counter = 0;
+
+
+    static int Left_Ren_Bumper_Pressed_Counter = 0;
+    static int Center_Ren_Bumper_Pressed_Counter = 0;
+    static int Right_Ren_Bumper_Pressed_Counter = 0;
+
 
     if (ReadFrontRightBumper() == BUMPER_TRIPPED) {
         if (Front_Right_Pressed_Counter < MAX_HISTORY_SIZE - 1) {
@@ -282,14 +296,55 @@ uint8_t CheckBumpers(void) {
     }
 
 
+
+    /////////
+    //Ren ship bumpers
+
+    if (ReadLeftRenBumper() == BUMPER_TRIPPED) {
+        if (Left_Ren_Bumper_Pressed_Counter < MAX_HISTORY_SIZE - 1) {
+            Left_Ren_Bumper_Pressed_Counter++;
+        }
+    } else if (ReadLeftRenBumper() == BUMPER_NOT_TRIPPED) {
+        if (Left_Ren_Bumper_Pressed_Counter > (-MAX_HISTORY_SIZE) + 1) {
+            Left_Ren_Bumper_Pressed_Counter--;
+        }
+    }
+
+    if (ReadCenterRenBumper() == BUMPER_TRIPPED) {
+        if (Center_Ren_Bumper_Pressed_Counter < MAX_HISTORY_SIZE - 1) {
+            Center_Ren_Bumper_Pressed_Counter++;
+        }
+    } else if (ReadCenterRenBumper() == BUMPER_NOT_TRIPPED) {
+        if (Center_Ren_Bumper_Pressed_Counter > (-MAX_HISTORY_SIZE) + 1) {
+            Center_Ren_Bumper_Pressed_Counter--;
+        }
+    }
+
+    if (ReadRightRenBumper() == BUMPER_TRIPPED) {
+        if (Right_Ren_Bumper_Pressed_Counter < MAX_HISTORY_SIZE - 1) {
+            Right_Ren_Bumper_Pressed_Counter++;
+        }
+    } else if (ReadRightRenBumper() == BUMPER_NOT_TRIPPED) {
+        if (Right_Ren_Bumper_Pressed_Counter > (-MAX_HISTORY_SIZE) + 1) {
+            Right_Ren_Bumper_Pressed_Counter--;
+        }
+    }
+
     checkBumper(&Front_Right_Pressed_Flag, Front_Right_Pressed_Counter, Front_Right);
     checkBumper(&Front_Left_Pressed_Flag, Front_Left_Pressed_Counter, Front_Left);
     checkBumper(&Rear_Right_Pressed_Flag, Rear_Right_Pressed_Counter, Rear_Right);
     checkBumper(&Rear_Left_Pressed_Flag, Rear_Left_Pressed_Counter, Rear_Left);
 
 
+    checkBumper(& Ren_Left_Pressed_Flag, Left_Ren_Bumper_Pressed_Counter, Left_Ren);
+    checkBumper(&Ren_Center_Pressed_Flag, Center_Ren_Bumper_Pressed_Counter, Center_Ren);
+    checkBumper(&Ren_Right_Pressed_Flag, Right_Ren_Bumper_Pressed_Counter, Right_Ren);
 
     return (returnVal);
+}
+
+int read_all_bumpers() {
+    return (((IO_PortsReadPort(BUMPER_PORT)) & ALL_BUMPER_PINS) >> SHIFT_AMOUNT);
 }
 
 int ReadFrontRightBumper() {
@@ -306,4 +361,15 @@ int ReadRearRightBumper() {
 
 int ReadRearLeftBumper() {
     return all_bumpers.back_left_bumper;
+}
+
+int ReadLeftRenBumper(){
+    return all_bumpers.ren_left;
+}
+int ReadCenterRenBumper(){
+    return all_bumpers.ren_center;
+}
+int ReadRightRenBumper(){
+    return all_bumpers.ren_right;
+    
 }
