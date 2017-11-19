@@ -52,13 +52,14 @@
 #define TAPE_PIN_5 AD_PORTW7
 
 
-#define LED_PIN PIN3
+#define LED_PIN PIN8
+#define TAPE_PORT PORTY
 #define TAPE_HIGH_THRESHOLD 400
 #define TAPE_LOW_THRESHOLD 300
 #define ALL_LEDS 0xF
 
-#define ONE_MILLISECOND 2
-#define FIFTY_MILLISECOND 25
+#define TWO_MILLISECOND 2
+#define TWENTY_FIVE_MILLISECOND 25
 
 #define TAPE_SENSOR_COUNT 5
 
@@ -196,7 +197,7 @@ ES_Event RunTapeDetectorFSMService(ES_Event ThisEvent) {
                 init_tape_sensors();
 
                 ES_Timer_Init();
-                IO_PortsSetPortOutputs(PORTX, LED_PIN);
+                IO_PortsSetPortOutputs(TAPE_PORT, LED_PIN);
 
 
                 LED_AddBanks(LED_BANK1);
@@ -227,9 +228,9 @@ ES_Event RunTapeDetectorFSMService(ES_Event ThisEvent) {
 
                 case ES_ENTRY:
                   //  printf("enter on_entry\r\n");
-                    IO_PortsSetPortBits(PORTX, LED_PIN); //turn on the LED on the IR sensor
+                    IO_PortsSetPortBits(TAPE_PORT, LED_PIN); //turn on the LED on the IR sensor
 
-                    int rc = ES_Timer_InitTimer(TAPE_SENSOR_TIMER, ONE_MILLISECOND);
+                    int rc = ES_Timer_InitTimer(TAPE_SENSOR_TIMER, TWO_MILLISECOND);
 
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
@@ -262,7 +263,7 @@ ES_Event RunTapeDetectorFSMService(ES_Event ThisEvent) {
                 case ES_ENTRY:
                     read_tape_sensors(OnReading);
 
-                    ES_Timer_InitTimer(TAPE_SENSOR_TIMER, FIFTY_MILLISECOND);
+                    ES_Timer_InitTimer(TAPE_SENSOR_TIMER, TWENTY_FIVE_MILLISECOND);
 
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
@@ -292,8 +293,8 @@ ES_Event RunTapeDetectorFSMService(ES_Event ThisEvent) {
 
                 case ES_ENTRY:
                    // printf("Off_enter on_entry\r\n");
-                    IO_PortsClearPortBits(PORTX, LED_PIN); //turn on the LED on the IR sensor
-                    int rc = ES_Timer_InitTimer(TAPE_SENSOR_TIMER, ONE_MILLISECOND);
+                    IO_PortsClearPortBits(TAPE_PORT, LED_PIN); //turn on the LED on the IR sensor
+                    int rc = ES_Timer_InitTimer(TAPE_SENSOR_TIMER, TWO_MILLISECOND);
 
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
@@ -322,7 +323,7 @@ ES_Event RunTapeDetectorFSMService(ES_Event ThisEvent) {
                 case ES_ENTRY:
                     read_tape_sensors(OffReading);
 
-                    ES_Timer_InitTimer(TAPE_SENSOR_TIMER, FIFTY_MILLISECOND);
+                    ES_Timer_InitTimer(TAPE_SENSOR_TIMER, TWENTY_FIVE_MILLISECOND);
                     ThisEvent.EventType = ES_NO_EVENT;
 
                     detect_tape_event();

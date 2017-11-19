@@ -17,7 +17,7 @@
 //#define TEST_TAPE_SENSOR
 #define TEST_TAPE_SENSOR_WITH_ES_FRAMEWORK
 //#define TEST_BUMPER
-
+//#define TEST_DRIVING_MOTORS
 
 #define TAPE_PIN_1 AD_PORTW3
 
@@ -170,3 +170,5 @@ int main() {
         ;
 }
 #endif
+
+
