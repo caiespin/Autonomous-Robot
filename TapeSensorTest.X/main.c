@@ -12,12 +12,15 @@
 #include "LED.h"
 #include "ES_Configure.h"
 #include "ES_Framework.h"
+#include "pwm.h"
+#include "RC_Servo.h"
 
 
 //#define TEST_TAPE_SENSOR
-#define TEST_TAPE_SENSOR_WITH_ES_FRAMEWORK
+//#define TEST_TAPE_SENSOR_WITH_ES_FRAMEWORK
 //#define TEST_BUMPER
-//#define TEST_DRIVING_MOTORS
+#define TEST_DRIVING_MOTORS
+//#define TEST_SERVO
 
 #define TAPE_PIN_1 AD_PORTW3
 
@@ -96,13 +99,12 @@ int main() {
 
 #ifdef TEST_TAPE_SENSOR_WITH_ES_FRAMEWORK
 
-
 int main() {
 
     ES_Return_t ErrorType;
 
     BOARD_Init();
-    
+
 
 
     printf("Starting ES Framework Template\r\n");
@@ -147,6 +149,40 @@ int main() {
 
 #define ALL_BUMPER_PINS (FRONT_LEFT_BUMPER_PIN | FRONT_RIGHT_BUMPER_PIN | BACK_LEFT_BUMPER_PIN |  BACK_RIGHT_BUMPER_PIN)
 
+void delay(int x) {
+    int i = 0;
+    while (i < x) {
+        i++;
+    }
+}
+
+int main() {
+    BOARD_Init();
+    IO_PortsSetPortInputs(BUMPER_PORT, FRONT_LEFT_BUMPER_PIN);
+    IO_PortsSetPortInputs(BUMPER_PORT, FRONT_RIGHT_BUMPER_PIN);
+    IO_PortsSetPortInputs(BUMPER_PORT, BACK_LEFT_BUMPER_PIN);
+    IO_PortsSetPortInputs(BUMPER_PORT, BACK_RIGHT_BUMPER_PIN);
+
+    while (1) {
+        printf("Status:%d \r\n", ((IO_PortsReadPort(BUMPER_PORT)) & ALL_BUMPER_PINS) >> SHIFT_AMOUNT);
+        delay(1000000);
+    }
+    for (;;)
+        ;
+}
+#endif
+
+#ifdef TEST_DRIVING_MOTORS
+
+
+
+#define DRIVING_MOTOR_PORT  PORTY
+#define ENABLE_A PWM_PORTY12  
+#define DIRECTION_A PIN11
+
+
+#define ENABLE_B PWM_PORTY10 
+#define DIRECTION_B PIN9
 
 void delay(int x) {
     int i = 0;
@@ -157,18 +193,56 @@ void delay(int x) {
 
 int main() {
     BOARD_Init();
-    IO_PortsSetPortInputs(BUMPER_PORT,  FRONT_LEFT_BUMPER_PIN);
-    IO_PortsSetPortInputs(BUMPER_PORT,   FRONT_RIGHT_BUMPER_PIN);
-    IO_PortsSetPortInputs(BUMPER_PORT,  BACK_LEFT_BUMPER_PIN);
-    IO_PortsSetPortInputs(BUMPER_PORT,  BACK_RIGHT_BUMPER_PIN);
+    PWM_Init();
 
-    while (1) {
-        printf("Status:%d \r\n", ((IO_PortsReadPort(BUMPER_PORT)) & ALL_BUMPER_PINS) >> SHIFT_AMOUNT );
-        delay(1000000);
+    IO_PortsSetPortOutputs(DRIVING_MOTOR_PORT, DIRECTION_A | DIRECTION_B);
+    PWM_AddPins(ENABLE_A | ENABLE_B);
+
+    //IO_PortsSetPortOutput(BUMPER_PORT,  FRONT_LEFT_BUMPER_PIN);
+    //IO_PortsSetPortOutput(BUMPER_PORT,   FRONT_RIGHT_BUMPER_PIN);
+    //IO_PortsSetPortInputs(BUMPER_PORT,  BACK_LEFT_BUMPER_PIN);
+    //  IO_PortsSetPortInputs(BUMPER_PORT,  BACK_RIGHT_BUMPER_PIN);
+    PWM_SetFrequency(PWM_500HZ);
+    PWM_SetDutyCycle(ENABLE_A, 800);
+     PWM_SetDutyCycle(ENABLE_B, 800);
+    IO_PortsWritePort(DRIVING_MOTOR_PORT, DIRECTION_A );
+ IO_PortsClearPortBits(DRIVING_MOTOR_PORT,  DIRECTION_B);
+
+    for (;;) {
+
+
     }
-    for (;;)
-        ;
+
 }
+
 #endif
 
+#ifdef TEST_SERVO
+#define SERVO_PIN RC_PORTX03
 
+void delay(int x) {
+    int i = 0;
+    while (i < x) {
+        i++;
+    }
+}
+
+int main() {
+    BOARD_Init();
+    RC_Init();
+    RC_AddPins(SERVO_PIN);
+
+  
+ RC_SetPulseTime(SERVO_PIN, MINPULSE);
+   delay(1000000);
+   RC_SetPulseTime(SERVO_PIN,MAXPULSE);
+   delay(100000);
+
+    for (;;) {
+        
+
+
+    }
+
+}
+#endif
