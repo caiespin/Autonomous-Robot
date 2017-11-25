@@ -17,10 +17,11 @@
 
 
 //#define TEST_TAPE_SENSOR
-//#define TEST_TAPE_SENSOR_WITH_ES_FRAMEWORK
+#define TEST_TAPE_SENSOR_WITH_ES_FRAMEWORK
 //#define TEST_BUMPER
-#define TEST_DRIVING_MOTORS
+//#define TEST_DRIVING_MOTORS
 //#define TEST_SERVO
+//#define TEST_DRIVING_MOTORS_HELPER_FUNCTIONS
 
 #define TAPE_PIN_1 AD_PORTW3
 
@@ -245,4 +246,33 @@ int main() {
     }
 
 }
+#endif
+
+
+
+#ifdef TEST_DRIVING_MOTORS_HELPER_FUNCTIONS
+
+#include "motors.h"
+
+
+void delay(int x) {
+    int i = 0;
+    while (i < x) {
+        i++;
+    }
+}
+
+int main() {
+    BOARD_Init();
+    motors_init();
+     turn_right();
+    
+    
+    for (;;) {
+
+
+    }
+
+}
+
 #endif

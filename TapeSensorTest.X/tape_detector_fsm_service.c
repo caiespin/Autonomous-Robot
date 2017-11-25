@@ -52,11 +52,13 @@
 #define TAPE_PIN_5 AD_PORTW7
 
 
+
+
 #define LED_PIN PIN8
 #define TAPE_PORT PORTY
 #define TAPE_HIGH_THRESHOLD 400
 #define TAPE_LOW_THRESHOLD 300
-#define ALL_LEDS 0xF
+
 
 #define TWO_MILLISECOND 2
 #define TWENTY_FIVE_MILLISECOND 25
@@ -86,10 +88,7 @@ static const char *StateNames[] = {
 	"OffReading",
 };
 
-typedef enum {
-    on_tape,
-    off_tape
-} tape_sensor_status;
+
 
 void read_tape_sensors(TapeDetectorFSMState_t state);
 void init_tape_sensors();
@@ -192,7 +191,7 @@ ES_Event RunTapeDetectorFSMService(ES_Event ThisEvent) {
         case InitPState: // If current state is initial Psedudo State
             if (ThisEvent.EventType == ES_INIT)// only respond to ES_Init
             {
-                LED_Init();
+               // LED_Init();
 
                 init_tape_sensors();
 
@@ -200,10 +199,10 @@ ES_Event RunTapeDetectorFSMService(ES_Event ThisEvent) {
                 IO_PortsSetPortOutputs(TAPE_PORT, LED_PIN);
 
 
-                LED_AddBanks(LED_BANK1);
-                LED_AddBanks(LED_BANK2);
-                LED_OffBank(LED_BANK1, ALL_LEDS);
-                LED_OffBank(LED_BANK2, ALL_LEDS);
+               // LED_AddBanks(LED_BANK1);
+                //LED_AddBanks(LED_BANK2);
+               // LED_OffBank(LED_BANK1, ALL_LEDS);
+               // LED_OffBank(LED_BANK2, ALL_LEDS);
 
                 ThisEvent.EventType = ES_NO_EVENT;
 
@@ -399,6 +398,10 @@ void init_tape_sensors() {
 
 }
 
+int get_front_tape_status(){
+    return tape_sensors[FRONT_TAPE_SENSOR].status;
+}
+
 void detect_tape_event() {
     int index = 0;
     for (index = 0; index < TAPE_SENSOR_COUNT; index++) {
@@ -411,14 +414,19 @@ void detect_tape_event() {
                 if (index < 4) {
                     int current = LED_GetBank(LED_BANK1);
 
-                    LED_SetBank(LED_BANK1, current | (1 << index ));
+                   // LED_SetBank(LED_BANK1, current | (1 << index ));
+                    
                 } else {
                     int current = LED_GetBank(LED_BANK2);
 
 
-                    LED_SetBank(LED_BANK2, current | (1 << (index - 4)));
+                  //  LED_SetBank(LED_BANK2, current | (1 << (index - 4)));
 
                 }
+                ES_Event newEvent;
+                newEvent.EventType=TAPE_DETECTED;
+                newEvent.EventParam=index;
+                PostFSMLineFollower(newEvent);
             }
         } else if (diff > TAPE_HIGH_THRESHOLD) {
 
@@ -427,13 +435,17 @@ void detect_tape_event() {
                 if (index < 4) {
                     int current = LED_GetBank(LED_BANK1);
 
-                    LED_OffBank(LED_BANK1, current | (1 << index ));
+                   // LED_OffBank(LED_BANK1, current | (1 << index ));
                 } else {
                     int current = LED_GetBank(LED_BANK2);
 
 
-                    LED_OffBank(LED_BANK2, current | (1 << (index - 4)));
+                  //  LED_OffBank(LED_BANK2, current | (1 << (index - 4)));
                 }
+                ES_Event newEvent;
+                newEvent.EventType=TAPE_LOST;
+                newEvent.EventParam=index;
+                PostFSMLineFollower(newEvent);
             }
         }
 

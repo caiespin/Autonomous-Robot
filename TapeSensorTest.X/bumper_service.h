@@ -14,8 +14,8 @@
  * Updated on 13/Nov/2013
  */
 
-#ifndef TemplateService_H  // <- This should be changed to your own guard on both
-#define TemplateService_H  //    of these lines
+#ifndef BUMPER_SERVICE_H  // <- This should be changed to your own guard on both
+#define BUMPER_SERVICE_H  //    of these lines
 
 
 /*******************************************************************************

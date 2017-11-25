@@ -57,17 +57,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=main.c C:/CMPE118/src/AD.c C:/CMPE118/src/BOARD.c C:/CMPE118/src/LED.c C:/CMPE118/src/RC_Servo.c C:/CMPE118/src/pwm.c C:/CMPE118/src/roach.c C:/CMPE118/src/serial.c C:/CMPE118/src/timers.c IO_Ports.c Stepper.c C:/CMPE118/src/ES_CheckEvents.c C:/CMPE118/src/ES_Framework.c C:/CMPE118/src/ES_KeyboardInput.c C:/CMPE118/src/ES_PostList.c C:/CMPE118/src/ES_Queue.c C:/CMPE118/src/ES_TattleTale.c C:/CMPE118/src/ES_Timers.c TemplateEventChecker.c tape_detector_fsm_service.c bumper_service.c
+SOURCEFILES_QUOTED_IF_SPACED=main.c C:/CMPE118/src/AD.c C:/CMPE118/src/BOARD.c C:/CMPE118/src/LED.c C:/CMPE118/src/RC_Servo.c C:/CMPE118/src/pwm.c C:/CMPE118/src/roach.c C:/CMPE118/src/serial.c C:/CMPE118/src/timers.c IO_Ports.c Stepper.c C:/CMPE118/src/ES_CheckEvents.c C:/CMPE118/src/ES_Framework.c C:/CMPE118/src/ES_KeyboardInput.c C:/CMPE118/src/ES_PostList.c C:/CMPE118/src/ES_Queue.c C:/CMPE118/src/ES_TattleTale.c C:/CMPE118/src/ES_Timers.c TemplateEventChecker.c tape_detector_fsm_service.c bumper_service.c FSM_Line_Follower.c motors.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/main.o ${OBJECTDIR}/_ext/331920610/AD.o ${OBJECTDIR}/_ext/331920610/BOARD.o ${OBJECTDIR}/_ext/331920610/LED.o ${OBJECTDIR}/_ext/331920610/RC_Servo.o ${OBJECTDIR}/_ext/331920610/pwm.o ${OBJECTDIR}/_ext/331920610/roach.o ${OBJECTDIR}/_ext/331920610/serial.o ${OBJECTDIR}/_ext/331920610/timers.o ${OBJECTDIR}/IO_Ports.o ${OBJECTDIR}/Stepper.o ${OBJECTDIR}/_ext/331920610/ES_CheckEvents.o ${OBJECTDIR}/_ext/331920610/ES_Framework.o ${OBJECTDIR}/_ext/331920610/ES_KeyboardInput.o ${OBJECTDIR}/_ext/331920610/ES_PostList.o ${OBJECTDIR}/_ext/331920610/ES_Queue.o ${OBJECTDIR}/_ext/331920610/ES_TattleTale.o ${OBJECTDIR}/_ext/331920610/ES_Timers.o ${OBJECTDIR}/TemplateEventChecker.o ${OBJECTDIR}/tape_detector_fsm_service.o ${OBJECTDIR}/bumper_service.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/main.o.d ${OBJECTDIR}/_ext/331920610/AD.o.d ${OBJECTDIR}/_ext/331920610/BOARD.o.d ${OBJECTDIR}/_ext/331920610/LED.o.d ${OBJECTDIR}/_ext/331920610/RC_Servo.o.d ${OBJECTDIR}/_ext/331920610/pwm.o.d ${OBJECTDIR}/_ext/331920610/roach.o.d ${OBJECTDIR}/_ext/331920610/serial.o.d ${OBJECTDIR}/_ext/331920610/timers.o.d ${OBJECTDIR}/IO_Ports.o.d ${OBJECTDIR}/Stepper.o.d ${OBJECTDIR}/_ext/331920610/ES_CheckEvents.o.d ${OBJECTDIR}/_ext/331920610/ES_Framework.o.d ${OBJECTDIR}/_ext/331920610/ES_KeyboardInput.o.d ${OBJECTDIR}/_ext/331920610/ES_PostList.o.d ${OBJECTDIR}/_ext/331920610/ES_Queue.o.d ${OBJECTDIR}/_ext/331920610/ES_TattleTale.o.d ${OBJECTDIR}/_ext/331920610/ES_Timers.o.d ${OBJECTDIR}/TemplateEventChecker.o.d ${OBJECTDIR}/tape_detector_fsm_service.o.d ${OBJECTDIR}/bumper_service.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/main.o ${OBJECTDIR}/_ext/331920610/AD.o ${OBJECTDIR}/_ext/331920610/BOARD.o ${OBJECTDIR}/_ext/331920610/LED.o ${OBJECTDIR}/_ext/331920610/RC_Servo.o ${OBJECTDIR}/_ext/331920610/pwm.o ${OBJECTDIR}/_ext/331920610/roach.o ${OBJECTDIR}/_ext/331920610/serial.o ${OBJECTDIR}/_ext/331920610/timers.o ${OBJECTDIR}/IO_Ports.o ${OBJECTDIR}/Stepper.o ${OBJECTDIR}/_ext/331920610/ES_CheckEvents.o ${OBJECTDIR}/_ext/331920610/ES_Framework.o ${OBJECTDIR}/_ext/331920610/ES_KeyboardInput.o ${OBJECTDIR}/_ext/331920610/ES_PostList.o ${OBJECTDIR}/_ext/331920610/ES_Queue.o ${OBJECTDIR}/_ext/331920610/ES_TattleTale.o ${OBJECTDIR}/_ext/331920610/ES_Timers.o ${OBJECTDIR}/TemplateEventChecker.o ${OBJECTDIR}/tape_detector_fsm_service.o ${OBJECTDIR}/bumper_service.o ${OBJECTDIR}/FSM_Line_Follower.o ${OBJECTDIR}/motors.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/main.o.d ${OBJECTDIR}/_ext/331920610/AD.o.d ${OBJECTDIR}/_ext/331920610/BOARD.o.d ${OBJECTDIR}/_ext/331920610/LED.o.d ${OBJECTDIR}/_ext/331920610/RC_Servo.o.d ${OBJECTDIR}/_ext/331920610/pwm.o.d ${OBJECTDIR}/_ext/331920610/roach.o.d ${OBJECTDIR}/_ext/331920610/serial.o.d ${OBJECTDIR}/_ext/331920610/timers.o.d ${OBJECTDIR}/IO_Ports.o.d ${OBJECTDIR}/Stepper.o.d ${OBJECTDIR}/_ext/331920610/ES_CheckEvents.o.d ${OBJECTDIR}/_ext/331920610/ES_Framework.o.d ${OBJECTDIR}/_ext/331920610/ES_KeyboardInput.o.d ${OBJECTDIR}/_ext/331920610/ES_PostList.o.d ${OBJECTDIR}/_ext/331920610/ES_Queue.o.d ${OBJECTDIR}/_ext/331920610/ES_TattleTale.o.d ${OBJECTDIR}/_ext/331920610/ES_Timers.o.d ${OBJECTDIR}/TemplateEventChecker.o.d ${OBJECTDIR}/tape_detector_fsm_service.o.d ${OBJECTDIR}/bumper_service.o.d ${OBJECTDIR}/FSM_Line_Follower.o.d ${OBJECTDIR}/motors.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/main.o ${OBJECTDIR}/_ext/331920610/AD.o ${OBJECTDIR}/_ext/331920610/BOARD.o ${OBJECTDIR}/_ext/331920610/LED.o ${OBJECTDIR}/_ext/331920610/RC_Servo.o ${OBJECTDIR}/_ext/331920610/pwm.o ${OBJECTDIR}/_ext/331920610/roach.o ${OBJECTDIR}/_ext/331920610/serial.o ${OBJECTDIR}/_ext/331920610/timers.o ${OBJECTDIR}/IO_Ports.o ${OBJECTDIR}/Stepper.o ${OBJECTDIR}/_ext/331920610/ES_CheckEvents.o ${OBJECTDIR}/_ext/331920610/ES_Framework.o ${OBJECTDIR}/_ext/331920610/ES_KeyboardInput.o ${OBJECTDIR}/_ext/331920610/ES_PostList.o ${OBJECTDIR}/_ext/331920610/ES_Queue.o ${OBJECTDIR}/_ext/331920610/ES_TattleTale.o ${OBJECTDIR}/_ext/331920610/ES_Timers.o ${OBJECTDIR}/TemplateEventChecker.o ${OBJECTDIR}/tape_detector_fsm_service.o ${OBJECTDIR}/bumper_service.o
+OBJECTFILES=${OBJECTDIR}/main.o ${OBJECTDIR}/_ext/331920610/AD.o ${OBJECTDIR}/_ext/331920610/BOARD.o ${OBJECTDIR}/_ext/331920610/LED.o ${OBJECTDIR}/_ext/331920610/RC_Servo.o ${OBJECTDIR}/_ext/331920610/pwm.o ${OBJECTDIR}/_ext/331920610/roach.o ${OBJECTDIR}/_ext/331920610/serial.o ${OBJECTDIR}/_ext/331920610/timers.o ${OBJECTDIR}/IO_Ports.o ${OBJECTDIR}/Stepper.o ${OBJECTDIR}/_ext/331920610/ES_CheckEvents.o ${OBJECTDIR}/_ext/331920610/ES_Framework.o ${OBJECTDIR}/_ext/331920610/ES_KeyboardInput.o ${OBJECTDIR}/_ext/331920610/ES_PostList.o ${OBJECTDIR}/_ext/331920610/ES_Queue.o ${OBJECTDIR}/_ext/331920610/ES_TattleTale.o ${OBJECTDIR}/_ext/331920610/ES_Timers.o ${OBJECTDIR}/TemplateEventChecker.o ${OBJECTDIR}/tape_detector_fsm_service.o ${OBJECTDIR}/bumper_service.o ${OBJECTDIR}/FSM_Line_Follower.o ${OBJECTDIR}/motors.o
 
 # Source Files
-SOURCEFILES=main.c C:/CMPE118/src/AD.c C:/CMPE118/src/BOARD.c C:/CMPE118/src/LED.c C:/CMPE118/src/RC_Servo.c C:/CMPE118/src/pwm.c C:/CMPE118/src/roach.c C:/CMPE118/src/serial.c C:/CMPE118/src/timers.c IO_Ports.c Stepper.c C:/CMPE118/src/ES_CheckEvents.c C:/CMPE118/src/ES_Framework.c C:/CMPE118/src/ES_KeyboardInput.c C:/CMPE118/src/ES_PostList.c C:/CMPE118/src/ES_Queue.c C:/CMPE118/src/ES_TattleTale.c C:/CMPE118/src/ES_Timers.c TemplateEventChecker.c tape_detector_fsm_service.c bumper_service.c
+SOURCEFILES=main.c C:/CMPE118/src/AD.c C:/CMPE118/src/BOARD.c C:/CMPE118/src/LED.c C:/CMPE118/src/RC_Servo.c C:/CMPE118/src/pwm.c C:/CMPE118/src/roach.c C:/CMPE118/src/serial.c C:/CMPE118/src/timers.c IO_Ports.c Stepper.c C:/CMPE118/src/ES_CheckEvents.c C:/CMPE118/src/ES_Framework.c C:/CMPE118/src/ES_KeyboardInput.c C:/CMPE118/src/ES_PostList.c C:/CMPE118/src/ES_Queue.c C:/CMPE118/src/ES_TattleTale.c C:/CMPE118/src/ES_Timers.c TemplateEventChecker.c tape_detector_fsm_service.c bumper_service.c FSM_Line_Follower.c motors.c
 
 
 CFLAGS=
@@ -245,6 +245,18 @@ ${OBJECTDIR}/bumper_service.o: bumper_service.c  nbproject/Makefile-${CND_CONF}.
 	@${RM} ${OBJECTDIR}/bumper_service.o 
 	@${FIXDEPS} "${OBJECTDIR}/bumper_service.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"C:/CMPE118/include" -I"C:/CMPE118/src" -I"." -MMD -MF "${OBJECTDIR}/bumper_service.o.d" -o ${OBJECTDIR}/bumper_service.o bumper_service.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
+${OBJECTDIR}/FSM_Line_Follower.o: FSM_Line_Follower.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/FSM_Line_Follower.o.d 
+	@${RM} ${OBJECTDIR}/FSM_Line_Follower.o 
+	@${FIXDEPS} "${OBJECTDIR}/FSM_Line_Follower.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"C:/CMPE118/include" -I"C:/CMPE118/src" -I"." -MMD -MF "${OBJECTDIR}/FSM_Line_Follower.o.d" -o ${OBJECTDIR}/FSM_Line_Follower.o FSM_Line_Follower.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+${OBJECTDIR}/motors.o: motors.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/motors.o.d 
+	@${RM} ${OBJECTDIR}/motors.o 
+	@${FIXDEPS} "${OBJECTDIR}/motors.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"C:/CMPE118/include" -I"C:/CMPE118/src" -I"." -MMD -MF "${OBJECTDIR}/motors.o.d" -o ${OBJECTDIR}/motors.o motors.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
 else
 ${OBJECTDIR}/main.o: main.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
@@ -371,6 +383,18 @@ ${OBJECTDIR}/bumper_service.o: bumper_service.c  nbproject/Makefile-${CND_CONF}.
 	@${RM} ${OBJECTDIR}/bumper_service.o.d 
 	@${RM} ${OBJECTDIR}/bumper_service.o 
 	@${FIXDEPS} "${OBJECTDIR}/bumper_service.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"C:/CMPE118/include" -I"C:/CMPE118/src" -I"." -MMD -MF "${OBJECTDIR}/bumper_service.o.d" -o ${OBJECTDIR}/bumper_service.o bumper_service.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+${OBJECTDIR}/FSM_Line_Follower.o: FSM_Line_Follower.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/FSM_Line_Follower.o.d 
+	@${RM} ${OBJECTDIR}/FSM_Line_Follower.o 
+	@${FIXDEPS} "${OBJECTDIR}/FSM_Line_Follower.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"C:/CMPE118/include" -I"C:/CMPE118/src" -I"." -MMD -MF "${OBJECTDIR}/FSM_Line_Follower.o.d" -o ${OBJECTDIR}/FSM_Line_Follower.o FSM_Line_Follower.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+${OBJECTDIR}/motors.o: motors.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/motors.o.d 
+	@${RM} ${OBJECTDIR}/motors.o 
+	@${FIXDEPS} "${OBJECTDIR}/motors.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"C:/CMPE118/include" -I"C:/CMPE118/src" -I"." -MMD -MF "${OBJECTDIR}/motors.o.d" -o ${OBJECTDIR}/motors.o motors.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
 endif
 

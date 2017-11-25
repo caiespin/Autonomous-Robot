@@ -28,17 +28,34 @@
 /*******************************************************************************
  * PUBLIC #DEFINES                                                             *
  ******************************************************************************/
+#define BACK_TAPE_SENSOR 4
+#define CENTER_TAPE_SENSOR 0
+#define LEFT_TAPE_SENSOR 3
+#define FRONT_TAPE_SENSOR 1
+#define RIGHT_TAPE_SENSOR 2
 
 
+#define ALL_LEDS 0xF
 /*******************************************************************************
  * PUBLIC TYPEDEFS                                                             *
  ******************************************************************************/
+
+
+typedef enum {
+    on_tape,
+    off_tape
+} tape_sensor_status;
+
 
 
 
 /*******************************************************************************
  * PUBLIC FUNCTION PROTOTYPES                                                  *
  ******************************************************************************/
+//Returns on_tape for on tape and off_tape for off tape
+int get_front_tape_status();
+
+
 
 /**
  * @Function InitTemplateFSM(uint8_t Priority)

@@ -31,6 +31,8 @@
       <itemPath>TemplateEventChecker.h</itemPath>
       <itemPath>tape_detector_fsm_service.h</itemPath>
       <itemPath>bumper_service.h</itemPath>
+      <itemPath>FSM_Line_Follower.h</itemPath>
+      <itemPath>motors.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -61,6 +63,8 @@
       <itemPath>TemplateEventChecker.c</itemPath>
       <itemPath>tape_detector_fsm_service.c</itemPath>
       <itemPath>bumper_service.c</itemPath>
+      <itemPath>FSM_Line_Follower.c</itemPath>
+      <itemPath>motors.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
