@@ -61,9 +61,10 @@
 
 
 #define TWO_MILLISECOND 2
-#define TWENTY_FIVE_MILLISECOND 25
+#define TWENTY_FIVE_MILLISECOND 12
 
 #define TAPE_SENSOR_COUNT 5
+#define READING_COUNT 5
 
 /*******************************************************************************
  * PRIVATE FUNCTION PROTOTYPES                                                 *
@@ -90,7 +91,7 @@ static const char *StateNames[] = {
 
 
 
-void read_tape_sensors(TapeDetectorFSMState_t state);
+void read_tape_sensors(TapeDetectorFSMState_t state,int counter);
 void init_tape_sensors();
 void detect_tape_event();
 
@@ -101,6 +102,8 @@ void detect_tape_event();
 /* You will need MyPriority and the state variable; you may need others as well.
  * The type of state variable should match that of enum in header file. */
 
+static int on_reading_counter = 0;
+static int off_reading_counter = 0;
 
 typedef enum {
     front,
@@ -115,10 +118,22 @@ const int tape_sensor_pins[TAPE_SENSOR_COUNT] = {TAPE_PIN_1, TAPE_PIN_2, TAPE_PI
 typedef struct {
     int pin;
     int direction;
-    int high_val;
-    int low_val;
+    int high_vals[READING_COUNT];
+    int low_vals[READING_COUNT];
+    int high_val_average;
+    int low_val_average;
     tape_sensor_status status;
 } tape_sensor;
+
+int tape_sensor_average(int* arr,int size){
+    int i;
+    int sum=0;
+    for(i=0;i<size;i++){
+        sum+=arr[i];
+    }
+    return (sum/size);
+    
+}
 
 
 tape_sensor tape_sensors[TAPE_SENSOR_COUNT];
@@ -184,14 +199,14 @@ ES_Event RunTapeDetectorFSMService(ES_Event ThisEvent) {
     uint8_t makeTransition = FALSE; // use to flag transition
     TapeDetectorFSMState_t nextState; // <- need to change enum type here
 
-   // ES_Tattle(); // trace call stack
+    // ES_Tattle(); // trace call stack
 
     switch (CurrentState) {
 
         case InitPState: // If current state is initial Psedudo State
             if (ThisEvent.EventType == ES_INIT)// only respond to ES_Init
             {
-               // LED_Init();
+                // LED_Init();
 
                 init_tape_sensors();
 
@@ -199,10 +214,10 @@ ES_Event RunTapeDetectorFSMService(ES_Event ThisEvent) {
                 IO_PortsSetPortOutputs(TAPE_PORT, LED_PIN);
 
 
-               // LED_AddBanks(LED_BANK1);
+                // LED_AddBanks(LED_BANK1);
                 //LED_AddBanks(LED_BANK2);
-               // LED_OffBank(LED_BANK1, ALL_LEDS);
-               // LED_OffBank(LED_BANK2, ALL_LEDS);
+                // LED_OffBank(LED_BANK1, ALL_LEDS);
+                // LED_OffBank(LED_BANK2, ALL_LEDS);
 
                 ThisEvent.EventType = ES_NO_EVENT;
 
@@ -226,7 +241,7 @@ ES_Event RunTapeDetectorFSMService(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
 
                 case ES_ENTRY:
-                  //  printf("enter on_entry\r\n");
+                    //  printf("enter on_entry\r\n");
                     IO_PortsSetPortBits(TAPE_PORT, LED_PIN); //turn on the LED on the IR sensor
 
                     int rc = ES_Timer_InitTimer(TAPE_SENSOR_TIMER, TWO_MILLISECOND);
@@ -246,7 +261,7 @@ ES_Event RunTapeDetectorFSMService(ES_Event ThisEvent) {
                 case ES_EXIT: // If current state is initial Psedudo State
 
                 case ES_TIMERACTIVE:
-                   // printf("enter on_ES_TIMERACTIVE\r\n");
+                    // printf("enter on_ES_TIMERACTIVE\r\n");
                 case ES_TIMERSTOPPED:
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
@@ -260,21 +275,29 @@ ES_Event RunTapeDetectorFSMService(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
 
                 case ES_ENTRY:
-                    read_tape_sensors(OnReading);
 
-                    ES_Timer_InitTimer(TAPE_SENSOR_TIMER, TWENTY_FIVE_MILLISECOND);
+                    on_reading_counter = 0;
+                    ES_Timer_InitTimer(TAPE_SENSOR_TIMER, TWO_MILLISECOND);
 
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
                 case ES_TIMEOUT:
+                    if (on_reading_counter < READING_COUNT) {
+                        read_tape_sensors(OnReading, on_reading_counter);
+                        on_reading_counter++;
+                        ES_Timer_InitTimer(TAPE_SENSOR_TIMER, TWO_MILLISECOND);
+                    } else {
+                        nextState = Off;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+
+                    }
                     // this is where you would put any actions associated with the
                     // transition from the initial pseudo-state into the actual
                     // initial state
 
                     // now put the machine into the actual initial state
-                    nextState = Off;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
+
                     break;
                 case ES_EXIT: // If current state is initial Psedudo State
                 case ES_TIMERACTIVE:
@@ -291,7 +314,7 @@ ES_Event RunTapeDetectorFSMService(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
 
                 case ES_ENTRY:
-                   // printf("Off_enter on_entry\r\n");
+                    // printf("Off_enter on_entry\r\n");
                     IO_PortsClearPortBits(TAPE_PORT, LED_PIN); //turn on the LED on the IR sensor
                     int rc = ES_Timer_InitTimer(TAPE_SENSOR_TIMER, TWO_MILLISECOND);
 
@@ -320,12 +343,12 @@ ES_Event RunTapeDetectorFSMService(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
 
                 case ES_ENTRY:
-                    read_tape_sensors(OffReading);
 
-                    ES_Timer_InitTimer(TAPE_SENSOR_TIMER, TWENTY_FIVE_MILLISECOND);
+
+                    ES_Timer_InitTimer(TAPE_SENSOR_TIMER, TWO_MILLISECOND);
                     ThisEvent.EventType = ES_NO_EVENT;
 
-                    detect_tape_event();
+
 
 
 
@@ -337,9 +360,20 @@ ES_Event RunTapeDetectorFSMService(ES_Event ThisEvent) {
                     // initial state
 
                     // now put the machine into the actual initial state
-                    nextState = On;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
+                    if (off_reading_counter < READING_COUNT) {
+                        read_tape_sensors(OffReading, off_reading_counter);
+                        off_reading_counter++;
+                        ES_Timer_InitTimer(TAPE_SENSOR_TIMER, TWO_MILLISECOND);
+                    } else {
+                        nextState = On;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                        detect_tape_event();
+                    }
+
+
+
+
                     break;
                 case ES_EXIT: // If current state is initial Psedudo State
                 case ES_TIMERACTIVE:
@@ -360,23 +394,23 @@ ES_Event RunTapeDetectorFSMService(ES_Event ThisEvent) {
         CurrentState = nextState;
         RunTapeDetectorFSMService(ENTRY_EVENT);
     }
-  //  ES_Tail(); // trace call stack end
+    //  ES_Tail(); // trace call stack end
     return ThisEvent;
 }
 
 /*******************************************************************************
  * PRIVATE FUNCTIONS                                                           *
  ******************************************************************************/
-void read_tape_sensors(TapeDetectorFSMState_t state) {
+void read_tape_sensors(TapeDetectorFSMState_t state, int counter) {
     int index;
     if (state == OnReading) {
 
         for (index = 0; index < TAPE_SENSOR_COUNT; index++) {
-            tape_sensors[index].high_val = AD_ReadADPin(tape_sensors[index].pin);
+            tape_sensors[index].high_vals[counter] = AD_ReadADPin(tape_sensors[index].pin);
         }
     } else if (state == OffReading) {
         for (index = 0; index < TAPE_SENSOR_COUNT; index++) {
-            tape_sensors[index].low_val = AD_ReadADPin(tape_sensors[index].pin);
+            tape_sensors[index].low_vals[counter] = AD_ReadADPin(tape_sensors[index].pin);
         }
     }
 
@@ -398,15 +432,26 @@ void init_tape_sensors() {
 
 }
 
-int get_front_tape_status(){
+int get_front_tape_status() {
     return tape_sensors[FRONT_TAPE_SENSOR].status;
+}
+
+int get_left_tape_status() {
+    return tape_sensors[LEFT_TAPE_SENSOR].status;
+}
+
+int get_right_tape_status() {
+    return tape_sensors[RIGHT_TAPE_SENSOR].status;
 }
 
 void detect_tape_event() {
     int index = 0;
+    
     for (index = 0; index < TAPE_SENSOR_COUNT; index++) {
-        int diff = tape_sensors[index].low_val - tape_sensors[index].high_val;
-       // printf("diff-----------------> %d \r\n", diff);
+        tape_sensors[index].low_val_average=tape_sensor_average(tape_sensors[index].low_vals,READING_COUNT);
+        tape_sensors[index].high_val_average=tape_sensor_average(tape_sensors[index].high_vals,READING_COUNT);
+        int diff = tape_sensors[index].low_val_average - tape_sensors[index].high_val_average;
+        // printf("diff-----------------> %d \r\n", diff);
         if (diff < TAPE_LOW_THRESHOLD) {
             if (tape_sensors[index].status != on_tape) {
                 tape_sensors[index].status = on_tape;
@@ -414,18 +459,18 @@ void detect_tape_event() {
                 if (index < 4) {
                     int current = LED_GetBank(LED_BANK1);
 
-                   // LED_SetBank(LED_BANK1, current | (1 << index ));
-                    
+                    // LED_SetBank(LED_BANK1, current | (1 << index ));
+
                 } else {
                     int current = LED_GetBank(LED_BANK2);
 
 
-                  //  LED_SetBank(LED_BANK2, current | (1 << (index - 4)));
+                    //  LED_SetBank(LED_BANK2, current | (1 << (index - 4)));
 
                 }
                 ES_Event newEvent;
-                newEvent.EventType=TAPE_DETECTED;
-                newEvent.EventParam=index;
+                newEvent.EventType = TAPE_DETECTED;
+                newEvent.EventParam = index;
                 PostFSMLineFollower(newEvent);
             }
         } else if (diff > TAPE_HIGH_THRESHOLD) {
@@ -435,16 +480,16 @@ void detect_tape_event() {
                 if (index < 4) {
                     int current = LED_GetBank(LED_BANK1);
 
-                   // LED_OffBank(LED_BANK1, current | (1 << index ));
+                    // LED_OffBank(LED_BANK1, current | (1 << index ));
                 } else {
                     int current = LED_GetBank(LED_BANK2);
 
 
-                  //  LED_OffBank(LED_BANK2, current | (1 << (index - 4)));
+                    //  LED_OffBank(LED_BANK2, current | (1 << (index - 4)));
                 }
                 ES_Event newEvent;
-                newEvent.EventType=TAPE_LOST;
-                newEvent.EventParam=index;
+                newEvent.EventType = TAPE_LOST;
+                newEvent.EventParam = index;
                 PostFSMLineFollower(newEvent);
             }
         }

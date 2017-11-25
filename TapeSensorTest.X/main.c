@@ -204,8 +204,8 @@ int main() {
     //IO_PortsSetPortInputs(BUMPER_PORT,  BACK_LEFT_BUMPER_PIN);
     //  IO_PortsSetPortInputs(BUMPER_PORT,  BACK_RIGHT_BUMPER_PIN);
     PWM_SetFrequency(PWM_500HZ);
-    PWM_SetDutyCycle(ENABLE_A, 800);
-     PWM_SetDutyCycle(ENABLE_B, 800);
+    PWM_SetDutyCycle(ENABLE_A, 1000);
+     PWM_SetDutyCycle(ENABLE_B, 950);
     IO_PortsWritePort(DRIVING_MOTOR_PORT, DIRECTION_A );
  IO_PortsClearPortBits(DRIVING_MOTOR_PORT,  DIRECTION_B);
 
@@ -265,7 +265,7 @@ void delay(int x) {
 int main() {
     BOARD_Init();
     motors_init();
-     turn_right();
+     forwards();
     
     
     for (;;) {

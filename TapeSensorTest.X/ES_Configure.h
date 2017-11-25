@@ -98,7 +98,7 @@ static const char *EventNames[] = {
 #define TIMER_UNUSED ((pPostFunc)0)
 #define TIMER0_RESP_FUNC PostTapeDetectorFSMService
 #define TIMER1_RESP_FUNC PostBumperService
-#define TIMER2_RESP_FUNC TIMER_UNUSED
+#define TIMER2_RESP_FUNC PostFSMLineFollower
 #define TIMER3_RESP_FUNC TIMER_UNUSED
 #define TIMER4_RESP_FUNC TIMER_UNUSED
 #define TIMER5_RESP_FUNC TIMER_UNUSED
@@ -122,7 +122,7 @@ static const char *EventNames[] = {
 
 #define TAPE_SENSOR_TIMER 0 /*make sure this is enabled above and posting to the correct state machine*/
 #define BUMPER_SENSOR_TIMER 1 /*make sure this is enabled above and posting to the correct state machine*/
-
+#define TAPE_FOLLOWER_TIMER 2
 
 /****************************************************************************/
 // The maximum number of services sets an upper bound on the number of 

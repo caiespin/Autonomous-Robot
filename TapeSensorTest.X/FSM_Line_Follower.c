@@ -39,13 +39,14 @@
 #include "motors.h"
 #include <stdio.h>
 #include "LED.h"
+#include "ES_Timers.h"
 
 
 /*******************************************************************************
  * MODULE #DEFINES                                                             *
  ******************************************************************************/
 
-
+#define WIGGLE_LEFT_TIME 600
 /*******************************************************************************
  * PRIVATE FUNCTION PROTOTYPES                                                 *
  ******************************************************************************/
@@ -67,6 +68,7 @@ typedef enum {
     on_right_side,
     corner_detected,
     turning_corner,
+    wiggle_left,
 } TemplateFSMState_t;
 
 static const char *StateNames[] = {
@@ -76,6 +78,7 @@ static const char *StateNames[] = {
 	"on_right_side",
 	"corner_detected",
 	"turning_corner",
+	"wiggle_left",
 };
 
 
@@ -87,6 +90,7 @@ static uint8_t MyPriority;
  * PUBLIC FUNCTIONS                                                            *
  ******************************************************************************/
 #define ALL_LEDS 0xF
+
 /**
  * @Function InitTemplateFSM(uint8_t Priority)
  * @param Priority - internal variable to track which event queue to use
@@ -108,8 +112,10 @@ uint8_t InitFSMLineFollower(uint8_t Priority) {
 
     LED_AddBanks(LED_BANK1);
     LED_AddBanks(LED_BANK2);
+    LED_AddBanks(LED_BANK3);
     LED_OffBank(LED_BANK1, ALL_LEDS);
     LED_OffBank(LED_BANK2, ALL_LEDS);
+    LED_OffBank(LED_BANK3, ALL_LEDS);
 
 
 
@@ -171,8 +177,8 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
                     forwards();
-                     LED_SetBank(LED_BANK1,1);
-                     LED_OffBank(LED_BANK2,ALL_LEDS);
+                    LED_SetBank(LED_BANK1, 1);
+                    LED_OffBank(LED_BANK2, ALL_LEDS);
                     break;
                 case TAPE_DETECTED:
                     switch (ThisEvent.EventParam) {
@@ -202,12 +208,30 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
                             break;
                     }
 
-                    printf("Tape Detected , param=%d\r\n", ThisEvent.EventParam);
+                   // printf("Tape Detected , param=%d\r\n", ThisEvent.EventParam);
 
                     break;
                 case TAPE_LOST:
 
-                    printf("Tape Lost , param=%d\r\n", ThisEvent.EventParam);
+                    switch (ThisEvent.EventParam) {
+                        case CENTER_TAPE_SENSOR:
+
+                            if ((get_front_tape_status() == off_tape) && (get_left_tape_status() == off_tape) &&
+                                    (get_right_tape_status() == off_tape)) {
+                                LED_SetBank(LED_BANK3, 1);
+                                //LED_OffBank(LED_BANK2, ALL_LEDS);
+
+                                nextState = wiggle_left;
+                                makeTransition = TRUE;
+                                ThisEvent.EventType = ES_NO_EVENT;
+                            }
+                            break;
+                    }
+
+
+
+
+                   // printf("Tape Lost , param=%d\r\n", ThisEvent.EventParam);
 
                     break;
             }
@@ -217,8 +241,8 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
                     tank_turn_right();
-                     LED_SetBank(LED_BANK1,2);
-                     LED_OffBank(LED_BANK2,ALL_LEDS);
+                    LED_SetBank(LED_BANK1, 2);
+                    LED_OffBank(LED_BANK2, ALL_LEDS);
                     break;
                 case TAPE_DETECTED:
                     switch (ThisEvent.EventParam) {
@@ -235,8 +259,8 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
                     tank_turn_left();
-                     LED_SetBank(LED_BANK1,4);
-                     LED_OffBank(LED_BANK2,ALL_LEDS);
+                    LED_SetBank(LED_BANK1, 4);
+                    LED_OffBank(LED_BANK2, ALL_LEDS);
                     break;
                 case TAPE_DETECTED:
                     switch (ThisEvent.EventParam) {
@@ -252,8 +276,8 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
                     forwards();
-                    LED_SetBank(LED_BANK1,8);
-                    LED_OffBank(LED_BANK2,ALL_LEDS);
+                    LED_SetBank(LED_BANK1, 8);
+                    LED_OffBank(LED_BANK2, ALL_LEDS);
                     break;
                 case TAPE_LOST:
                     switch (ThisEvent.EventParam) {
@@ -271,8 +295,8 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
                     tank_turn_right();
-                    LED_SetBank(LED_BANK2,1);
-                    LED_OffBank(LED_BANK1,ALL_LEDS);
+                    LED_SetBank(LED_BANK2, 1);
+                    LED_OffBank(LED_BANK1, ALL_LEDS);
                     break;
                 case TAPE_DETECTED:
                     switch (ThisEvent.EventParam) {
@@ -282,7 +306,40 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
                             ThisEvent.EventType = ES_NO_EVENT;
                     }
                     break;
+
+                case ES_EXIT:
+                    LED_OffBank(LED_BANK3, 0xf);
+                    break;
             }
+            break;
+        case wiggle_left:
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    tank_turn_left();
+                    ES_Timer_InitTimer(TAPE_FOLLOWER_TIMER, WIGGLE_LEFT_TIME);
+                    break;
+                case TAPE_DETECTED:
+                    switch (ThisEvent.EventParam) {
+                        case FRONT_TAPE_SENSOR:
+                            nextState = on_line;
+                            makeTransition = TRUE;
+                            ThisEvent.EventType = ES_NO_EVENT;
+                    }
+                    break;
+                case ES_TIMEOUT:
+                    nextState = turning_corner;
+                    makeTransition = TRUE;
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+              
+
+                case ES_TIMERACTIVE:
+                    // printf("enter on_ES_TIMERACTIVE\r\n");
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+            }
+
             break;
 
         default: // all unhandled states fall into here

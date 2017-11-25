@@ -55,7 +55,9 @@ typedef enum {
 //Returns on_tape for on tape and off_tape for off tape
 int get_front_tape_status();
 
+int get_right_tape_status();
 
+int get_left_tape_status();
 
 /**
  * @Function InitTemplateFSM(uint8_t Priority)
