@@ -210,7 +210,7 @@ ES_Event RunTapeDetectorFSMService(ES_Event ThisEvent) {
 
                 init_tape_sensors();
 
-                ES_Timer_Init();
+                
                 IO_PortsSetPortOutputs(TAPE_PORT, LED_PIN);
 
 

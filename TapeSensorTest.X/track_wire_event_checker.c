@@ -38,8 +38,8 @@
  * MODULE #DEFINES                                                             *
  ******************************************************************************/
 #define TRACKWIRE_ALIGNED_THRESHOLD 20
-#define TRACKWIRE_DETECTED_THRESHOLD 500
-#define TRACKWIRE_LOST_THRESHOLD 485
+#define TRACKWIRE_DETECTED_THRESHOLD 600
+#define TRACKWIRE_LOST_THRESHOLD 500
 /*******************************************************************************
  * EVENTCHECKER_TEST SPECIFIC CODE                                                             *
  ******************************************************************************/
@@ -92,12 +92,12 @@ uint8_t TrackwireChecker(void) {
     uint8_t returnVal = FALSE;
     uint16_t front_trackwire_val = AD_ReadADPin(FRONT_TRACKWIRE);
     uint16_t back_trackwire_val = AD_ReadADPin(BACK_TRACKWIRE);
-    
-    if((front_trackwire_val == ERROR) || (back_trackwire_val == ERROR)){
+
+    if ((front_trackwire_val ==((uint16_t)ERROR )) || (back_trackwire_val == ((uint16_t)ERROR ))) {
         return returnVal;
     }
 
-    uint16_t diff = front_trackwire_val - back_trackwire_val;
+    int diff = front_trackwire_val - back_trackwire_val;
 
     switch (curEvent) {
         case TRACKWIRE_LOST:
@@ -122,7 +122,7 @@ uint8_t TrackwireChecker(void) {
                 returnVal = TRUE;
                 printf("TRACKWIRE_LOST\r\n");
                 PostTopHSM(thisEvent);
-            } else if (diff < TRACKWIRE_ALIGNED_THRESHOLD) {
+            } else if ((diff < TRACKWIRE_ALIGNED_THRESHOLD) && (diff > -TRACKWIRE_ALIGNED_THRESHOLD)) {
                 curEvent = TRACKWIRE_ALIGNED;
                 thisEvent.EventType = curEvent;
                 thisEvent.EventParam = diff;
@@ -173,6 +173,8 @@ uint8_t TrackwireChecker(void) {
 
 void trackwire_init() {
     AD_AddPins(FRONT_TRACKWIRE | BACK_TRACKWIRE);
+    uint16_t front_trackwire_val = AD_ReadADPin(FRONT_TRACKWIRE);
+    uint16_t back_trackwire_val = AD_ReadADPin(BACK_TRACKWIRE);
 }
 
 /* 

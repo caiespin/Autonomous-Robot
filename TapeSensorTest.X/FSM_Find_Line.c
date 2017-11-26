@@ -268,6 +268,7 @@ ES_Event RunFSMFindLine(ES_Event ThisEvent) {
                     tank_turn_right();
                     LED_SetBank(LED_BANK2, 1);
                     LED_OffBank(LED_BANK1, ALL_LEDS);
+                    
                     break;
                 case TAPE_DETECTED:
                     switch (ThisEvent.EventParam) {

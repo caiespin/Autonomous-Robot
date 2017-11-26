@@ -105,7 +105,7 @@ uint8_t InitFSMLineFollower(uint8_t Priority) {
     MyPriority = Priority;
     // put us into the Initial PseudoState
     CurrentState = InitPState;
-   
+
 
 
     // post the initial transition event
@@ -197,7 +197,7 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
                             break;
                     }
 
-                   // printf("Tape Detected , param=%d\r\n", ThisEvent.EventParam);
+                    // printf("Tape Detected , param=%d\r\n", ThisEvent.EventParam);
 
                     break;
                 case TAPE_LOST:
@@ -207,7 +207,7 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
 
                             if ((get_front_tape_status() == off_tape) && (get_left_tape_status() == off_tape) &&
                                     (get_right_tape_status() == off_tape)) {
-                                LED_SetBank(LED_BANK3, 1);
+                                //  LED_SetBank(LED_BANK3, 1);
                                 //LED_OffBank(LED_BANK2, ALL_LEDS);
 
                                 nextState = wiggle_left;
@@ -220,7 +220,7 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
 
 
 
-                   // printf("Tape Lost , param=%d\r\n", ThisEvent.EventParam);
+                    // printf("Tape Lost , param=%d\r\n", ThisEvent.EventParam);
 
                     break;
             }
@@ -297,7 +297,7 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
                     break;
 
                 case ES_EXIT:
-                    LED_OffBank(LED_BANK3, 0xf);
+                   // LED_OffBank(LED_BANK3, 0xf);
                     break;
             }
             break;
@@ -320,7 +320,7 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
                     makeTransition = TRUE;
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
-              
+
 
                 case ES_TIMERACTIVE:
                     // printf("enter on_ES_TIMERACTIVE\r\n");

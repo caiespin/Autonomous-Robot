@@ -113,6 +113,7 @@ int main() {
     motors_init();
     AD_Init();
     LED_Init();
+    ES_Timer_Init();
     trackwire_init();
 
     LED_AddBanks(LED_BANK1);
@@ -304,16 +305,73 @@ void delay(int x) {
 int main() {
     BOARD_Init();
     AD_Init();
+
+    trackwire_init();
+
+    for (;;) {
+
+        uint16_t front_trackwire_val = AD_ReadADPin(FRONT_TRACKWIRE);
+        uint16_t back_trackwire_val = AD_ReadADPin(BACK_TRACKWIRE);
+
+        if ((front_trackwire_val == ((uint16_t) ERROR)) || (back_trackwire_val == ((uint16_t) ERROR))) {
+            continue;
+        }
+        printf("FORWARDS front:%d,  back:%d, diff:%d\r\n", front_trackwire_val, back_trackwire_val, front_trackwire_val - back_trackwire_val);
+        delay(1000000);
+    }
+
+}
+
+#endif
+
+#ifdef TEST_TRACKWIRE2
+
+void delay(int x) {
+    int i = 0;
+    while (i < x) {
+        i++;
+    }
+}
+
+int main() {
+    BOARD_Init();
+    AD_Init();
     motors_init();
     forwards();
 
-    AD_AddPins(FRONT_TRACKWIRE | BACK_TRACKWIRE);
+    trackwire_init();
 
     for (;;) {
+        forwards();
         uint16_t front_trackwire_val = AD_ReadADPin(FRONT_TRACKWIRE);
-
         uint16_t back_trackwire_val = AD_ReadADPin(BACK_TRACKWIRE);
-        printf("front:%d,  back:%d, diff:%d\r\n", front_trackwire_val, back_trackwire_val, front_trackwire_val - back_trackwire_val);
+
+        if ((front_trackwire_val == ((uint16_t) ERROR)) || (back_trackwire_val == ((uint16_t) ERROR))) {
+            continue;
+        }
+        printf("FORWARDS front:%d,  back:%d, diff:%d\r\n", front_trackwire_val, back_trackwire_val, front_trackwire_val - back_trackwire_val);
+        delay(1000000);
+
+        reverse();
+
+        front_trackwire_val = AD_ReadADPin(FRONT_TRACKWIRE);
+
+        back_trackwire_val = AD_ReadADPin(BACK_TRACKWIRE);
+        if ((front_trackwire_val == ((uint16_t) ERROR)) || (back_trackwire_val == ((uint16_t) ERROR))) {
+            continue;
+        }
+        printf("reverse front:%d,  back:%d, diff:%d\r\n", front_trackwire_val, back_trackwire_val, front_trackwire_val - back_trackwire_val);
+        delay(1000000);
+
+        stop();
+
+        front_trackwire_val = AD_ReadADPin(FRONT_TRACKWIRE);
+
+        back_trackwire_val = AD_ReadADPin(BACK_TRACKWIRE);
+        if ((front_trackwire_val == ((uint16_t) ERROR)) || (back_trackwire_val == ((uint16_t) ERROR))) {
+            continue;
+        }
+        printf("stop front:%d,  back:%d, diff:%d\r\n", front_trackwire_val, back_trackwire_val, front_trackwire_val - back_trackwire_val);
         delay(1000000);
     }
 

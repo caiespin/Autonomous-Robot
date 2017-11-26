@@ -45,13 +45,14 @@
 /*******************************************************************************
  * MODULE #DEFINES                                                             *
  ******************************************************************************/
-
+#define HSM_TIME 100
 
 typedef enum {
     InitPState,
     FindLineState,
     LineFollowerState,
     CollisionAvoidanceState,
+    AlignATM6,
 
 } TemplateHSMState_t;
 
@@ -60,6 +61,7 @@ static const char *StateNames[] = {
 	"FindLineState",
 	"LineFollowerState",
 	"CollisionAvoidanceState",
+	"AlignATM6",
 };
 
 
@@ -198,6 +200,13 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
             }
             ThisEvent = RunFSMLineFollower(ThisEvent);
             switch (ThisEvent.EventType) {
+
+                case TRACKWIRE_DETECTED:
+                    //NEED to MODIFY THIS ADD FRONT BUMPER , or LEFT OR RIGHT
+                    nextState = AlignATM6;
+                    makeTransition = TRUE;
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
                 case BUMPER_PRESSED:
                     //NEED to MODIFY THIS ADD FRONT BUMPER , or LEFT OR RIGHT
                     nextState = CollisionAvoidanceState;
@@ -233,6 +242,55 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                     break;
             }
             break;
+        case AlignATM6: // in the first state, replace this with correct names
+            // run sub-state machine for this state
+            //NOTE: the SubState Machine runs and responds to events before anything in the this
+            //state machine does
+
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                   InitFSMAlignAtm6();
+                    LED_SetBank(LED_BANK3, 0xf);
+                     int rc = ES_Timer_InitTimer(TOP_HSM_TIMER, HSM_TIME);
+                    reverse();
+                    break;
+                    
+                 case TRACKWIRE_ALIGNED:
+                     ES_Timer_StopTimer(TOP_HSM_TIMER);
+                 case ES_TIMEOUT:
+                     stop();
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+             
+
+                case ES_TIMERACTIVE:
+                    // printf("enter on_ES_TIMERACTIVE\r\n");
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                    
+//               case TRACKWIRE_ALIGNED:
+//                    //NEED to MODIFY THIS ADD FRONT BUMPER , or LEFT OR RIGHT
+//                    nextState = AlignATM6;
+//                    makeTransition = TRUE;
+//                    ThisEvent.EventType = ES_NO_EVENT;
+//                    stop();
+//                    break;
+            }
+//            ThisEvent = RunFSMCollisionAvoidance(ThisEvent);
+//            switch (ThisEvent.EventType) {
+//                case OBSTACLE_AVOIDED:
+//
+//                    nextState = FindLineState;
+//                    makeTransition = TRUE;
+//                    ThisEvent.EventType = ES_NO_EVENT;
+//                    break;
+//                case ES_NO_EVENT:
+//                default:
+//                    break;
+//            }
+            break;
+
 
 
         default: // all unhandled states fall into here
