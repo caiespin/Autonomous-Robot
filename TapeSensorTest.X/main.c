@@ -15,6 +15,7 @@
 #include "pwm.h"
 #include "RC_Servo.h"
 #include "motors.h"
+#include "track_wire_event_checker.h"
 
 
 //#define TEST_TAPE_SENSOR
@@ -110,9 +111,9 @@ int main() {
 
     BOARD_Init();
     motors_init();
-
+    AD_Init();
     LED_Init();
-
+    trackwire_init();
 
     LED_AddBanks(LED_BANK1);
     LED_AddBanks(LED_BANK2);
@@ -292,10 +293,6 @@ int main() {
 #endif
 
 #ifdef TEST_TRACKWIRE
-
-
-#define FRONT_TRACKWIRE AD_PORTV3
-#define BACK_TRACKWIRE AD_PORTV4
 
 void delay(int x) {
     int i = 0;

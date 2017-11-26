@@ -31,12 +31,15 @@
 #include "ES_Events.h"
 #include "serial.h"
 #include "AD.h"
+#include <stdio.h>
+#include "TopHSM.h"
 
 /*******************************************************************************
  * MODULE #DEFINES                                                             *
  ******************************************************************************/
-#define BATTERY_DISCONNECT_THRESHOLD 175
-
+#define TRACKWIRE_ALIGNED_THRESHOLD 20
+#define TRACKWIRE_DETECTED_THRESHOLD 500
+#define TRACKWIRE_LOST_THRESHOLD 485
 /*******************************************************************************
  * EVENTCHECKER_TEST SPECIFIC CODE                                                             *
  ******************************************************************************/
@@ -82,30 +85,94 @@ static ES_Event storedEvent;
  * @note Use this code as a template for your other event checkers, and modify as necessary.
  * @author Gabriel H Elkaim, 2013.09.27 09:18
  * @modified Gabriel H Elkaim/Max Dunne, 2016.09.12 20:08 */
-uint8_t TemplateCheckBattery(void) {
-    static ES_EventTyp_t lastEvent = BATTERY_DISCONNECTED;
-    ES_EventTyp_t curEvent;
+uint8_t TrackwireChecker(void) {
+    //static ES_EventTyp_t lastEvent = TRACKWIRE_LOST;
+    static ES_EventTyp_t curEvent = TRACKWIRE_LOST;
     ES_Event thisEvent;
     uint8_t returnVal = FALSE;
-    uint16_t batVoltage = AD_ReadADPin(BAT_VOLTAGE); // read the battery voltage
+    uint16_t front_trackwire_val = AD_ReadADPin(FRONT_TRACKWIRE);
+    uint16_t back_trackwire_val = AD_ReadADPin(BACK_TRACKWIRE);
+    
+    if((front_trackwire_val == ERROR) || (back_trackwire_val == ERROR)){
+        return returnVal;
+    }
 
-    if (batVoltage > BATTERY_DISCONNECT_THRESHOLD) { // is battery connected?
-        curEvent = BATTERY_CONNECTED;
-    } else {
-        curEvent = BATTERY_DISCONNECTED;
+    uint16_t diff = front_trackwire_val - back_trackwire_val;
+
+    switch (curEvent) {
+        case TRACKWIRE_LOST:
+            if ((front_trackwire_val > TRACKWIRE_DETECTED_THRESHOLD) &&
+                    (back_trackwire_val > TRACKWIRE_DETECTED_THRESHOLD)) {
+
+                curEvent = TRACKWIRE_DETECTED;
+                thisEvent.EventType = curEvent;
+                thisEvent.EventParam = diff;
+                returnVal = TRUE;
+                printf("TRACKWIRE_DETECTED\r\n");
+                PostTopHSM(thisEvent);
+            }
+            break;
+
+        case TRACKWIRE_DETECTED:
+            if ((front_trackwire_val < TRACKWIRE_LOST_THRESHOLD) ||
+                    (back_trackwire_val < TRACKWIRE_LOST_THRESHOLD)) {
+                curEvent = TRACKWIRE_LOST;
+                thisEvent.EventType = curEvent;
+                thisEvent.EventParam = diff;
+                returnVal = TRUE;
+                printf("TRACKWIRE_LOST\r\n");
+                PostTopHSM(thisEvent);
+            } else if (diff < TRACKWIRE_ALIGNED_THRESHOLD) {
+                curEvent = TRACKWIRE_ALIGNED;
+                thisEvent.EventType = curEvent;
+                thisEvent.EventParam = diff;
+                returnVal = TRUE;
+                printf("TRACKWIRE_ALIGNED\r\n");
+                PostTopHSM(thisEvent);
+            }
+            break;
+
+        case TRACKWIRE_ALIGNED:
+            if ((front_trackwire_val < TRACKWIRE_LOST_THRESHOLD) ||
+                    (back_trackwire_val < TRACKWIRE_LOST_THRESHOLD)) {
+
+                curEvent = TRACKWIRE_LOST;
+                thisEvent.EventType = curEvent;
+                thisEvent.EventParam = diff;
+                returnVal = TRUE;
+                printf("TRACKWIRE_LOST2\r\n");
+                PostTopHSM(thisEvent);
+            }
+
+
+            break;
     }
-    if (curEvent != lastEvent) { // check for change from last time
-        thisEvent.EventType = curEvent;
-        thisEvent.EventParam = batVoltage;
-        returnVal = TRUE;
-        lastEvent = curEvent; // update history
-#ifndef EVENTCHECKER_TEST           // keep this as is for test harness
-       // PostGenericService(thisEvent);
-#else
-        SaveEvent(thisEvent);
-#endif   
-    }
+
+
+
+    //    if ( (diff < TRACKWIRE_ALIGNED_THRESHOLD) && (lastEvent == TRACKWIRE_DETECTED) ) { // is battery connected?
+    //        curEvent = TRACKWIRE_ALIGNED;
+    //    } else if(lastEvent == TRACKWIRE_LOST && (front_trackwire_val > TRACKWIRE_DETECTED_THRESHOLD)){
+    //        curEvent = TRACKWIRE_DETECTED;
+    //    }else if ((lastEvent == TRACKWIRE_ALIGNED) && ) {
+    //        
+    //    }
+    //    if (curEvent != lastEvent) { // check for change from last time
+    //        thisEvent.EventType = curEvent;
+    //        thisEvent.EventParam = diff;
+    //        returnVal = TRUE;
+    //        lastEvent = curEvent; // update history
+    //#ifndef EVENTCHECKER_TEST           // keep this as is for test harness
+    //        // PostGenericService(thisEvent);
+    //#else
+    //        SaveEvent(thisEvent);
+    //#endif   
+    //    }
     return (returnVal);
+}
+
+void trackwire_init() {
+    AD_AddPins(FRONT_TRACKWIRE | BACK_TRACKWIRE);
 }
 
 /* 

@@ -419,7 +419,7 @@ void read_tape_sensors(TapeDetectorFSMState_t state, int counter) {
 void init_tape_sensors() {
     int index = 0;
     //Initialize Analog inputs
-    AD_Init();
+   // AD_Init();
     printf("Initializing Tape pins\r\n");
     for (index = 0; index < TAPE_SENSOR_COUNT; index++) {
         printf("Pin:%d done\r\n", index);

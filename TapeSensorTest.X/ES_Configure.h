@@ -55,6 +55,9 @@ typedef enum {
     REN_BUMPER_RELEASE,
     LINE_FOUND,
     OBSTACLE_AVOIDED,
+    TRACKWIRE_LOST,
+    TRACKWIRE_ALIGNED,
+    TRACKWIRE_DETECTED,
 
 
 
@@ -82,6 +85,9 @@ static const char *EventNames[] = {
 	"REN_BUMPER_RELEASE",
 	"LINE_FOUND",
 	"OBSTACLE_AVOIDED",
+	"TRACKWIRE_LOST",
+	"TRACKWIRE_ALIGNED",
+	"TRACKWIRE_DETECTED",
 };
 
 
@@ -93,7 +99,7 @@ static const char *EventNames[] = {
 
 /****************************************************************************/
 // This is the list of event checking functions
-#define EVENT_CHECK_LIST  TemplateCheckBattery
+#define EVENT_CHECK_LIST  TrackwireChecker
 
 /****************************************************************************/
 // These are the definitions for the post functions to be executed when the

@@ -32,7 +32,8 @@
 /*******************************************************************************
  * PUBLIC #DEFINES                                                             *
  ******************************************************************************/
-
+#define FRONT_TRACKWIRE AD_PORTV3
+#define BACK_TRACKWIRE AD_PORTV4
 
 /*******************************************************************************
  * PUBLIC TYPEDEFS                                                             *
@@ -57,9 +58,9 @@
  * @note Use this code as a template for your other event checkers, and modify as necessary.
  * @author Gabriel H Elkaim, 2013.09.27 09:18
  * @modified Gabriel H Elkaim/Max Dunne, 2016.09.12 20:08 */
-uint8_t TemplateCheckBattery(void);
+uint8_t TrackwireChecker(void);
 
-
+void trackwire_init();
 
 #endif	/* TEMPLATEEVENTCHECKER_H */
 
