@@ -14,6 +14,7 @@
 #include "ES_Framework.h"
 #include "pwm.h"
 #include "RC_Servo.h"
+#include "motors.h"
 
 
 //#define TEST_TAPE_SENSOR
@@ -22,6 +23,9 @@
 //#define TEST_DRIVING_MOTORS
 //#define TEST_SERVO
 //#define TEST_DRIVING_MOTORS_HELPER_FUNCTIONS
+//#define TEST_TRACKWIRE
+
+
 
 #define TAPE_PIN_1 AD_PORTW3
 
@@ -105,6 +109,17 @@ int main() {
     ES_Return_t ErrorType;
 
     BOARD_Init();
+    motors_init();
+
+    LED_Init();
+
+
+    LED_AddBanks(LED_BANK1);
+    LED_AddBanks(LED_BANK2);
+    LED_AddBanks(LED_BANK3);
+    LED_OffBank(LED_BANK1, ALL_LEDS);
+    LED_OffBank(LED_BANK2, ALL_LEDS);
+    LED_OffBank(LED_BANK3, ALL_LEDS);
 
 
 
@@ -205,9 +220,9 @@ int main() {
     //  IO_PortsSetPortInputs(BUMPER_PORT,  BACK_RIGHT_BUMPER_PIN);
     PWM_SetFrequency(PWM_500HZ);
     PWM_SetDutyCycle(ENABLE_A, 1000);
-     PWM_SetDutyCycle(ENABLE_B, 950);
-    IO_PortsWritePort(DRIVING_MOTOR_PORT, DIRECTION_A );
- IO_PortsClearPortBits(DRIVING_MOTOR_PORT,  DIRECTION_B);
+    PWM_SetDutyCycle(ENABLE_B, 950);
+    IO_PortsWritePort(DRIVING_MOTOR_PORT, DIRECTION_A);
+    IO_PortsClearPortBits(DRIVING_MOTOR_PORT, DIRECTION_B);
 
     for (;;) {
 
@@ -233,14 +248,14 @@ int main() {
     RC_Init();
     RC_AddPins(SERVO_PIN);
 
-  
- RC_SetPulseTime(SERVO_PIN, MINPULSE);
-   delay(1000000);
-   RC_SetPulseTime(SERVO_PIN,MAXPULSE);
-   delay(100000);
+
+    RC_SetPulseTime(SERVO_PIN, MINPULSE);
+    delay(1000000);
+    RC_SetPulseTime(SERVO_PIN, MAXPULSE);
+    delay(100000);
 
     for (;;) {
-        
+
 
 
     }
@@ -254,7 +269,6 @@ int main() {
 
 #include "motors.h"
 
-
 void delay(int x) {
     int i = 0;
     while (i < x) {
@@ -265,12 +279,45 @@ void delay(int x) {
 int main() {
     BOARD_Init();
     motors_init();
-     forwards();
-    
-    
+    forwards();
+
+
     for (;;) {
 
 
+    }
+
+}
+
+#endif
+
+#ifdef TEST_TRACKWIRE
+
+
+#define FRONT_TRACKWIRE AD_PORTV3
+#define BACK_TRACKWIRE AD_PORTV4
+
+void delay(int x) {
+    int i = 0;
+    while (i < x) {
+        i++;
+    }
+}
+
+int main() {
+    BOARD_Init();
+    AD_Init();
+    motors_init();
+    forwards();
+
+    AD_AddPins(FRONT_TRACKWIRE | BACK_TRACKWIRE);
+
+    for (;;) {
+        uint16_t front_trackwire_val = AD_ReadADPin(FRONT_TRACKWIRE);
+
+        uint16_t back_trackwire_val = AD_ReadADPin(BACK_TRACKWIRE);
+        printf("front:%d,  back:%d, diff:%d\r\n", front_trackwire_val, back_trackwire_val, front_trackwire_val - back_trackwire_val);
+        delay(1000000);
     }
 
 }

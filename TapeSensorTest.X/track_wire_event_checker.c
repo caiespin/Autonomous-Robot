@@ -27,7 +27,7 @@
  ******************************************************************************/
 
 #include "ES_Configure.h"
-#include "TemplateEventChecker.h"
+#include "track_wire_event_checker.h"
 #include "ES_Events.h"
 #include "serial.h"
 #include "AD.h"

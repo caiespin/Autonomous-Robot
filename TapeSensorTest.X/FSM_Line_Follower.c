@@ -105,18 +105,7 @@ uint8_t InitFSMLineFollower(uint8_t Priority) {
     MyPriority = Priority;
     // put us into the Initial PseudoState
     CurrentState = InitPState;
-    motors_init();
-
-    LED_Init();
-
-
-    LED_AddBanks(LED_BANK1);
-    LED_AddBanks(LED_BANK2);
-    LED_AddBanks(LED_BANK3);
-    LED_OffBank(LED_BANK1, ALL_LEDS);
-    LED_OffBank(LED_BANK2, ALL_LEDS);
-    LED_OffBank(LED_BANK3, ALL_LEDS);
-
+   
 
 
     // post the initial transition event

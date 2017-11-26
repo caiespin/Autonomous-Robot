@@ -167,6 +167,11 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
             // run sub-state machine for this state
             //NOTE: the SubState Machine runs and responds to events before anything in the this
             //state machine does
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    InitFSMFindLine();
+                    break;
+            }
             ThisEvent = RunFSMFindLine(ThisEvent);
             switch (ThisEvent.EventType) {
                 case LINE_FOUND:
@@ -186,7 +191,11 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
             // run sub-state machine for this state
             //NOTE: the SubState Machine runs and responds to events before anything in the this
             //state machine does
-
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    InitFSMLineFollower(MyPriority);
+                    break;
+            }
             ThisEvent = RunFSMLineFollower(ThisEvent);
             switch (ThisEvent.EventType) {
                 case BUMPER_PRESSED:
@@ -214,7 +223,7 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
             ThisEvent = RunFSMCollisionAvoidance(ThisEvent);
             switch (ThisEvent.EventType) {
                 case OBSTACLE_AVOIDED:
-                  
+
                     nextState = FindLineState;
                     makeTransition = TRUE;
                     ThisEvent.EventType = ES_NO_EVENT;

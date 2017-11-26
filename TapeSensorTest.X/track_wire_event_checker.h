@@ -19,8 +19,8 @@
  * Modified on September 12, 2016, 7:59 PM
  */
 
-#ifndef TEMPLATEEVENTCHECKER_H
-#define	TEMPLATEEVENTCHECKER_H
+#ifndef TRACK_WIRE_EVENT_CHECKER_H
+#define	TRACK_WIRE_EVENT_CHECKER_H
 
 /*******************************************************************************
  * PUBLIC #INCLUDES                                                            *

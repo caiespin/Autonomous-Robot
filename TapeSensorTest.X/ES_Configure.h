@@ -89,7 +89,7 @@ static const char *EventNames[] = {
 
 /****************************************************************************/
 // This are the name of the Event checking function header file.
-#define EVENT_CHECK_HEADER "TemplateEventChecker.h"
+#define EVENT_CHECK_HEADER "track_wire_event_checker.h"
 
 /****************************************************************************/
 // This is the list of event checking functions
