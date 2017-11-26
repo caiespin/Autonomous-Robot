@@ -35,6 +35,7 @@
 //#include "TemplateSubHSM.h" //#include all sub state machines called
 #include "FSM_Line_Follower.h"
 #include "FSM_Find_Line.h"
+#include "FSMCollisionAvoidance.h"
 #include "LED.h"
 /*******************************************************************************
  * PRIVATE #DEFINES                                                            *
@@ -50,6 +51,7 @@ typedef enum {
     InitPState,
     FindLineState,
     LineFollowerState,
+    CollisionAvoidanceState,
 
 } TemplateHSMState_t;
 
@@ -57,6 +59,7 @@ static const char *StateNames[] = {
 	"InitPState",
 	"FindLineState",
 	"LineFollowerState",
+	"CollisionAvoidanceState",
 };
 
 
@@ -146,6 +149,7 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                 // Initialize all sub-state machines
                 InitFSMLineFollower(MyPriority);
                 InitFSMFindLine();
+                InitFSMCollisionAvoidance();
                 // now put the machine into the actual initial state
                 nextState = FindLineState;
                 makeTransition = TRUE;
@@ -160,7 +164,7 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
             ThisEvent = RunFSMFindLine(ThisEvent);
             switch (ThisEvent.EventType) {
                 case LINE_FOUND:
-                     LED_SetBank(LED_BANK3, 0xf);
+                    LED_SetBank(LED_BANK3, 0xf);
                     nextState = LineFollowerState;
                     makeTransition = TRUE;
                     ThisEvent.EventType = ES_NO_EVENT;
@@ -175,14 +179,35 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
             // run sub-state machine for this state
             //NOTE: the SubState Machine runs and responds to events before anything in the this
             //state machine does
-            
+
             ThisEvent = RunFSMLineFollower(ThisEvent);
             switch (ThisEvent.EventType) {
+                case BUMPER_PRESSED:
+                    //NEED to MODIFY THIS ADD FRONT BUMPER , or LEFT OR RIGHT
+                    nextState =CollisionAvoidanceState;
+                    makeTransition = TRUE;
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
                 case ES_NO_EVENT:
                 default:
                     break;
             }
             break;
+              case CollisionAvoidanceState: // in the first state, replace this with correct names
+            // run sub-state machine for this state
+            //NOTE: the SubState Machine runs and responds to events before anything in the this
+            //state machine does
+
+            ThisEvent = RunFSMCollisionAvoidance(ThisEvent);
+            switch (ThisEvent.EventType) {
+               
+                case ES_NO_EVENT:
+                default:
+                    break;
+            }
+            break;
+            
+            
         default: // all unhandled states fall into here
             break;
     } // end switch on Current State

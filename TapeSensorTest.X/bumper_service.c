@@ -25,11 +25,12 @@
 #include "bumper_service.h"
 #include "IO_Ports.h"
 #include <stdio.h>
+#include "TopHSM.h"
 
 /*******************************************************************************
  * MODULE #DEFINES                                                             *
  ******************************************************************************/
-#define DEBUG
+//#define DEBUG
 
 
 
@@ -218,7 +219,7 @@ int checkBumper(int* flag, int counter, int param) {
         //thisEvent.EventParam = param;
         thisEvent.EventParam = all_bumpers.value & ALL_BIG_BUMPERS;
         returnVal = TRUE;
-        PostFSMService(thisEvent);
+        PostTopHSM(thisEvent);
 
     } else if ((*flag == TRUE) &&(counter < (-MAX_HISTORY_SIZE) + 2)) {
         *flag = FALSE;
@@ -227,7 +228,7 @@ int checkBumper(int* flag, int counter, int param) {
         // thisEvent.EventParam = param;
         thisEvent.EventParam = all_bumpers.value & ALL_BIG_BUMPERS;
         returnVal = TRUE;
-        PostFSMService(thisEvent);
+        PostTopHSM(thisEvent);
 
     }
     return returnVal;
@@ -244,7 +245,7 @@ int checkRenBumper(int* flag, int counter, int param) {
         //thisEvent.EventParam = param;
         thisEvent.EventParam = all_bumpers.value & ALL_REN_BUMPERS;
         returnVal = TRUE;
-        PostFSMService(thisEvent);
+        PostTopHSM(thisEvent);
 
     } else if ((*flag == TRUE) &&(counter < (-MAX_HISTORY_SIZE) + 2)) {
         *flag = FALSE;
@@ -253,7 +254,7 @@ int checkRenBumper(int* flag, int counter, int param) {
         // thisEvent.EventParam = param;
         thisEvent.EventParam = all_bumpers.value & ALL_REN_BUMPERS;
         returnVal = TRUE;
-        PostFSMService(thisEvent);
+       PostTopHSM(thisEvent);
 
     }
     return returnVal;
