@@ -53,6 +53,7 @@ typedef enum {
     BUMPER_RELEASED,
     REN_BUMPER_PRESSED,
     REN_BUMPER_RELEASE,
+            LINE_FOUND,
 
 
 
@@ -78,6 +79,7 @@ static const char *EventNames[] = {
 	"BUMPER_RELEASED",
 	"REN_BUMPER_PRESSED",
 	"REN_BUMPER_RELEASE",
+	"LINE_FOUND",
 };
 
 
@@ -98,7 +100,7 @@ static const char *EventNames[] = {
 #define TIMER_UNUSED ((pPostFunc)0)
 #define TIMER0_RESP_FUNC PostTapeDetectorFSMService
 #define TIMER1_RESP_FUNC PostBumperService
-#define TIMER2_RESP_FUNC PostFSMLineFollower
+#define TIMER2_RESP_FUNC PostTopHSM
 #define TIMER3_RESP_FUNC TIMER_UNUSED
 #define TIMER4_RESP_FUNC TIMER_UNUSED
 #define TIMER5_RESP_FUNC TIMER_UNUSED
@@ -159,19 +161,19 @@ static const char *EventNames[] = {
 // the name of the run function
 #define SERV_1_RUN RunBumperService
 // How big should this services Queue be?
-#define SERV_1_QUEUE_SIZE 3
+#define SERV_1_QUEUE_SIZE 9
 #endif
 
 // These are the definitions for Service 2
 #if NUM_SERVICES > 2
 // the header file with the public fuction prototypes
-#define SERV_2_HEADER "FSM_Line_Follower.h"
+#define SERV_2_HEADER "TopHSM.h"
 // the name of the Init function
-#define SERV_2_INIT InitFSMLineFollower
+#define SERV_2_INIT InitTopHSM
 // the name of the run function
-#define SERV_2_RUN RunFSMLineFollower
+#define SERV_2_RUN RunTopHSM
 // How big should this services Queue be?
-#define SERV_2_QUEUE_SIZE 3
+#define SERV_2_QUEUE_SIZE 9
 #endif
 
 
@@ -186,7 +188,7 @@ static const char *EventNames[] = {
 // the name of the run function
 #define SERV_3_RUN TestServiceRun
 // How big should this services Queue be?
-#define SERV_3_QUEUE_SIZE 3
+#define SERV_3_QUEUE_SIZE 9
 #endif
 
 /****************************************************************************/

@@ -34,7 +34,7 @@
 #include "IO_Ports.h"
 #include "LED.h"
 #include "tape_detector_fsm_service.h"
-
+#include "TopHSM.h"
 #include <AD.h>
 //Uncomment these for the Roaches
 //#include "roach.h"
@@ -91,7 +91,7 @@ static const char *StateNames[] = {
 
 
 
-void read_tape_sensors(TapeDetectorFSMState_t state,int counter);
+void read_tape_sensors(TapeDetectorFSMState_t state, int counter);
 void init_tape_sensors();
 void detect_tape_event();
 
@@ -125,14 +125,14 @@ typedef struct {
     tape_sensor_status status;
 } tape_sensor;
 
-int tape_sensor_average(int* arr,int size){
+int tape_sensor_average(int* arr, int size) {
     int i;
-    int sum=0;
-    for(i=0;i<size;i++){
-        sum+=arr[i];
+    int sum = 0;
+    for (i = 0; i < size; i++) {
+        sum += arr[i];
     }
-    return (sum/size);
-    
+    return (sum / size);
+
 }
 
 
@@ -446,10 +446,10 @@ int get_right_tape_status() {
 
 void detect_tape_event() {
     int index = 0;
-    
+
     for (index = 0; index < TAPE_SENSOR_COUNT; index++) {
-        tape_sensors[index].low_val_average=tape_sensor_average(tape_sensors[index].low_vals,READING_COUNT);
-        tape_sensors[index].high_val_average=tape_sensor_average(tape_sensors[index].high_vals,READING_COUNT);
+        tape_sensors[index].low_val_average = tape_sensor_average(tape_sensors[index].low_vals, READING_COUNT);
+        tape_sensors[index].high_val_average = tape_sensor_average(tape_sensors[index].high_vals, READING_COUNT);
         int diff = tape_sensors[index].low_val_average - tape_sensors[index].high_val_average;
         // printf("diff-----------------> %d \r\n", diff);
         if (diff < TAPE_LOW_THRESHOLD) {
@@ -471,7 +471,7 @@ void detect_tape_event() {
                 ES_Event newEvent;
                 newEvent.EventType = TAPE_DETECTED;
                 newEvent.EventParam = index;
-                PostFSMLineFollower(newEvent);
+                PostTopHSM(newEvent);
             }
         } else if (diff > TAPE_HIGH_THRESHOLD) {
 
@@ -490,7 +490,7 @@ void detect_tape_event() {
                 ES_Event newEvent;
                 newEvent.EventType = TAPE_LOST;
                 newEvent.EventParam = index;
-                PostFSMLineFollower(newEvent);
+                PostTopHSM(newEvent);
             }
         }
 

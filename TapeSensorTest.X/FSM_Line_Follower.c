@@ -160,7 +160,7 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
 
     switch (CurrentState) {
         case InitPState: // If current state is initial Psedudo State
-            if (ThisEvent.EventType == ES_INIT)// only respond to ES_Init
+            if (ThisEvent.EventType == ES_ENTRY)// only respond to ES_Init
             {
                 // this is where you would put any actions associated with the
                 // transition from the initial pseudo-state into the actual
