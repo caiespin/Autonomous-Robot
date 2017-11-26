@@ -53,7 +53,8 @@ typedef enum {
     BUMPER_RELEASED,
     REN_BUMPER_PRESSED,
     REN_BUMPER_RELEASE,
-            LINE_FOUND,
+    LINE_FOUND,
+    OBSTACLE_AVOIDED,
 
 
 
@@ -80,6 +81,7 @@ static const char *EventNames[] = {
 	"REN_BUMPER_PRESSED",
 	"REN_BUMPER_RELEASE",
 	"LINE_FOUND",
+	"OBSTACLE_AVOIDED",
 };
 
 

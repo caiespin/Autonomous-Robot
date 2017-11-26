@@ -96,6 +96,7 @@ static uint8_t MyPriority;
 uint8_t InitTopHSM(uint8_t Priority) {
     MyPriority = Priority;
     // put us into the Initial PseudoState
+
     CurrentState = InitPState;
     // post the initial transition event
     if (ES_PostToService(MyPriority, INIT_EVENT) == TRUE) {
@@ -151,7 +152,12 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                 InitFSMFindLine();
                 InitFSMCollisionAvoidance();
                 // now put the machine into the actual initial state
+
+
                 nextState = FindLineState;
+                // nextState=CollisionAvoidanceState;
+
+
                 makeTransition = TRUE;
                 ThisEvent.EventType = ES_NO_EVENT;
                 ;
@@ -168,6 +174,7 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                     nextState = LineFollowerState;
                     makeTransition = TRUE;
                     ThisEvent.EventType = ES_NO_EVENT;
+                    break;
                 case ES_NO_EVENT:
                 default:
                     break;
@@ -184,7 +191,7 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
                 case BUMPER_PRESSED:
                     //NEED to MODIFY THIS ADD FRONT BUMPER , or LEFT OR RIGHT
-                    nextState =CollisionAvoidanceState;
+                    nextState = CollisionAvoidanceState;
                     makeTransition = TRUE;
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
@@ -193,21 +200,32 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                     break;
             }
             break;
-              case CollisionAvoidanceState: // in the first state, replace this with correct names
+
+        case CollisionAvoidanceState: // in the first state, replace this with correct names
             // run sub-state machine for this state
             //NOTE: the SubState Machine runs and responds to events before anything in the this
             //state machine does
 
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    InitFSMCollisionAvoidance();
+                    break;
+            }
             ThisEvent = RunFSMCollisionAvoidance(ThisEvent);
             switch (ThisEvent.EventType) {
-               
+                case OBSTACLE_AVOIDED:
+                  
+                    nextState = FindLineState;
+                    makeTransition = TRUE;
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
                 case ES_NO_EVENT:
                 default:
                     break;
             }
             break;
-            
-            
+
+
         default: // all unhandled states fall into here
             break;
     } // end switch on Current State

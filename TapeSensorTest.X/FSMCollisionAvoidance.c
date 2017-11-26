@@ -37,20 +37,28 @@
 /*******************************************************************************
  * MODULE #DEFINES                                                             *
  ******************************************************************************/
+
+#define STOP_TIME 100
+#define REVERSE_TIME 500
+#define TURN_TIME 850
+#define FORWARDS_1_TIME 1000
+#define FORWARDS_2_TIME 2000
+
 typedef enum {
     InitPSubState,
-            Stop1State,
-            ReverseState,
-            Stop2State,
-            TankTurnRightState,
-            Stop3State,
-            Forwards1State,
-            Stop4State,
-            TankTurnLeft1State,
-            Stop5State,
-            Forwards2State,
-            Stop6State,
-            TankTurnLeft2State,
+    Stop1State,
+    ReverseState,
+    Stop2State,
+    TankTurnRightState,
+    Stop3State,
+    Forwards1State,
+    Stop4State,
+    TankTurnLeft1State,
+    Stop5State,
+    Forwards2State,
+    Stop6State,
+    TankTurnLeft2State,
+    Stop7State,
 } TemplateSubHSMState_t;
 
 static const char *StateNames[] = {
@@ -67,6 +75,7 @@ static const char *StateNames[] = {
 	"Forwards2State",
 	"Stop6State",
 	"TankTurnLeft2State",
+	"Stop7State",
 };
 
 
@@ -151,13 +160,279 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
         case Stop1State: // in the first state, replace this with correct names
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
+                    ES_Timer_InitTimer(COLLISION_AVOIDANCE_TIMER, STOP_TIME);
                     stop();
+                    break;
+                case ES_TIMEOUT:
+
+                    nextState = ReverseState;
+                    makeTransition = TRUE;
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+                case ES_TIMERACTIVE:
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
                     break;
                 case ES_NO_EVENT:
                 default: // all unhandled events pass the event back up to the next level
                     break;
             }
             break;
+        case ReverseState:
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    ES_Timer_InitTimer(COLLISION_AVOIDANCE_TIMER, REVERSE_TIME);
+                    reverse();
+                    break;
+                case ES_TIMEOUT:
+
+                    nextState = Stop2State;
+                    makeTransition = TRUE;
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+                case ES_TIMERACTIVE:
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
+                    break;
+            }
+            break;
+
+        case Stop2State: // in the first state, replace this with correct names
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    ES_Timer_InitTimer(COLLISION_AVOIDANCE_TIMER, STOP_TIME);
+                    stop();
+                    break;
+                case ES_TIMEOUT:
+
+                    nextState = TankTurnRightState;
+                    makeTransition = TRUE;
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+                case ES_TIMERACTIVE:
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
+                    break;
+            }
+            break;
+
+        case TankTurnRightState:
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    ES_Timer_InitTimer(COLLISION_AVOIDANCE_TIMER, TURN_TIME);
+                    tank_turn_right();
+                    break;
+                case ES_TIMEOUT:
+
+                    nextState = Stop3State;
+                    makeTransition = TRUE;
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+                case ES_TIMERACTIVE:
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
+                    break;
+            }
+            break;
+
+        case Stop3State: // in the first state, replace this with correct names
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    ES_Timer_InitTimer(COLLISION_AVOIDANCE_TIMER, STOP_TIME);
+                    stop();
+                    break;
+                case ES_TIMEOUT:
+
+                    nextState = Forwards1State;
+                    makeTransition = TRUE;
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+                case ES_TIMERACTIVE:
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
+                    break;
+            }
+            break;
+
+        case Forwards1State:
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    ES_Timer_InitTimer(COLLISION_AVOIDANCE_TIMER, FORWARDS_1_TIME);
+                    forwards();
+                    break;
+                case ES_TIMEOUT:
+
+                    nextState = Stop4State;
+                    makeTransition = TRUE;
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+                case ES_TIMERACTIVE:
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
+                    break;
+            }
+            break;
+
+        case Stop4State: // in the first state, replace this with correct names
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    ES_Timer_InitTimer(COLLISION_AVOIDANCE_TIMER, STOP_TIME);
+                    stop();
+                    break;
+                case ES_TIMEOUT:
+
+                    nextState = TankTurnLeft1State;
+                    makeTransition = TRUE;
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+                case ES_TIMERACTIVE:
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
+                    break;
+            }
+            break;
+
+        case TankTurnLeft1State:
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    ES_Timer_InitTimer(COLLISION_AVOIDANCE_TIMER, TURN_TIME);
+                    tank_turn_left();
+                    break;
+                case ES_TIMEOUT:
+
+                    nextState = Stop5State;
+                    makeTransition = TRUE;
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+                case ES_TIMERACTIVE:
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
+                    break;
+            }
+            break;
+
+        case Stop5State: // in the first state, replace this with correct names
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    ES_Timer_InitTimer(COLLISION_AVOIDANCE_TIMER, STOP_TIME);
+                    stop();
+                    break;
+                case ES_TIMEOUT:
+
+                    nextState = Forwards2State;
+                    makeTransition = TRUE;
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+                case ES_TIMERACTIVE:
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
+                    break;
+            }
+            break;
+
+
+        case Forwards2State:
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    ES_Timer_InitTimer(COLLISION_AVOIDANCE_TIMER, FORWARDS_2_TIME);
+                    forwards();
+                    break;
+                case ES_TIMEOUT:
+
+                    nextState = Stop6State;
+                    makeTransition = TRUE;
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+                case ES_TIMERACTIVE:
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
+                    break;
+            }
+            break;
+
+        case Stop6State: // in the first state, replace this with correct names
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    ES_Timer_InitTimer(COLLISION_AVOIDANCE_TIMER, STOP_TIME);
+                    stop();
+                    break;
+                case ES_TIMEOUT:
+
+                    nextState = TankTurnLeft2State;
+                    makeTransition = TRUE;
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+                case ES_TIMERACTIVE:
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
+                    break;
+            }
+            break;
+
+        case TankTurnLeft2State:
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    ES_Timer_InitTimer(COLLISION_AVOIDANCE_TIMER, TURN_TIME);
+                    tank_turn_left();
+                    break;
+                case ES_TIMEOUT:
+
+                   
+                    ThisEvent.EventType = OBSTACLE_AVOIDED;
+                    break;
+
+                case ES_TIMERACTIVE:
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
+                    break;
+            }
+            break;
+
+       
 
         default: // all unhandled states fall into here
             break;

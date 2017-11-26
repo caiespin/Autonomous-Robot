@@ -90,16 +90,16 @@ static uint8_t MyPriority;
  * @author J. Edward Carryer, 2011.10.23 19:25 */
 uint8_t InitFSMFindLine(void) {
     ES_Event returnEvent;
-LED_Init();
+    LED_Init();
 
- LED_AddBanks(LED_BANK1);
+    LED_AddBanks(LED_BANK1);
     LED_AddBanks(LED_BANK2);
     LED_AddBanks(LED_BANK3);
     LED_OffBank(LED_BANK1, ALL_LEDS);
     LED_OffBank(LED_BANK2, ALL_LEDS);
     LED_OffBank(LED_BANK3, ALL_LEDS);
-    
-    
+
+
     CurrentState = InitPSubState;
     returnEvent = RunFSMFindLine(INIT_EVENT);
     if (returnEvent.EventType == ES_NO_EVENT) {
@@ -147,9 +147,16 @@ ES_Event RunFSMFindLine(ES_Event ThisEvent) {
         case DrivingForwardState: // in the first state, replace this with correct names
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
-                     LED_SetBank(LED_BANK1, 1);
-                    LED_OffBank(LED_BANK2, ALL_LEDS);
-                    forwards();
+                    if ((get_front_tape_status() == on_tape) && (get_center_tape_status() == on_tape)) {
+                        ThisEvent.EventType = LINE_FOUND;
+                   } else if ((get_front_tape_status() == on_tape) && (get_center_tape_status() != on_tape)) {
+                        nextState = DrivingForward2State;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
+                    else{
+                        forwards();
+                    }
                     break;
                 case TAPE_DETECTED:
                     switch (ThisEvent.EventParam) {
@@ -185,7 +192,7 @@ ES_Event RunFSMFindLine(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
                     turn_right();
-                     LED_SetBank(LED_BANK1, 2);
+                    LED_SetBank(LED_BANK1, 2);
                     LED_OffBank(LED_BANK2, ALL_LEDS);
                     break;
                 case TAPE_DETECTED:
@@ -210,7 +217,7 @@ ES_Event RunFSMFindLine(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
                     turn_left();
-                     LED_SetBank(LED_BANK1, 4);
+                    LED_SetBank(LED_BANK1, 4);
                     LED_OffBank(LED_BANK2, ALL_LEDS);
                     break;
                 case TAPE_DETECTED:
@@ -230,12 +237,12 @@ ES_Event RunFSMFindLine(ES_Event ThisEvent) {
                     break;
             }
             break;
-            
-            case DrivingForward2State: // in the first state, replace this with correct names
+
+        case DrivingForward2State: // in the first state, replace this with correct names
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
                     forwards();
-                     LED_SetBank(LED_BANK1, 8);
+                    LED_SetBank(LED_BANK1, 8);
                     LED_OffBank(LED_BANK2, ALL_LEDS);
                     break;
                 case TAPE_DETECTED:
@@ -243,7 +250,7 @@ ES_Event RunFSMFindLine(ES_Event ThisEvent) {
 
 
                         case CENTER_TAPE_SENSOR:
-                            nextState =TurnRight2State ;
+                            nextState = TurnRight2State;
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
                             break;
@@ -255,11 +262,11 @@ ES_Event RunFSMFindLine(ES_Event ThisEvent) {
                     break;
             }
             break;
-            case TurnRight2State: // in the first state, replace this with correct names
+        case TurnRight2State: // in the first state, replace this with correct names
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
                     tank_turn_right();
-                     LED_SetBank(LED_BANK2, 1);
+                    LED_SetBank(LED_BANK2, 1);
                     LED_OffBank(LED_BANK1, ALL_LEDS);
                     break;
                 case TAPE_DETECTED:
@@ -267,8 +274,8 @@ ES_Event RunFSMFindLine(ES_Event ThisEvent) {
 
 
                         case FRONT_TAPE_SENSOR:
-                           
-                            ThisEvent.EventType=LINE_FOUND;
+
+                            ThisEvent.EventType = LINE_FOUND;
                             break;
 
                     }

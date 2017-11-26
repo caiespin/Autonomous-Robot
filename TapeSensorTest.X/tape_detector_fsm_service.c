@@ -425,6 +425,7 @@ void init_tape_sensors() {
         printf("Pin:%d done\r\n", index);
         tape_sensors[index].direction = index;
         tape_sensors[index].pin = tape_sensor_pins[index];
+        tape_sensors[index].status=off_tape;
         int rc = AD_AddPins(tape_sensors[index].pin);
         //printf("rc=%d\r\n",rc);
 
@@ -443,6 +444,10 @@ int get_left_tape_status() {
 int get_right_tape_status() {
     return tape_sensors[RIGHT_TAPE_SENSOR].status;
 }
+int get_center_tape_status() {
+    return tape_sensors[CENTER_TAPE_SENSOR].status;
+}
+
 
 void detect_tape_event() {
     int index = 0;
