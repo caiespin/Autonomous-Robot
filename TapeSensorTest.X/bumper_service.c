@@ -18,12 +18,12 @@
  * MODULE #INCLUDE                                                             *
  ******************************************************************************/
 
-#include "BOARD.h"
+
 #include "AD.h"
 #include "ES_Configure.h"
 #include "ES_Framework.h"
 #include "bumper_service.h"
-#include "IO_Ports.h"
+
 #include <stdio.h>
 #include "TopHSM.h"
 
@@ -34,21 +34,6 @@
 
 
 
-#define  FRONT_LEFT_BUMPER_PIN PIN3
-#define  FRONT_RIGHT_BUMPER_PIN PIN4
-#define  BACK_LEFT_BUMPER_PIN PIN5
-#define  BACK_RIGHT_BUMPER_PIN PIN6
-
-#define  REN_LEFT_PIN PIN7
-#define  REN_CENTER_PIN PIN9
-#define  REN_RIGHT_PIN PIN11
-
-
-#define  FRONT_BUMPERS (FRONT_LEFT_BUMPER_PIN | FRONT_RIGHT_BUMPER_PIN)
-#define  BACK_BUMPERS (BACK_LEFT_BUMPER_PIN | BACK_RIGHT_BUMPER_PIN)
-
-#define ALL_BIG_BUMPERS (FRONT_BUMPERS | BACK_BUMPERS)
-#define ALL_REN_BUMPERS (REN_LEFT_PIN | REN_CENTER_PIN | REN_RIGHT_PIN)
 
 
 //#define  SHIFT_AMOUNT 3
