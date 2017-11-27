@@ -58,6 +58,7 @@ typedef enum {
     TRACKWIRE_LOST,
     TRACKWIRE_ALIGNED,
     TRACKWIRE_DETECTED,
+    ATM6_ALIGNED,
 
 
 
@@ -88,6 +89,7 @@ static const char *EventNames[] = {
 	"TRACKWIRE_LOST",
 	"TRACKWIRE_ALIGNED",
 	"TRACKWIRE_DETECTED",
+	"ATM6_ALIGNED",
 };
 
 
@@ -134,7 +136,7 @@ static const char *EventNames[] = {
 #define BUMPER_SENSOR_TIMER 1 /*make sure this is enabled above and posting to the correct state machine*/
 #define TAPE_FOLLOWER_TIMER 2
 #define COLLISION_AVOIDANCE_TIMER 3
-#define TOP_HSM_TIMER 4
+#define ALIGN_ATM6_TIMER 4
 
 /****************************************************************************/
 // The maximum number of services sets an upper bound on the number of 

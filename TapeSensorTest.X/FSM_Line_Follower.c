@@ -69,6 +69,7 @@ typedef enum {
     corner_detected,
     turning_corner,
     wiggle_left,
+            reverse_state,
 } TemplateFSMState_t;
 
 static const char *StateNames[] = {
@@ -79,17 +80,19 @@ static const char *StateNames[] = {
 	"corner_detected",
 	"turning_corner",
 	"wiggle_left",
+	"reverse_state",
 };
 
 
 static TemplateFSMState_t CurrentState = InitPState; // <- change enum name to match ENUM
 static uint8_t MyPriority;
 
-
+#define ALL_LEDS 0xF
+#define REVERSE_TIME 200
 /*******************************************************************************
  * PUBLIC FUNCTIONS                                                            *
  ******************************************************************************/
-#define ALL_LEDS 0xF
+
 
 /**
  * @Function InitTemplateFSM(uint8_t Priority)
@@ -210,7 +213,7 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
                                 //  LED_SetBank(LED_BANK3, 1);
                                 //LED_OffBank(LED_BANK2, ALL_LEDS);
 
-                                nextState = wiggle_left;
+                                nextState = reverse_state;
                                 makeTransition = TRUE;
                                 ThisEvent.EventType = ES_NO_EVENT;
                             }
@@ -301,6 +304,30 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
                     break;
             }
             break;
+            
+             case reverse_state:
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    reverse();
+                    ES_Timer_InitTimer(TAPE_FOLLOWER_TIMER, REVERSE_TIME);
+                    break;
+               
+                case ES_TIMEOUT:
+                    nextState = wiggle_left;
+                    makeTransition = TRUE;
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+
+                case ES_TIMERACTIVE:
+                    // printf("enter on_ES_TIMERACTIVE\r\n");
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+            }
+
+            break;
+
         case wiggle_left:
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:

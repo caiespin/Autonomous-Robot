@@ -37,6 +37,7 @@
 #include "FSM_Find_Line.h"
 #include "FSMCollisionAvoidance.h"
 #include "LED.h"
+#include "FSMAlignATM6.h"
 /*******************************************************************************
  * PRIVATE #DEFINES                                                            *
  ******************************************************************************/
@@ -45,7 +46,7 @@
 /*******************************************************************************
  * MODULE #DEFINES                                                             *
  ******************************************************************************/
-#define HSM_TIME 100
+//#define HSM_TIME 100
 
 typedef enum {
     InitPState,
@@ -53,6 +54,7 @@ typedef enum {
     LineFollowerState,
     CollisionAvoidanceState,
     AlignATM6,
+    Shoot,
 
 } TemplateHSMState_t;
 
@@ -62,6 +64,7 @@ static const char *StateNames[] = {
 	"LineFollowerState",
 	"CollisionAvoidanceState",
 	"AlignATM6",
+	"Shoot",
 };
 
 
@@ -153,6 +156,7 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                 InitFSMLineFollower(MyPriority);
                 InitFSMFindLine();
                 InitFSMCollisionAvoidance();
+                InitFSMAlignAtm6();
                 // now put the machine into the actual initial state
 
 
@@ -228,6 +232,12 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                 case ES_ENTRY:
                     InitFSMCollisionAvoidance();
                     break;
+                case TRACKWIRE_DETECTED:
+                    //NEED to MODIFY THIS ADD FRONT BUMPER , or LEFT OR RIGHT
+                    nextState = AlignATM6;
+                    makeTransition = TRUE;
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
             }
             ThisEvent = RunFSMCollisionAvoidance(ThisEvent);
             switch (ThisEvent.EventType) {
@@ -237,6 +247,7 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                     makeTransition = TRUE;
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
+
                 case ES_NO_EVENT:
                 default:
                     break;
@@ -249,49 +260,36 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
 
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
-                   InitFSMAlignAtm6();
-                    LED_SetBank(LED_BANK3, 0xf);
-                     int rc = ES_Timer_InitTimer(TOP_HSM_TIMER, HSM_TIME);
-                    reverse();
+                    InitFSMAlignAtm6();
                     break;
-                    
-                 case TRACKWIRE_ALIGNED:
-                     ES_Timer_StopTimer(TOP_HSM_TIMER);
-                 case ES_TIMEOUT:
-                     stop();
-                    ThisEvent.EventType = ES_NO_EVENT;
-                    break;
-             
 
-                case ES_TIMERACTIVE:
-                    // printf("enter on_ES_TIMERACTIVE\r\n");
-                case ES_TIMERSTOPPED:
+
+            }
+            ThisEvent = RunFSMAlignAtm6(ThisEvent);
+            switch (ThisEvent.EventType) {
+
+                case ATM6_ALIGNED:
+                    nextState = Shoot;
+                    makeTransition = TRUE;
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
-                    
-//               case TRACKWIRE_ALIGNED:
-//                    //NEED to MODIFY THIS ADD FRONT BUMPER , or LEFT OR RIGHT
-//                    nextState = AlignATM6;
-//                    makeTransition = TRUE;
-//                    ThisEvent.EventType = ES_NO_EVENT;
-//                    stop();
-//                    break;
+
+                case ES_NO_EVENT:
+                default:
+                    break;
             }
-//            ThisEvent = RunFSMCollisionAvoidance(ThisEvent);
-//            switch (ThisEvent.EventType) {
-//                case OBSTACLE_AVOIDED:
-//
-//                    nextState = FindLineState;
-//                    makeTransition = TRUE;
-//                    ThisEvent.EventType = ES_NO_EVENT;
-//                    break;
-//                case ES_NO_EVENT:
-//                default:
-//                    break;
-//            }
+
+
             break;
 
+        case Shoot:
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    stop();
+                    break;
+            }
 
+            break;
 
         default: // all unhandled states fall into here
             break;
