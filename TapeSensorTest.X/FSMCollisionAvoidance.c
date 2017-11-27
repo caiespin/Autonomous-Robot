@@ -45,11 +45,15 @@
 #define TURN_TIME 840
 
 #define TURN2_TIME 940
+
+#define TankTurnRight2_TIME 800
+
+#define TankTurnLeft1_TIME 960
 #define FORWARDS_1_TIME 550
 #define FORWARDS_2_TIME 2200
-#define FORWARDS_3_TIME 1000
+#define FORWARDS_3_TIME 1100
 #define INCH_TIME 100
-#define REVERSE_2_TIME REVERSE_TIME
+#define REVERSE_2_TIME 400
 #define MINI_FORWARDS_TIME 100
 
 typedef enum {
@@ -355,7 +359,7 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
         case TankTurnLeft1State:
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
-                    ES_Timer_InitTimer(COLLISION_AVOIDANCE_TIMER, TURN2_TIME);
+                    ES_Timer_InitTimer(COLLISION_AVOIDANCE_TIMER,  TankTurnLeft1_TIME);
                     tank_turn_left();
                     break;
                 case ES_TIMEOUT:
@@ -552,7 +556,7 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
         case TankTurnRight2State:
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
-                    ES_Timer_InitTimer(COLLISION_AVOIDANCE_TIMER, TURN_TIME);
+                    ES_Timer_InitTimer(COLLISION_AVOIDANCE_TIMER, TankTurnRight2_TIME);
                     tank_turn_right();
                     break;
                 case ES_TIMEOUT:

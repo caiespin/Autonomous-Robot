@@ -250,9 +250,12 @@ int main() {
     RC_Init();
     RC_AddPins(SERVO_PIN);
 
-
+//#define MINPULSE 550
+//#define MAXPULSE 2450 metsl serv
+    
+    
     RC_SetPulseTime(SERVO_PIN, MINPULSE);
-    delay(1000000);
+    delay(3000000);
     RC_SetPulseTime(SERVO_PIN, MAXPULSE);
     delay(100000);
 

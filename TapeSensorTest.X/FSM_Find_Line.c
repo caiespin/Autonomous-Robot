@@ -149,13 +149,13 @@ ES_Event RunFSMFindLine(ES_Event ThisEvent) {
                 case ES_ENTRY:
                     if ((get_front_tape_status() == on_tape) && (get_center_tape_status() == on_tape)) {
                         ThisEvent.EventType = LINE_FOUND;
-                   } else if ((get_front_tape_status() == on_tape) && (get_center_tape_status() != on_tape)) {
+                    } else if ((get_front_tape_status() == on_tape) && (get_center_tape_status() == off_tape)) {
                         nextState = DrivingForward2State;
                         makeTransition = TRUE;
                         ThisEvent.EventType = ES_NO_EVENT;
-                    }
-                    else{
+                    } else {
                         forwards();
+                        ThisEvent.EventType = ES_NO_EVENT;
                     }
                     break;
                 case TAPE_DETECTED:
@@ -244,6 +244,7 @@ ES_Event RunFSMFindLine(ES_Event ThisEvent) {
                     forwards();
                     LED_SetBank(LED_BANK1, 8);
                     LED_OffBank(LED_BANK2, ALL_LEDS);
+                    
                     break;
                 case TAPE_DETECTED:
                     switch (ThisEvent.EventParam) {
@@ -268,7 +269,7 @@ ES_Event RunFSMFindLine(ES_Event ThisEvent) {
                     tank_turn_right();
                     LED_SetBank(LED_BANK2, 1);
                     LED_OffBank(LED_BANK1, ALL_LEDS);
-                    
+
                     break;
                 case TAPE_DETECTED:
                     switch (ThisEvent.EventParam) {
