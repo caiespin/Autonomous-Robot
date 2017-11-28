@@ -19,12 +19,13 @@
 
 
 //#define TEST_TAPE_SENSOR
-#define TEST_TAPE_SENSOR_WITH_ES_FRAMEWORK
+//#define TEST_TAPE_SENSOR_WITH_ES_FRAMEWORK
 //#define TEST_BUMPER
 //#define TEST_DRIVING_MOTORS
 //#define TEST_SERVO
 //#define TEST_DRIVING_MOTORS_HELPER_FUNCTIONS
 //#define TEST_TRACKWIRE
+#define TEST_SHOOTER
 
 
 
@@ -380,4 +381,46 @@ int main() {
 
 }
 
+#endif
+
+
+#ifdef TEST_SHOOTER
+#define SERVO_TILT_PIN RC_PORTX03
+#define SERVO_DELIVER_PIN RC_PORTX04
+#define SHOOTER_MOTOR_PIN PIN5
+
+void delay(int x) {
+    int i = 0;
+    while (i < x) {
+        i++;
+    }
+}
+
+int main() {
+    BOARD_Init();
+    RC_Init();
+   IO_PortsSetPortOutputs(PORTX, SHOOTER_MOTOR_PIN);
+    RC_AddPins(SERVO_TILT_PIN);
+    RC_AddPins(SERVO_DELIVER_PIN);
+
+//#define MINPULSE 550
+//#define MAXPULSE 2450 metsl serv
+     IO_PortsClearPortBits(PORTX, SHOOTER_MOTOR_PIN);
+    
+    
+ //RC_SetPulseTime(SERVO_DELIVER_PIN, 1000);
+
+    for (;;) {
+   
+  RC_SetPulseTime(SERVO_TILT_PIN,1400);
+   delay(1000000);
+//    
+    RC_SetPulseTime(SERVO_TILT_PIN, 1800);
+//    // RC_SetPulseTime(SERVO_TILT_PIN,  MAXPULSE);
+ delay(1000000);
+
+
+    }
+
+}
 #endif

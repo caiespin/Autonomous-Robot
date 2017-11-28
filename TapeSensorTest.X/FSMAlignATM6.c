@@ -41,7 +41,7 @@
  ******************************************************************************/
 typedef enum {
     InitPState,
-    ReverseState,
+    ForwardsState,
     StopState,
     Turn90State,
 
@@ -49,15 +49,15 @@ typedef enum {
 
 static const char *StateNames[] = {
 	"InitPState",
-	"ReverseState",
+	"ForwardsState",
 	"StopState",
 	"Turn90State",
 };
 
 
-#define REVERSE_TIME 3
+#define FORWARD_TIME 100
 #define STOP_MOTOR_TIME 200
-#define TANK_TURN_TIME 890
+#define TANK_TURN_TIME 1200
 
 /*******************************************************************************
  * PRIVATE FUNCTION PROTOTYPES                                                 *
@@ -130,7 +130,7 @@ ES_Event RunFSMAlignAtm6(ES_Event ThisEvent) {
                 // initial state
 
                 // now put the machine into the actual initial state
-                nextState = ReverseState;
+                nextState = ForwardsState;
                 makeTransition = TRUE;
                 ThisEvent.EventType = ES_NO_EVENT;
                 
@@ -138,19 +138,19 @@ ES_Event RunFSMAlignAtm6(ES_Event ThisEvent) {
             }
             break;
 
-        case ReverseState: // in the first state, replace this with correct names
+        case ForwardsState: // in the first state, replace this with correct names
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
 
-                    ES_Timer_InitTimer(ALIGN_ATM6_TIMER, REVERSE_TIME);
-                    reverse();
+                    ES_Timer_InitTimer(ALIGN_ATM6_TIMER, FORWARD_TIME);
+                   forwards();
                     break;
 
 
                 case TRACKWIRE_ALIGNED:
                     ES_Timer_StopTimer(ALIGN_ATM6_TIMER);
                 case ES_TIMEOUT:
-                    printf("--------------------FSMAlignATM6, reverseState\r\n");
+                   // printf("--------------------FSMAlignATM6, ForwardsState\r\n");
                     nextState = StopState;
                     makeTransition = TRUE;
                     ThisEvent.EventType = ES_NO_EVENT;

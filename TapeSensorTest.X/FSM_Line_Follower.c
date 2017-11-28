@@ -69,7 +69,9 @@ typedef enum {
     corner_detected,
     turning_corner,
     wiggle_left,
-            reverse_state,
+    reverse_state,
+    InchRight,
+            InchLeft,
 } TemplateFSMState_t;
 
 static const char *StateNames[] = {
@@ -81,6 +83,8 @@ static const char *StateNames[] = {
 	"turning_corner",
 	"wiggle_left",
 	"reverse_state",
+	"InchRight",
+	"InchLeft",
 };
 
 
@@ -89,10 +93,11 @@ static uint8_t MyPriority;
 
 #define ALL_LEDS 0xF
 #define REVERSE_TIME 200
+#define INCH_RIGHT_TIME 200
+#define INCH_LEFT_TIME 200
 /*******************************************************************************
  * PUBLIC FUNCTIONS                                                            *
  ******************************************************************************/
-
 
 /**
  * @Function InitTemplateFSM(uint8_t Priority)
@@ -239,7 +244,7 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
                 case TAPE_DETECTED:
                     switch (ThisEvent.EventParam) {
                         case FRONT_TAPE_SENSOR:
-                            nextState = on_line;
+                            nextState = InchRight;
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
                     }
@@ -257,7 +262,7 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
                 case TAPE_DETECTED:
                     switch (ThisEvent.EventParam) {
                         case FRONT_TAPE_SENSOR:
-                            nextState = on_line;
+                            nextState = InchLeft;
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
                     }
@@ -293,25 +298,79 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
                 case TAPE_DETECTED:
                     switch (ThisEvent.EventParam) {
                         case FRONT_TAPE_SENSOR:
-                            nextState = on_line;
+                            nextState = InchRight;
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
                     }
                     break;
 
                 case ES_EXIT:
-                   // LED_OffBank(LED_BANK3, 0xf);
+                    // LED_OffBank(LED_BANK3, 0xf);
+                    break;
+            }
+            break;
+
+        case InchRight: // in the first state, replace this with correct names
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    tank_turn_right();
+                    ES_Timer_InitTimer(TAPE_FOLLOWER_TIMER, INCH_RIGHT_TIME);
+
+                    break;
+                case ES_TIMEOUT:
+
+
+                    nextState = on_line;
+                    makeTransition = TRUE;
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+
+                case ES_TIMERACTIVE:
+                    // printf("enter on_ES_TIMERACTIVE\r\n");
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
                     break;
             }
             break;
             
-             case reverse_state:
+             case InchLeft: // in the first state, replace this with correct names
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    tank_turn_right();
+                    ES_Timer_InitTimer(TAPE_FOLLOWER_TIMER, INCH_LEFT_TIME);
+
+                    break;
+                case ES_TIMEOUT:
+
+
+                    nextState = on_line;
+                    makeTransition = TRUE;
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+
+                case ES_TIMERACTIVE:
+                    // printf("enter on_ES_TIMERACTIVE\r\n");
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
+                    break;
+            }
+            break;
+
+        case reverse_state:
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
                     reverse();
                     ES_Timer_InitTimer(TAPE_FOLLOWER_TIMER, REVERSE_TIME);
                     break;
-               
+
                 case ES_TIMEOUT:
                     nextState = wiggle_left;
                     makeTransition = TRUE;

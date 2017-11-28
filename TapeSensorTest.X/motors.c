@@ -8,7 +8,7 @@
 #define DIRECTION_A PIN11
 
 #define MOT0R_A_SPEED 1000
-#define MOT0R_B_SPEED 977
+#define MOT0R_B_SPEED 920
 
 #define ENABLE_B PWM_PORTY10 
 #define DIRECTION_B PIN9
