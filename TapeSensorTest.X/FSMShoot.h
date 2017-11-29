@@ -31,8 +31,8 @@
  * PUBLIC #DEFINES                                                             *
  ******************************************************************************/
 #define SERVO_TILT_PIN RC_PORTX03
-#define SERVO_DELIVER_PIN PIN11
-#define SHOOTER_MOTOR_PIN PIN5
+#define SERVO_DELIVER_PIN PIN5
+#define SHOOTER_MOTOR_PIN PWM_PORTX11
 
 /*******************************************************************************
  * PUBLIC TYPEDEFS                                                             *

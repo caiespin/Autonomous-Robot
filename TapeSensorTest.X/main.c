@@ -20,13 +20,13 @@
 
 
 //#define TEST_TAPE_SENSOR
-#define TEST_TAPE_SENSOR_WITH_ES_FRAMEWORK
+//#define TEST_TAPE_SENSOR_WITH_ES_FRAMEWORK
 //#define TEST_BUMPER
 //#define TEST_DRIVING_MOTORS
 //#define TEST_SERVO
 //#define TEST_DRIVING_MOTORS_HELPER_FUNCTIONS
 //#define TEST_TRACKWIRE
-//#define TEST_SHOOTER
+#define TEST_SHOOTER
 
 
 
@@ -384,9 +384,7 @@ int main() {
 
 
 #ifdef TEST_SHOOTER
-#define SERVO_TILT_PIN RC_PORTX03
-#define SERVO_DELIVER_PIN PIN4
-#define SHOOTER_MOTOR_PIN PIN5
+#include "FSMShoot.h"
 
 void delay(int x) {
     int i = 0;
@@ -398,31 +396,37 @@ void delay(int x) {
 int main() {
     BOARD_Init();
     RC_Init();
-    IO_PortsSetPortOutputs(PORTX, SHOOTER_MOTOR_PIN);
-    IO_PortsSetPortOutputs(PORTX, SERVO_DELIVER_PIN);
-    RC_AddPins(SERVO_TILT_PIN);
+    PWM_Init();
+    shooter_init();
 
-
-    //#define MINPULSE 550
-    //#define MAXPULSE 2450 metsl serv
-    IO_PortsSetPortBits(PORTX, SHOOTER_MOTOR_PIN);
-    // IO_PortsClearPortBits(PORTX, SERVO_DELIVER_PIN);
-    // RC_SetPulseTime(SERVO_TILT_PIN, 1400);
-    IO_PortsSetPortBits(PORTX, SERVO_DELIVER_PIN);
-    delay(4000000);
-
-    delay(5000000);
-    //    
-    //   RC_SetPulseTime(SERVO_TILT_PIN, 1800);
-    //IO_PortsClearPortBits(PORTX, SERVO_DELIVER_PIN);
-
-
-    //RC_SetPulseTime(SERVO_DELIVER_PIN, 1000);
-
+// RC_SetPulseTime(SERVO_TILT_PIN, 1800);
+//    //#define MINPULSE 550
+//    //#define MAXPULSE 2450 metsl serv
+//    IO_PortsSetPortBits(PORTX, SHOOTER_MOTOR_PIN);
+//    // IO_PortsClearPortBits(PORTX, SERVO_DELIVER_PIN);
+//    // RC_SetPulseTime(SERVO_TILT_PIN, 1400);
+//    IO_PortsSetPortBits(PORTX, SERVO_DELIVER_PIN);
+//
+//    //    
+//    //   RC_SetPulseTime(SERVO_TILT_PIN, 1800);
+//    //IO_PortsClearPortBits(PORTX, SERVO_DELIVER_PIN);
+//
+//
+//    //RC_SetPulseTime(SERVO_DELIVER_PIN, 1000);
+RC_SetPulseTime(SERVO_TILT_PIN, MINPULSE);
+PWM_SetDutyCycle(SHOOTER_MOTOR_PIN,350);
+delay(3000000);
+start_trigger_motor();
+delay(300000);
+stop_trigger_motor();
+//start_ball_accelerator();
     for (;;) {
         // delay(5000000);
-        //
-
+//        //
+//RC_SetPulseTime(SERVO_TILT_PIN, MAXPULSE);
+//delay(3000000);
+//RC_SetPulseTime(SERVO_TILT_PIN, MINPULSE);
+//delay(3000000);
         //    // RC_SetPulseTime(SERVO_TILT_PIN,  MAXPULSE);
 
 

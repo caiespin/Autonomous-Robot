@@ -173,7 +173,8 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
 
                     break;
                 case ES_TIMEOUT:
-                    nextState = FindLineState;
+                   // nextState = FindLineState;
+                    nextState = Shoot;
                     makeTransition = TRUE;
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;

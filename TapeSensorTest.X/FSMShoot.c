@@ -36,6 +36,7 @@
 #include "IO_Ports.h"
 #include "RC_Servo.h"
 #include "motors.h"
+#include "pwm.h"
 
 /*******************************************************************************
  * MODULE #DEFINES                                                             *
@@ -88,19 +89,20 @@ void stop_ball_accelerator();
 static TemplateSubHSMState_t CurrentState = InitPSubState; // <- change name to match ENUM
 static uint8_t MyPriority;
 
-
 /*******************************************************************************
  * PUBLIC FUNCTIONS                                                            *
  ******************************************************************************/
-void shooter_init(){
-     IO_PortsSetPortOutputs(PORTX, SHOOTER_MOTOR_PIN);
+void shooter_init() {
+    // IO_PortsSetPortOutputs(PORTX, SHOOTER_MOTOR_PIN);
+    PWM_AddPins(SHOOTER_MOTOR_PIN);
     IO_PortsSetPortOutputs(PORTX, SERVO_DELIVER_PIN);
+
+    // IO_PortsClearPortBits(PORTX, SERVO_DELIVER_PIN | SHOOTER_MOTOR_PIN);
+    IO_PortsClearPortBits(PORTX, SERVO_DELIVER_PIN);
     RC_AddPins(SERVO_TILT_PIN);
-    
-    IO_PortsClearPortBits(PORTX,SERVO_DELIVER_PIN );
-    
-    
+    RC_SetPulseTime(SERVO_TILT_PIN, MINPULSE);
 }
+
 /**
  * @Function InitTemplateSubHSM(uint8_t Priority)
  * @param Priority - internal variable to track which event queue to use
@@ -113,7 +115,7 @@ void shooter_init(){
  * @author J. Edward Carryer, 2011.10.23 19:25 */
 uint8_t InitFSMShoot(void) {
     ES_Event returnEvent;
-   
+
     CurrentState = InitPSubState;
     returnEvent = RunFSMShoot(INIT_EVENT);
     if (returnEvent.EventType == ES_NO_EVENT) {
@@ -163,7 +165,7 @@ ES_Event RunFSMShoot(ES_Event ThisEvent) {
                 case ES_ENTRY:
                     ES_Timer_InitTimer(SHOOT_FSM_TIMER, STOP_TIME);
                     stop();
-                     ThisEvent.EventType = ES_NO_EVENT;
+                    ThisEvent.EventType = ES_NO_EVENT;
                     break;
                 case ES_TIMEOUT:
                     if (ThisEvent.EventParam == SHOOT_FSM_TIMER) {
@@ -188,7 +190,7 @@ ES_Event RunFSMShoot(ES_Event ThisEvent) {
                 case ES_ENTRY:
                     ES_Timer_InitTimer(SHOOT_FSM_TIMER, START_MOTOR_TIME);
                     start_ball_accelerator();
-                     ThisEvent.EventType = ES_NO_EVENT;
+                    ThisEvent.EventType = ES_NO_EVENT;
                     break;
                 case ES_TIMEOUT:
                     if (ThisEvent.EventParam == SHOOT_FSM_TIMER) {
@@ -214,7 +216,7 @@ ES_Event RunFSMShoot(ES_Event ThisEvent) {
                     ES_Timer_InitTimer(SHOOT_FSM_TIMER, LOAD_BALL_TIME);
                     //Start Servo that triggers
                     start_trigger_motor();
-                     ThisEvent.EventType = ES_NO_EVENT;
+                    ThisEvent.EventType = ES_NO_EVENT;
                     break;
                 case ES_TIMEOUT:
                     if (ThisEvent.EventParam == SHOOT_FSM_TIMER) {
@@ -242,7 +244,7 @@ ES_Event RunFSMShoot(ES_Event ThisEvent) {
                 case ES_ENTRY:
                     ES_Timer_InitTimer(SHOOT_FSM_TIMER, LOAD_BALL_TIME);
                     //  stop();
-                     ThisEvent.EventType = ES_NO_EVENT;
+                    ThisEvent.EventType = ES_NO_EVENT;
                     break;
                 case ES_TIMEOUT:
                     if (ThisEvent.EventParam == SHOOT_FSM_TIMER) {
