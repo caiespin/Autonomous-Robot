@@ -38,7 +38,7 @@
 #include <BOARD.h>
 #include "motors.h"
 #include <stdio.h>
-#include "LED.h"
+//#include "LED.h"
 #include "ES_Timers.h"
 
 
@@ -71,7 +71,7 @@ typedef enum {
     wiggle_left,
     reverse_state,
     InchRight,
-            InchLeft,
+    InchLeft,
 } TemplateFSMState_t;
 
 static const char *StateNames[] = {
@@ -93,8 +93,8 @@ static uint8_t MyPriority;
 
 #define ALL_LEDS 0xF
 #define REVERSE_TIME 200
-#define INCH_RIGHT_TIME 200
-#define INCH_LEFT_TIME 200
+#define INCH_RIGHT_TIME 100
+#define INCH_LEFT_TIME 100
 /*******************************************************************************
  * PUBLIC FUNCTIONS                                                            *
  ******************************************************************************/
@@ -174,8 +174,8 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
                     forwards();
-                    LED_SetBank(LED_BANK1, 1);
-                    LED_OffBank(LED_BANK2, ALL_LEDS);
+                    //  LED_SetBank(LED_BANK1, 1);
+                    // LED_OffBank(LED_BANK2, ALL_LEDS);
                     break;
                 case TAPE_DETECTED:
                     switch (ThisEvent.EventParam) {
@@ -238,8 +238,8 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
                     tank_turn_right();
-                    LED_SetBank(LED_BANK1, 2);
-                    LED_OffBank(LED_BANK2, ALL_LEDS);
+                    // LED_SetBank(LED_BANK1, 2);
+                    // LED_OffBank(LED_BANK2, ALL_LEDS);
                     break;
                 case TAPE_DETECTED:
                     switch (ThisEvent.EventParam) {
@@ -256,8 +256,8 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
                     tank_turn_left();
-                    LED_SetBank(LED_BANK1, 4);
-                    LED_OffBank(LED_BANK2, ALL_LEDS);
+                    // LED_SetBank(LED_BANK1, 4);
+                    //  LED_OffBank(LED_BANK2, ALL_LEDS);
                     break;
                 case TAPE_DETECTED:
                     switch (ThisEvent.EventParam) {
@@ -273,8 +273,8 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
                     forwards();
-                    LED_SetBank(LED_BANK1, 8);
-                    LED_OffBank(LED_BANK2, ALL_LEDS);
+                    //  LED_SetBank(LED_BANK1, 8);
+                    //   LED_OffBank(LED_BANK2, ALL_LEDS);
                     break;
                 case TAPE_LOST:
                     switch (ThisEvent.EventParam) {
@@ -292,8 +292,8 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
                     tank_turn_right();
-                    LED_SetBank(LED_BANK2, 1);
-                    LED_OffBank(LED_BANK1, ALL_LEDS);
+                    //  LED_SetBank(LED_BANK2, 1);
+                    //   LED_OffBank(LED_BANK1, ALL_LEDS);
                     break;
                 case TAPE_DETECTED:
                     switch (ThisEvent.EventParam) {
@@ -319,10 +319,11 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
                     break;
                 case ES_TIMEOUT:
 
-
-                    nextState = on_line;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
+                    if (ThisEvent.EventParam == TAPE_FOLLOWER_TIMER) {
+                        nextState = on_line;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
                     break;
 
 
@@ -336,20 +337,21 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
                     break;
             }
             break;
-            
-             case InchLeft: // in the first state, replace this with correct names
+
+        case InchLeft: // in the first state, replace this with correct names
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
-                    tank_turn_right();
+                    tank_turn_left();
                     ES_Timer_InitTimer(TAPE_FOLLOWER_TIMER, INCH_LEFT_TIME);
 
                     break;
                 case ES_TIMEOUT:
 
-
-                    nextState = on_line;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
+                    if (ThisEvent.EventParam == TAPE_FOLLOWER_TIMER) {
+                        nextState = on_line;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
                     break;
 
 
@@ -372,9 +374,11 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
                     break;
 
                 case ES_TIMEOUT:
-                    nextState = wiggle_left;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
+                    if (ThisEvent.EventParam == TAPE_FOLLOWER_TIMER) {
+                        nextState = wiggle_left;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
                     break;
 
 
@@ -402,9 +406,11 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
                     }
                     break;
                 case ES_TIMEOUT:
-                    nextState = turning_corner;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
+                    if (ThisEvent.EventParam == TAPE_FOLLOWER_TIMER) {
+                        nextState = turning_corner;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
                     break;
 
 

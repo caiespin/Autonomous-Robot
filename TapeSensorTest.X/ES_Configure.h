@@ -114,8 +114,8 @@ static const char *EventNames[] = {
 #define TIMER3_RESP_FUNC PostTopHSM
 #define TIMER4_RESP_FUNC PostTopHSM
 #define TIMER5_RESP_FUNC PostTopHSM
-#define TIMER6_RESP_FUNC TIMER_UNUSED
-#define TIMER7_RESP_FUNC TIMER_UNUSED
+#define TIMER6_RESP_FUNC PostTopHSM
+#define TIMER7_RESP_FUNC PostTopHSM
 #define TIMER8_RESP_FUNC TIMER_UNUSED
 #define TIMER9_RESP_FUNC TIMER_UNUSED
 #define TIMER10_RESP_FUNC TIMER_UNUSED
@@ -138,6 +138,9 @@ static const char *EventNames[] = {
 #define COLLISION_AVOIDANCE_TIMER 3
 #define ALIGN_ATM6_TIMER 4
 #define FIND_LINE_TIMER 5
+#define SHOOT_FSM_TIMER 6
+#define TOP_HSM_TIMER 7
+
 
 /****************************************************************************/
 // The maximum number of services sets an upper bound on the number of 

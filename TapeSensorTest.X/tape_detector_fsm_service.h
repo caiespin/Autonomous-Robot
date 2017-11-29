@@ -35,6 +35,22 @@
 #define RIGHT_TAPE_SENSOR 2
 
 
+
+#define TAPE_PIN_1 AD_PORTW3
+#define TAPE_PIN_2 AD_PORTW4
+#define TAPE_PIN_3 AD_PORTW5
+#define TAPE_PIN_4 AD_PORTW6
+#define TAPE_PIN_5 AD_PORTW7
+
+
+
+
+#define LED_PIN PIN8
+#define TAPE_PORT PORTY
+
+#define TAPE_SENSOR_COUNT 5
+#define READING_COUNT 5
+
 #define ALL_LEDS 0xF
 /*******************************************************************************
  * PUBLIC TYPEDEFS                                                             *
@@ -58,7 +74,7 @@ int get_front_tape_status();
 int get_right_tape_status();
 
 int get_left_tape_status();
-
+void init_tape_sensors();
 /**
  * @Function InitTemplateFSM(uint8_t Priority)
  * @param Priority - internal variable to track which event queue to use

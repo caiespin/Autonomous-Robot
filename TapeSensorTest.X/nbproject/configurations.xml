@@ -38,6 +38,7 @@
       <itemPath>FSMCollisionAvoidance.h</itemPath>
       <itemPath>track_wire_event_checker.h</itemPath>
       <itemPath>FSMAlignATM6.h</itemPath>
+      <itemPath>FSMShoot.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -74,6 +75,7 @@
       <itemPath>FSMCollisionAvoidance.c</itemPath>
       <itemPath>track_wire_event_checker.c</itemPath>
       <itemPath>FSMAlignATM6.c</itemPath>
+      <itemPath>FSMShoot.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

@@ -17,7 +17,7 @@
 //Sets up the pins for driving the motors.
 
 void motors_init() {
-    PWM_Init();
+   
     IO_PortsSetPortOutputs(DRIVING_MOTOR_PORT, DIRECTION_A | DIRECTION_B);
     PWM_AddPins(ENABLE_A | ENABLE_B);
     PWM_SetFrequency(PWM_500HZ);

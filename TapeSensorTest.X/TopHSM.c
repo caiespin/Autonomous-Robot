@@ -36,13 +36,14 @@
 #include "FSM_Line_Follower.h"
 #include "FSM_Find_Line.h"
 #include "FSMCollisionAvoidance.h"
-#include "LED.h"
+//#include "LED.h"
 #include "FSMAlignATM6.h"
+#include "FSMShoot.h"
 /*******************************************************************************
  * PRIVATE #DEFINES                                                            *
  ******************************************************************************/
 //Include any defines you need to do
-
+#define BOOT_TIME 50
 /*******************************************************************************
  * MODULE #DEFINES                                                             *
  ******************************************************************************/
@@ -142,31 +143,44 @@ uint8_t PostTopHSM(ES_Event ThisEvent) {
 ES_Event RunTopHSM(ES_Event ThisEvent) {
     uint8_t makeTransition = FALSE; // use to flag transition
     TemplateHSMState_t nextState; // <- change type to correct enum
-
+    int bumpers;
     ES_Tattle(); // trace call stack
 
     switch (CurrentState) {
         case InitPState: // If current state is initial Pseudo State
-            if (ThisEvent.EventType == ES_INIT)// only respond to ES_Init
-            {
-                // this is where you would put any actions associated with the
-                // transition from the initial pseudo-state into the actual
-                // initial state
-                // Initialize all sub-state machines
-                InitFSMLineFollower(MyPriority);
-                InitFSMFindLine();
-                InitFSMCollisionAvoidance();
-                InitFSMAlignAtm6();
-                // now put the machine into the actual initial state
+            switch (ThisEvent.EventType) {
+                case ES_INIT:// only respond to ES_Init
+
+                    // this is where you would put any actions associated with the
+                    // transition from the initial pseudo-state into the actual
+                    // initial state
+                    // Initialize all sub-state machines
+
+                    //                InitFSMLineFollower(MyPriority);
+                    //                InitFSMFindLine();
+                    //                InitFSMCollisionAvoidance();
+                    //                InitFSMAlignAtm6();
+                    //                InitFSMShoot();
+
+                    // now put the machine into the actual initial state
+
+                    ES_Timer_InitTimer(TOP_HSM_TIMER, BOOT_TIME);
 
 
-                nextState = FindLineState;
-                // nextState=CollisionAvoidanceState;
+
+                    break;
+                case ES_TIMEOUT:
+                    nextState = FindLineState;
+                    makeTransition = TRUE;
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
 
 
-                makeTransition = TRUE;
-                ThisEvent.EventType = ES_NO_EVENT;
-                ;
+                case ES_TIMERACTIVE:
+                    // printf("enter on_ES_TIMERACTIVE\r\n");
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
             }
             break;
         case FindLineState:
@@ -181,10 +195,20 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
             ThisEvent = RunFSMFindLine(ThisEvent);
             switch (ThisEvent.EventType) {
                 case LINE_FOUND:
-                    LED_SetBank(LED_BANK3, 0xf);
+                    //   LED_SetBank(LED_BANK3, 0xf);
                     nextState = LineFollowerState;
                     makeTransition = TRUE;
                     ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+                case BUMPER_PRESSED:
+                    bumpers = (ThisEvent.EventParam & (FRONT_BUMPERS));
+                    if ((bumpers == FRONT_LEFT_BUMPER_PIN) || (bumpers == FRONT_RIGHT_BUMPER_PIN) || (bumpers == FRONT_BUMPERS)) {
+                        //NEED to MODIFY THIS ADD FRONT BUMPER , or LEFT OR RIGHT
+                        nextState = CollisionAvoidanceState;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
                     break;
                 case ES_NO_EVENT:
                 default:
@@ -212,10 +236,13 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
                 case BUMPER_PRESSED:
-                    //NEED to MODIFY THIS ADD FRONT BUMPER , or LEFT OR RIGHT
-                    nextState = CollisionAvoidanceState;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
+                    bumpers = (ThisEvent.EventParam & (FRONT_BUMPERS));
+                    if ((bumpers == FRONT_LEFT_BUMPER_PIN) || (bumpers == FRONT_RIGHT_BUMPER_PIN) || (bumpers == FRONT_BUMPERS)) {
+                        //NEED to MODIFY THIS ADD FRONT BUMPER , or LEFT OR RIGHT
+                        nextState = CollisionAvoidanceState;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
                     break;
                 case ES_NO_EVENT:
                 default:
@@ -283,12 +310,21 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
             break;
 
         case Shoot:
+            // run sub-state machine for this state
+            //NOTE: the SubState Machine runs and responds to events before anything in the this
+            //state machine does
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
-                    stop();
+                    InitFSMShoot();
                     break;
             }
+            ThisEvent = RunFSMShoot(ThisEvent);
+            switch (ThisEvent.EventType) {
 
+                case ES_NO_EVENT:
+                default:
+                    break;
+            }
             break;
 
         default: // all unhandled states fall into here

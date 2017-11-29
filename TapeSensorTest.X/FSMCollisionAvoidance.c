@@ -39,25 +39,32 @@
 /*******************************************************************************
  * MODULE #DEFINES                                                             *
  ******************************************************************************/
+#define EXTRA_WEIGHT 300
 
 #define STOP_TIME 100
-#define REVERSE_TIME 300
-#define TURN_TIME 840
+#define REVERSE_TIME (300 + EXTRA_WEIGHT)
+//#define TURN_TIME 840
+#define TankTurnRight1_TIME (1000 + EXTRA_WEIGHT)
 
-#define TURN2_TIME 940
+#define TankTurnLeft3_TIME (1400 + EXTRA_WEIGHT)
+#define TankTurnLeft4_TIME (1100 + EXTRA_WEIGHT)
 
-#define TankTurnRight2_TIME 800
+//#define TURN2_TIME 940
+#define RAM_TIME (500 + EXTRA_WEIGHT)
+#define TankTurnRight2_TIME (1300 + EXTRA_WEIGHT)
 
-#define TankTurnLeft1_TIME 960
-#define FORWARDS_1_TIME 550
-#define FORWARDS_2_TIME 2200
-#define FORWARDS_3_TIME 1100
-#define INCH_TIME 100
-#define REVERSE_2_TIME 400
-#define MINI_FORWARDS_TIME 100
+#define TankTurnLeft1_TIME (1100 + EXTRA_WEIGHT)
+#define TankTurnLeft2_TIME (1100 + EXTRA_WEIGHT)
+#define FORWARDS_1_TIME (1200 + EXTRA_WEIGHT)
+#define FORWARDS_2_TIME (1600 + EXTRA_WEIGHT)
+#define FORWARDS_3_TIME (1100 + EXTRA_WEIGHT)
+#define INCH_TIME ( 100)
+#define REVERSE_2_TIME (800 + EXTRA_WEIGHT)
+#define MINI_FORWARDS_TIME (300 + EXTRA_WEIGHT)
 
 typedef enum {
     InitPSubState,
+    RamIntoItState,
     Stop1State,
     Reverse1State,
     Stop2State,
@@ -69,6 +76,7 @@ typedef enum {
     Stop5State,
     Forwards2State,
     Stop6State,
+    //  TankTurnRight2State,
     TankTurnLeft2State,
     FoundTapeState,
     InchForwardsState,
@@ -89,6 +97,7 @@ typedef enum {
 
 static const char *StateNames[] = {
 	"InitPSubState",
+	"RamIntoItState",
 	"Stop1State",
 	"Reverse1State",
 	"Stop2State",
@@ -178,7 +187,7 @@ uint8_t InitFSMCollisionAvoidance(void) {
 ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
     uint8_t makeTransition = FALSE; // use to flag transition
     TemplateSubHSMState_t nextState; // <- change type to correct enum
-
+    int bumpers;
     ES_Tattle(); // trace call stack
 
     switch (CurrentState) {
@@ -190,12 +199,34 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
                 // initial state
 
                 // now put the machine into the actual initial state
-                nextState = Stop1State;
+                nextState = RamIntoItState;
                 makeTransition = TRUE;
                 ThisEvent.EventType = ES_NO_EVENT;
             }
             break;
+        case RamIntoItState:
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    ES_Timer_InitTimer(COLLISION_AVOIDANCE_TIMER, RAM_TIME);
+                    forwards();
+                    break;
+                case ES_TIMEOUT:
+                    if (ThisEvent.EventParam == COLLISION_AVOIDANCE_TIMER) {
+                        nextState = Stop1State;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
+                    break;
 
+                case ES_TIMERACTIVE:
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
+                    break;
+            }
+            break;
         case Stop1State: // in the first state, replace this with correct names
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
@@ -203,10 +234,11 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
                     stop();
                     break;
                 case ES_TIMEOUT:
-
-                    nextState = Reverse1State;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
+                    if (ThisEvent.EventParam == COLLISION_AVOIDANCE_TIMER) {
+                        nextState = Reverse1State;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
                     break;
 
                 case ES_TIMERACTIVE:
@@ -225,10 +257,11 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
                     reverse();
                     break;
                 case ES_TIMEOUT:
-
-                    nextState = Stop2State;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
+                    if (ThisEvent.EventParam == COLLISION_AVOIDANCE_TIMER) {
+                        nextState = Stop2State;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
                     break;
 
                 case ES_TIMERACTIVE:
@@ -248,10 +281,11 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
                     stop();
                     break;
                 case ES_TIMEOUT:
-
-                    nextState = TankTurnRight1State;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
+                    if (ThisEvent.EventParam == COLLISION_AVOIDANCE_TIMER) {
+                        nextState = TankTurnRight1State;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
                     break;
 
                 case ES_TIMERACTIVE:
@@ -267,14 +301,15 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
         case TankTurnRight1State:
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
-                    ES_Timer_InitTimer(COLLISION_AVOIDANCE_TIMER, TURN_TIME);
+                    ES_Timer_InitTimer(COLLISION_AVOIDANCE_TIMER, TankTurnRight1_TIME);
                     tank_turn_right();
                     break;
                 case ES_TIMEOUT:
-
-                    nextState = Stop3State;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
+                    if (ThisEvent.EventParam == COLLISION_AVOIDANCE_TIMER) {
+                        nextState = Stop3State;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
                     break;
 
                 case ES_TIMERACTIVE:
@@ -294,10 +329,11 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
                     stop();
                     break;
                 case ES_TIMEOUT:
-
-                    nextState = Forwards1State;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
+                    if (ThisEvent.EventParam == COLLISION_AVOIDANCE_TIMER) {
+                        nextState = Forwards1State;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
                     break;
 
                 case ES_TIMERACTIVE:
@@ -317,10 +353,11 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
                     forwards();
                     break;
                 case ES_TIMEOUT:
-
-                    nextState = Stop4State;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
+                    if (ThisEvent.EventParam == COLLISION_AVOIDANCE_TIMER) {
+                        nextState = Stop4State;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
                     break;
 
                 case ES_TIMERACTIVE:
@@ -340,10 +377,11 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
                     stop();
                     break;
                 case ES_TIMEOUT:
-
-                    nextState = TankTurnLeft1State;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
+                    if (ThisEvent.EventParam == COLLISION_AVOIDANCE_TIMER) {
+                        nextState = TankTurnLeft1State;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
                     break;
 
                 case ES_TIMERACTIVE:
@@ -359,14 +397,15 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
         case TankTurnLeft1State:
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
-                    ES_Timer_InitTimer(COLLISION_AVOIDANCE_TIMER,  TankTurnLeft1_TIME);
+                    ES_Timer_InitTimer(COLLISION_AVOIDANCE_TIMER, TankTurnLeft1_TIME);
                     tank_turn_left();
                     break;
                 case ES_TIMEOUT:
-
-                    nextState = Stop5State;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
+                    if (ThisEvent.EventParam == COLLISION_AVOIDANCE_TIMER) {
+                        nextState = Stop5State;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
                     break;
 
                 case ES_TIMERACTIVE:
@@ -386,10 +425,11 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
                     stop();
                     break;
                 case ES_TIMEOUT:
-
-                    nextState = Forwards2State;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
+                    if (ThisEvent.EventParam == COLLISION_AVOIDANCE_TIMER) {
+                        nextState = Forwards2State;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
                     break;
 
                 case ES_TIMERACTIVE:
@@ -411,7 +451,8 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
                     break;
 
                 case BUMPER_PRESSED:
-                    if ((ThisEvent.EventParam == FRONT_LEFT_BUMPER_PIN) || (ThisEvent.EventParam == FRONT_RIGHT_BUMPER_PIN) || (ThisEvent.EventParam == FRONT_BUMPERS)) {
+                    bumpers = ThisEvent.EventParam & (FRONT_BUMPERS);
+                    if ((bumpers == FRONT_LEFT_BUMPER_PIN) || (bumpers == FRONT_RIGHT_BUMPER_PIN) || (bumpers == FRONT_BUMPERS)) {
                         nextState = Stop1State;
                         makeTransition = TRUE;
                         ThisEvent.EventType = ES_NO_EVENT;
@@ -427,10 +468,11 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
                     }
                     break;
                 case ES_TIMEOUT:
-
-                    nextState = Stop6State;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
+                    if (ThisEvent.EventParam == COLLISION_AVOIDANCE_TIMER) {
+                        nextState = Stop6State;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
                     break;
 
                 case ES_TIMERACTIVE:
@@ -450,10 +492,11 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
                     stop();
                     break;
                 case ES_TIMEOUT:
-
-                    nextState = TankTurnLeft2State;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
+                    if (ThisEvent.EventParam == COLLISION_AVOIDANCE_TIMER) {
+                        nextState = TankTurnLeft2State;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
                     break;
 
                 case ES_TIMERACTIVE:
@@ -469,13 +512,14 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
         case TankTurnLeft2State:
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
-                    ES_Timer_InitTimer(COLLISION_AVOIDANCE_TIMER, TURN2_TIME);
+                    ES_Timer_InitTimer(COLLISION_AVOIDANCE_TIMER, TankTurnLeft2_TIME);
                     tank_turn_left();
                     break;
                 case ES_TIMEOUT:
 
-
-                    ThisEvent.EventType = OBSTACLE_AVOIDED;
+                    if (ThisEvent.EventParam == COLLISION_AVOIDANCE_TIMER) {
+                        ThisEvent.EventType = OBSTACLE_AVOIDED;
+                    }
                     break;
 
                 case ES_TIMERACTIVE:
@@ -499,6 +543,17 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
                     }
+                    break;
+                    case BUMPER_PRESSED:
+                    bumpers = (ThisEvent.EventParam & (FRONT_BUMPERS));
+                    if ((bumpers == FRONT_LEFT_BUMPER_PIN) || (bumpers == FRONT_RIGHT_BUMPER_PIN) || (bumpers == FRONT_BUMPERS)) {
+                        //NEED to MODIFY THIS ADD FRONT BUMPER , or LEFT OR RIGHT
+                        nextState =Stop1State ;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
+                    break;
+
 
                 case ES_NO_EVENT:
                 default: // all unhandled events pass the event back up to the next level
@@ -513,10 +568,11 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
                     ES_Timer_InitTimer(COLLISION_AVOIDANCE_TIMER, INCH_TIME);
                     break;
                 case ES_TIMEOUT:
-
-                    nextState = Stop7State;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
+                    if (ThisEvent.EventParam == COLLISION_AVOIDANCE_TIMER) {
+                        nextState = Stop7State;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
                     break;
 
                 case ES_TIMERACTIVE:
@@ -536,10 +592,11 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
                     stop();
                     break;
                 case ES_TIMEOUT:
-
-                    nextState = TankTurnRight2State;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
+                    if (ThisEvent.EventParam == COLLISION_AVOIDANCE_TIMER) {
+                        nextState = TankTurnRight2State;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
                     break;
 
                 case ES_TIMERACTIVE:
@@ -560,10 +617,11 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
                     tank_turn_right();
                     break;
                 case ES_TIMEOUT:
-
-                    nextState = Stop8State;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
+                    if (ThisEvent.EventParam == COLLISION_AVOIDANCE_TIMER) {
+                        nextState = Stop8State;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
                     break;
 
                 case ES_TIMERACTIVE:
@@ -583,10 +641,11 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
                     stop();
                     break;
                 case ES_TIMEOUT:
-
-                    nextState = Reverse2State;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
+                    if (ThisEvent.EventParam == COLLISION_AVOIDANCE_TIMER) {
+                        nextState = Reverse2State;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
                     break;
 
                 case ES_TIMERACTIVE:
@@ -606,10 +665,11 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
                     reverse();
                     break;
                 case ES_TIMEOUT:
-
-                    nextState = Stop9State;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
+                    if (ThisEvent.EventParam == COLLISION_AVOIDANCE_TIMER) {
+                        nextState = Stop9State;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
                     break;
 
                 case ES_TIMERACTIVE:
@@ -629,10 +689,11 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
                     stop();
                     break;
                 case ES_TIMEOUT:
-
-                    nextState = MiniForwardState;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
+                    if (ThisEvent.EventParam == COLLISION_AVOIDANCE_TIMER) {
+                        nextState = MiniForwardState;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
                     break;
 
                 case ES_TIMERACTIVE:
@@ -652,10 +713,11 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
                     forwards();
                     break;
                 case ES_TIMEOUT:
-
-                    nextState = Stop10State;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
+                    if (ThisEvent.EventParam == COLLISION_AVOIDANCE_TIMER) {
+                        nextState = Stop10State;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
                     break;
 
                 case ES_TIMERACTIVE:
@@ -675,10 +737,11 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
                     stop();
                     break;
                 case ES_TIMEOUT:
-
-                    nextState = TankTurnLeft3State;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
+                    if (ThisEvent.EventParam == COLLISION_AVOIDANCE_TIMER) {
+                        nextState = TankTurnLeft3State;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
                     break;
 
                 case ES_TIMERACTIVE:
@@ -694,14 +757,15 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
         case TankTurnLeft3State:
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
-                    ES_Timer_InitTimer(COLLISION_AVOIDANCE_TIMER, TURN_TIME);
+                    ES_Timer_InitTimer(COLLISION_AVOIDANCE_TIMER, TankTurnLeft3_TIME);
                     tank_turn_left();
                     break;
                 case ES_TIMEOUT:
-
-                    nextState = Stop11State;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
+                    if (ThisEvent.EventParam == COLLISION_AVOIDANCE_TIMER) {
+                        nextState = Stop11State;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
                     break;
 
                 case ES_TIMERACTIVE:
@@ -722,10 +786,11 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
                     stop();
                     break;
                 case ES_TIMEOUT:
-
-                    nextState =  Forwards3State;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
+                    if (ThisEvent.EventParam == COLLISION_AVOIDANCE_TIMER) {
+                        nextState = Forwards3State;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
                     break;
 
                 case ES_TIMERACTIVE:
@@ -750,19 +815,20 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
 
 
 
-        case  Forwards3State:
+        case Forwards3State:
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
                     ES_Timer_InitTimer(COLLISION_AVOIDANCE_TIMER, FORWARDS_3_TIME);
                     forwards();
                     break;
 
-               
-                case ES_TIMEOUT:
 
-                    nextState = Stop12State;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
+                case ES_TIMEOUT:
+                    if (ThisEvent.EventParam == COLLISION_AVOIDANCE_TIMER) {
+                        nextState = Stop12State;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
                     break;
 
                 case ES_TIMERACTIVE:
@@ -782,10 +848,11 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
                     stop();
                     break;
                 case ES_TIMEOUT:
-
-                    nextState = TankTurnLeft4State;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
+                    if (ThisEvent.EventParam == COLLISION_AVOIDANCE_TIMER) {
+                        nextState = TankTurnLeft4State;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
                     break;
 
                 case ES_TIMERACTIVE:
@@ -801,13 +868,14 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
         case TankTurnLeft4State:
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
-                    ES_Timer_InitTimer(COLLISION_AVOIDANCE_TIMER, TURN_TIME);
+                    ES_Timer_InitTimer(COLLISION_AVOIDANCE_TIMER, TankTurnLeft4_TIME);
                     tank_turn_left();
                     break;
                 case ES_TIMEOUT:
 
-
-                    ThisEvent.EventType = OBSTACLE_AVOIDED;
+                    if (ThisEvent.EventParam == COLLISION_AVOIDANCE_TIMER) {
+                        ThisEvent.EventType = OBSTACLE_AVOIDED;
+                    }
                     break;
 
                 case ES_TIMERACTIVE:

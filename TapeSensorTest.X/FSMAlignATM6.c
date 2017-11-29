@@ -33,7 +33,6 @@
 #include "TopHSM.h"
 #include "FSMAlignATM6.h"
 #include "motors.h"
-#include "LED.h"
 #include "stdio.h"
 
 /*******************************************************************************
@@ -200,7 +199,7 @@ ES_Event RunFSMAlignAtm6(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
                     
-                     LED_SetBank(LED_BANK1, 0xf);
+                   //  LED_SetBank(LED_BANK1, 0xf);
                     ES_Timer_InitTimer(ALIGN_ATM6_TIMER, TANK_TURN_TIME);
                     tank_turn_right();
                     break;

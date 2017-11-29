@@ -16,16 +16,17 @@
 #include "RC_Servo.h"
 #include "motors.h"
 #include "track_wire_event_checker.h"
+#include "tape_detector_fsm_service.h"
 
 
 //#define TEST_TAPE_SENSOR
-//#define TEST_TAPE_SENSOR_WITH_ES_FRAMEWORK
+#define TEST_TAPE_SENSOR_WITH_ES_FRAMEWORK
 //#define TEST_BUMPER
 //#define TEST_DRIVING_MOTORS
 //#define TEST_SERVO
 //#define TEST_DRIVING_MOTORS_HELPER_FUNCTIONS
 //#define TEST_TRACKWIRE
-#define TEST_SHOOTER
+//#define TEST_SHOOTER
 
 
 
@@ -38,7 +39,7 @@
 
 
 
-#define LED_PIN PIN3
+
 #define TAPE_HIGH_THRESHOLD 25
 #define TAPE_LOW_THRESHOLD 5
 #define ALL_LEDS 0xF
@@ -67,7 +68,7 @@ int main() {
     AD_Init();
     AD_AddPins(TAPE_PIN_1);
 
-    IO_PortsSetPortOutputs(PORTX, LED_PIN);
+    IO_PortsSetPortOutputs(TAPE_PORT, LED_PIN);
 
 
     LED_AddBanks(LED_BANK1);
@@ -78,12 +79,12 @@ int main() {
     // int pot_val =
     while (1) {
 
-        IO_PortsSetPortBits(PORTX, LED_PIN);
+        IO_PortsSetPortBits(TAPE_PORT, LED_PIN);
         delay(8000);
         tape1AdcValHigh = AD_ReadADPin(TAPE_PIN_1);
         //printf("tape1AdcVal = %d\r\n", tape1AdcVal);
         delay(100000);
-        IO_PortsClearPortBits(PORTX, LED_PIN);
+        IO_PortsClearPortBits(TAPE_PORT, LED_PIN);
         delay(8000);
         tape1AdcValLow = AD_ReadADPin(TAPE_PIN_1);
         diff = tape1AdcValLow - tape1AdcValHigh;
@@ -111,18 +112,16 @@ int main() {
     ES_Return_t ErrorType;
 
     BOARD_Init();
-    motors_init();
+    PWM_Init();
+    motors_init(); //PWM_Init goes first
     AD_Init();
-    LED_Init();
+    init_tape_sensors();// AD goes before this 
+    RC_Init();
     ES_Timer_Init();
     trackwire_init();
+    shooter_init();
 
-    LED_AddBanks(LED_BANK1);
-    LED_AddBanks(LED_BANK2);
-    LED_AddBanks(LED_BANK3);
-    LED_OffBank(LED_BANK1, ALL_LEDS);
-    LED_OffBank(LED_BANK2, ALL_LEDS);
-    LED_OffBank(LED_BANK3, ALL_LEDS);
+
 
 
 
@@ -251,10 +250,10 @@ int main() {
     RC_Init();
     RC_AddPins(SERVO_PIN);
 
-//#define MINPULSE 550
-//#define MAXPULSE 2450 metsl serv
-    
-    
+    //#define MINPULSE 550
+    //#define MAXPULSE 2450 metsl serv
+
+
     RC_SetPulseTime(SERVO_PIN, MINPULSE);
     delay(3000000);
     RC_SetPulseTime(SERVO_PIN, MAXPULSE);
@@ -386,7 +385,7 @@ int main() {
 
 #ifdef TEST_SHOOTER
 #define SERVO_TILT_PIN RC_PORTX03
-#define SERVO_DELIVER_PIN RC_PORTX04
+#define SERVO_DELIVER_PIN PIN4
 #define SHOOTER_MOTOR_PIN PIN5
 
 void delay(int x) {
@@ -399,25 +398,33 @@ void delay(int x) {
 int main() {
     BOARD_Init();
     RC_Init();
-   IO_PortsSetPortOutputs(PORTX, SHOOTER_MOTOR_PIN);
+    IO_PortsSetPortOutputs(PORTX, SHOOTER_MOTOR_PIN);
+    IO_PortsSetPortOutputs(PORTX, SERVO_DELIVER_PIN);
     RC_AddPins(SERVO_TILT_PIN);
-    RC_AddPins(SERVO_DELIVER_PIN);
 
-//#define MINPULSE 550
-//#define MAXPULSE 2450 metsl serv
-     IO_PortsClearPortBits(PORTX, SHOOTER_MOTOR_PIN);
-    
-    
- //RC_SetPulseTime(SERVO_DELIVER_PIN, 1000);
+
+    //#define MINPULSE 550
+    //#define MAXPULSE 2450 metsl serv
+    IO_PortsSetPortBits(PORTX, SHOOTER_MOTOR_PIN);
+    // IO_PortsClearPortBits(PORTX, SERVO_DELIVER_PIN);
+    // RC_SetPulseTime(SERVO_TILT_PIN, 1400);
+    IO_PortsSetPortBits(PORTX, SERVO_DELIVER_PIN);
+    delay(4000000);
+
+    delay(5000000);
+    //    
+    //   RC_SetPulseTime(SERVO_TILT_PIN, 1800);
+    //IO_PortsClearPortBits(PORTX, SERVO_DELIVER_PIN);
+
+
+    //RC_SetPulseTime(SERVO_DELIVER_PIN, 1000);
 
     for (;;) {
-   
-  RC_SetPulseTime(SERVO_TILT_PIN,1400);
-   delay(1000000);
-//    
-    RC_SetPulseTime(SERVO_TILT_PIN, 1800);
-//    // RC_SetPulseTime(SERVO_TILT_PIN,  MAXPULSE);
- delay(1000000);
+        // delay(5000000);
+        //
+
+        //    // RC_SetPulseTime(SERVO_TILT_PIN,  MAXPULSE);
+
 
 
     }

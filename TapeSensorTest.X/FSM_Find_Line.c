@@ -33,7 +33,7 @@
 #include "TopHSM.h"
 #include "FSM_Find_Line.h"
 #include "motors.h"
-#include "LED.h"
+//#include "LED.h"
 
 /*******************************************************************************
  * MODULE #DEFINES                                                             *
@@ -196,8 +196,8 @@ ES_Event RunFSMFindLine(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
                     turn_right();
-                    LED_SetBank(LED_BANK1, 2);
-                    LED_OffBank(LED_BANK2, ALL_LEDS);
+                   // LED_SetBank(LED_BANK1, 2);
+                    //LED_OffBank(LED_BANK2, ALL_LEDS);
                     break;
                 case TAPE_DETECTED:
                     switch (ThisEvent.EventParam) {
@@ -221,8 +221,8 @@ ES_Event RunFSMFindLine(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
                     turn_left();
-                    LED_SetBank(LED_BANK1, 4);
-                    LED_OffBank(LED_BANK2, ALL_LEDS);
+                  //  LED_SetBank(LED_BANK1, 4);
+                  //  LED_OffBank(LED_BANK2, ALL_LEDS);
                     break;
                 case TAPE_DETECTED:
                     switch (ThisEvent.EventParam) {
@@ -243,11 +243,17 @@ ES_Event RunFSMFindLine(ES_Event ThisEvent) {
             break;
 
         case DrivingForward2State: // in the first state, replace this with correct names
+
+
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
+                     ThisEvent.EventType = ES_NO_EVENT;
+                    if ((get_front_tape_status() == on_tape) && (get_center_tape_status() == on_tape)) {
+                        ThisEvent.EventType = LINE_FOUND;
+                    }
                     forwards();
-                    LED_SetBank(LED_BANK1, 8);
-                    LED_OffBank(LED_BANK2, ALL_LEDS);
+                 //   LED_SetBank(LED_BANK1, 8);
+                  //  LED_OffBank(LED_BANK2, ALL_LEDS);
 
                     break;
                 case TAPE_DETECTED:
@@ -271,8 +277,8 @@ ES_Event RunFSMFindLine(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
                     tank_turn_right();
-                    LED_SetBank(LED_BANK2, 1);
-                    LED_OffBank(LED_BANK1, ALL_LEDS);
+                 //   LED_SetBank(LED_BANK2, 1);
+                 //   LED_OffBank(LED_BANK1, ALL_LEDS);
 
                     break;
                 case TAPE_DETECTED:

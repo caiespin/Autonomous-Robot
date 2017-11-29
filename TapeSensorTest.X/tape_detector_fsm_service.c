@@ -32,7 +32,7 @@
 #include "ES_Configure.h"
 #include "ES_Framework.h"
 #include "IO_Ports.h"
-#include "LED.h"
+//#include "LED.h"
 #include "tape_detector_fsm_service.h"
 #include "TopHSM.h"
 #include <AD.h>
@@ -45,17 +45,7 @@
 /*******************************************************************************
  * MODULE #DEFINES                                                             *
  ******************************************************************************/
-#define TAPE_PIN_1 AD_PORTW3
-#define TAPE_PIN_2 AD_PORTW4
-#define TAPE_PIN_3 AD_PORTW5
-#define TAPE_PIN_4 AD_PORTW6
-#define TAPE_PIN_5 AD_PORTW7
 
-
-
-
-#define LED_PIN PIN8
-#define TAPE_PORT PORTY
 #define TAPE_HIGH_THRESHOLD 400
 #define TAPE_LOW_THRESHOLD 300
 
@@ -63,8 +53,7 @@
 #define TWO_MILLISECOND 2
 #define TWENTY_FIVE_MILLISECOND 12
 
-#define TAPE_SENSOR_COUNT 5
-#define READING_COUNT 5
+
 
 /*******************************************************************************
  * PRIVATE FUNCTION PROTOTYPES                                                 *
@@ -92,7 +81,7 @@ static const char *StateNames[] = {
 
 
 void read_tape_sensors(TapeDetectorFSMState_t state, int counter);
-void init_tape_sensors();
+
 void detect_tape_event();
 
 /*******************************************************************************
@@ -208,10 +197,10 @@ ES_Event RunTapeDetectorFSMService(ES_Event ThisEvent) {
             {
                 // LED_Init();
 
-                init_tape_sensors();
 
-                
-                IO_PortsSetPortOutputs(TAPE_PORT, LED_PIN);
+
+
+
 
 
                 // LED_AddBanks(LED_BANK1);
@@ -403,30 +392,45 @@ ES_Event RunTapeDetectorFSMService(ES_Event ThisEvent) {
  ******************************************************************************/
 void read_tape_sensors(TapeDetectorFSMState_t state, int counter) {
     int index;
+    int adc_val;
     if (state == OnReading) {
 
         for (index = 0; index < TAPE_SENSOR_COUNT; index++) {
-            tape_sensors[index].high_vals[counter] = AD_ReadADPin(tape_sensors[index].pin);
+            adc_val = AD_ReadADPin(tape_sensors[index].pin);
+            if (adc_val != ((uint16_t) ERROR)) {
+                tape_sensors[index].high_vals[counter] = adc_val;
+            }
+
         }
     } else if (state == OffReading) {
         for (index = 0; index < TAPE_SENSOR_COUNT; index++) {
-            tape_sensors[index].low_vals[counter] = AD_ReadADPin(tape_sensors[index].pin);
-        }
+            adc_val =AD_ReadADPin(tape_sensors[index].pin);
+            if (adc_val != ((uint16_t) ERROR)) {
+                tape_sensors[index].low_vals[counter] =  adc_val;
+            }
+        }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
     }
 
 }
 
 void init_tape_sensors() {
     int index = 0;
+    IO_PortsSetPortOutputs(TAPE_PORT, LED_PIN);
     //Initialize Analog inputs
-   // AD_Init();
+    // AD_Init();
     printf("Initializing Tape pins\r\n");
     for (index = 0; index < TAPE_SENSOR_COUNT; index++) {
         printf("Pin:%d done\r\n", index);
         tape_sensors[index].direction = index;
         tape_sensors[index].pin = tape_sensor_pins[index];
-        tape_sensors[index].status=off_tape;
+        tape_sensors[index].status = off_tape;
         int rc = AD_AddPins(tape_sensors[index].pin);
+        int sample;
+         for ( sample = 0; sample < READING_COUNT; sample++) {
+             tape_sensors[index].low_vals[sample] =  0;
+             tape_sensors[index].high_vals[sample] =  0;
+             
+         }
         //printf("rc=%d\r\n",rc);
 
     }
@@ -444,10 +448,10 @@ int get_left_tape_status() {
 int get_right_tape_status() {
     return tape_sensors[RIGHT_TAPE_SENSOR].status;
 }
+
 int get_center_tape_status() {
     return tape_sensors[CENTER_TAPE_SENSOR].status;
 }
-
 
 void detect_tape_event() {
     int index = 0;
@@ -462,12 +466,12 @@ void detect_tape_event() {
                 tape_sensors[index].status = on_tape;
 
                 if (index < 4) {
-                    int current = LED_GetBank(LED_BANK1);
+                    //   int current = LED_GetBank(LED_BANK1);
 
                     // LED_SetBank(LED_BANK1, current | (1 << index ));
 
                 } else {
-                    int current = LED_GetBank(LED_BANK2);
+                    //  int current = LED_GetBank(LED_BANK2);
 
 
                     //  LED_SetBank(LED_BANK2, current | (1 << (index - 4)));
@@ -483,11 +487,11 @@ void detect_tape_event() {
             if (tape_sensors[index].status != off_tape) {
                 tape_sensors[index].status = off_tape;
                 if (index < 4) {
-                    int current = LED_GetBank(LED_BANK1);
+                    //int current = LED_GetBank(LED_BANK1);
 
                     // LED_OffBank(LED_BANK1, current | (1 << index ));
                 } else {
-                    int current = LED_GetBank(LED_BANK2);
+                    // int current = LED_GetBank(LED_BANK2);
 
 
                     //  LED_OffBank(LED_BANK2, current | (1 << (index - 4)));
