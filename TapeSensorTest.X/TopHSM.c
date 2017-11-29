@@ -39,6 +39,7 @@
 //#include "LED.h"
 #include "FSMAlignATM6.h"
 #include "FSMShoot.h"
+#include "FSM_Mini_Avoid.h"
 /*******************************************************************************
  * PRIVATE #DEFINES                                                            *
  ******************************************************************************/
@@ -56,6 +57,7 @@ typedef enum {
     CollisionAvoidanceState,
     AlignATM6,
     Shoot,
+    MiniAvoidState,
 
 } TemplateHSMState_t;
 
@@ -66,6 +68,7 @@ static const char *StateNames[] = {
 	"CollisionAvoidanceState",
 	"AlignATM6",
 	"Shoot",
+	"MiniAvoidState",
 };
 
 
@@ -205,7 +208,7 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                     bumpers = (ThisEvent.EventParam & (FRONT_BUMPERS));
                     if ((bumpers == FRONT_LEFT_BUMPER_PIN) || (bumpers == FRONT_RIGHT_BUMPER_PIN) || (bumpers == FRONT_BUMPERS)) {
                         //NEED to MODIFY THIS ADD FRONT BUMPER , or LEFT OR RIGHT
-                        nextState = CollisionAvoidanceState;
+                        nextState = MiniAvoidState;
                         makeTransition = TRUE;
                         ThisEvent.EventType = ES_NO_EVENT;
                     }
@@ -325,6 +328,27 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                 default:
                     break;
             }
+            break;
+
+        case MiniAvoidState:
+
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    InitFSMMiniAvoid();
+                    break;
+            }
+            ThisEvent = RunFSMMiniAvoid(ThisEvent);
+            switch (ThisEvent.EventType) {
+                case OBSTACLE_AVOIDED:
+                    nextState = FindLineState;
+                    makeTransition = TRUE;
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case ES_NO_EVENT:
+                default:
+                    break;
+            }
+
             break;
 
         default: // all unhandled states fall into here

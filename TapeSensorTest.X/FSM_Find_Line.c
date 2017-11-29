@@ -251,6 +251,11 @@ ES_Event RunFSMFindLine(ES_Event ThisEvent) {
                     if ((get_front_tape_status() == on_tape) && (get_center_tape_status() == on_tape)) {
                         ThisEvent.EventType = LINE_FOUND;
                     }
+                     else if (get_center_tape_status() == on_tape){
+                          nextState = TurnRight2State;
+                            makeTransition = TRUE;
+                            ThisEvent.EventType = ES_NO_EVENT;
+                      }
                     forwards();
                  //   LED_SetBank(LED_BANK1, 8);
                   //  LED_OffBank(LED_BANK2, ALL_LEDS);
