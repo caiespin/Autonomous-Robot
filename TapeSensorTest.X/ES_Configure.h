@@ -65,7 +65,7 @@ typedef enum {
             SHOT,
             T_FOUND,
             REN_ALIGNED,
-
+GO_TO_FIND_LINE,
 
 
 } ES_EventTyp_t;
@@ -102,6 +102,7 @@ static const char *EventNames[] = {
 	"SHOT",
 	"T_FOUND",
 	"REN_ALIGNED",
+	"GO_TO_FIND_LINE",
 };
 
 
@@ -130,8 +131,8 @@ static const char *EventNames[] = {
 #define TIMER7_RESP_FUNC PostTopHSM
 #define TIMER8_RESP_FUNC PostTopHSM
 #define TIMER9_RESP_FUNC PostTopHSM
-#define TIMER10_RESP_FUNC TIMER_UNUSED
-#define TIMER11_RESP_FUNC TIMER_UNUSED
+#define TIMER10_RESP_FUNC PostTopHSM
+#define TIMER11_RESP_FUNC PostTopHSM
 #define TIMER12_RESP_FUNC TIMER_UNUSED
 #define TIMER13_RESP_FUNC TIMER_UNUSED
 #define TIMER14_RESP_FUNC TIMER_UNUSED
@@ -155,6 +156,7 @@ static const char *EventNames[] = {
 #define MINI_AVOID_TIMER 8
 #define EXIT_SHOOTER_TIMER 9
 #define ATTACK_REN_TIMER 10
+#define START_WAR_TIMER 11
 
 
 /****************************************************************************/

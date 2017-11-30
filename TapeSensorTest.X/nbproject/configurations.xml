@@ -41,7 +41,9 @@
       <itemPath>RC_Servo.h</itemPath>
       <itemPath>event_checker.h</itemPath>
       <itemPath>FSMExitShooter.h</itemPath>
+      <itemPath>TemplateSubHSM.h</itemPath>
       <itemPath>FSMAttackRen.h</itemPath>
+      <itemPath>FSMStartWar.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -82,6 +84,7 @@
       <itemPath>event_checker.c</itemPath>
       <itemPath>FSMExitShooter.c</itemPath>
       <itemPath>FSMAttackRen.c</itemPath>
+      <itemPath>FSMStartWar.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

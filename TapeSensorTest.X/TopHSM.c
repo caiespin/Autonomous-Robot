@@ -43,6 +43,7 @@
 #include "FSM_Mini_Avoid.h"
 
 #include "FSMAttackRen.h"
+#include "FSMStartWar.h"
 /*******************************************************************************
  * PRIVATE #DEFINES                                                            *
  ******************************************************************************/
@@ -63,6 +64,7 @@ typedef enum {
     Exit_Shoot,
     MiniAvoidState,
     ATTACK_REN,
+            Start_War_State,
 
 } TemplateHSMState_t;
 
@@ -76,6 +78,7 @@ static const char *StateNames[] = {
 	"Exit_Shoot",
 	"MiniAvoidState",
 	"ATTACK_REN",
+	"Start_War_State",
 };
 
 
@@ -180,8 +183,8 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
 
                     break;
                 case ES_TIMEOUT:
-                   // nextState = FindLineState;
-                    nextState = ATTACK_REN;
+                    nextState = Start_War_State;
+                    //nextState = ATTACK_REN;
                     makeTransition = TRUE;
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
@@ -194,7 +197,33 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                     break;
             }
             break;
-        case FindLineState:
+        case Start_War_State:
+            // run sub-state machine for this state
+            //NOTE: the SubState Machine runs and responds to events before anything in the this
+            //state machine does
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    InitFSMStartWar();
+                    break;
+            }
+            ThisEvent = RunFSMStartWar(ThisEvent);
+            switch (ThisEvent.EventType) {
+                case GO_TO_FIND_LINE:
+                    //   LED_SetBank(LED_BANK3, 0xf);
+                    nextState =FindLineState ;
+                    makeTransition = TRUE;
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+               
+                case ES_NO_EVENT:
+                default:
+                    break;
+            }
+            break;
+            
+            
+             case FindLineState:
             // run sub-state machine for this state
             //NOTE: the SubState Machine runs and responds to events before anything in the this
             //state machine does

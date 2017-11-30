@@ -43,7 +43,11 @@
 #define TRACKWIRE_LOST_THRESHOLD 500
 
 //beacon defines 
-#define BEACON_SIGNAL PIN3
+#define BEACON_PORT PORTZ
+#define BEACON_SIGNAL_PIN PIN3
+
+#define BEACON_FOUND_STATE 0
+#define BEACON_NOT_FOUND_STATE 1
 /*******************************************************************************
  * EVENTCHECKER_TEST SPECIFIC CODE                                                             *
  ******************************************************************************/
@@ -75,94 +79,44 @@ static ES_Event storedEvent;
  * PUBLIC FUNCTIONS                                                            *
  ******************************************************************************/
 uint8_t BeaconDetectorChecker() {
-    //static ES_EventTyp_t lastEvent = TRACKWIRE_LOST;
+    static ES_EventTyp_t lastEvent = BEACON_LOST;
     static ES_EventTyp_t curEvent = BEACON_LOST;
     ES_Event thisEvent;
     uint8_t returnVal = FALSE;
-    
-//
-//    if ((front_trackwire_val == ((uint16_t) ERROR)) || (back_trackwire_val == ((uint16_t) ERROR))) {
-//        return returnVal;
-//    }
-//
-//    int diff = front_trackwire_val - back_trackwire_val;
-//
-//    switch (curEvent) {
-//        case TRACKWIRE_LOST:
-//            if ((front_trackwire_val > TRACKWIRE_DETECTED_THRESHOLD) &&
-//                    (back_trackwire_val > TRACKWIRE_DETECTED_THRESHOLD)) {
-//
-//                curEvent = TRACKWIRE_DETECTED;
-//                thisEvent.EventType = curEvent;
-//                thisEvent.EventParam = diff;
-//                returnVal = TRUE;
-//                printf("TRACKWIRE_DETECTED\r\n");
-//                PostTopHSM(thisEvent);
-//            }
-//            break;
-//
-//        case TRACKWIRE_DETECTED:
-//            if ((front_trackwire_val < TRACKWIRE_LOST_THRESHOLD) ||
-//                    (back_trackwire_val < TRACKWIRE_LOST_THRESHOLD)) {
-//                curEvent = TRACKWIRE_LOST;
-//                thisEvent.EventType = curEvent;
-//                thisEvent.EventParam = diff;
-//                returnVal = TRUE;
-//                printf("TRACKWIRE_LOST\r\n");
-//                PostTopHSM(thisEvent);
-//            } else if ((diff < TRACKWIRE_ALIGNED_THRESHOLD) && (diff > -TRACKWIRE_ALIGNED_THRESHOLD)) {
-//                curEvent = TRACKWIRE_ALIGNED;
-//                thisEvent.EventType = curEvent;
-//                thisEvent.EventParam = diff;
-//                returnVal = TRUE;
-//                printf("TRACKWIRE_ALIGNED\r\n");
-//                PostTopHSM(thisEvent);
-//            }
-//            break;
-//
-//        case TRACKWIRE_ALIGNED:
-//            if ((front_trackwire_val < TRACKWIRE_LOST_THRESHOLD) ||
-//                    (back_trackwire_val < TRACKWIRE_LOST_THRESHOLD)) {
-//
-//                curEvent = TRACKWIRE_LOST;
-//                thisEvent.EventType = curEvent;
-//                thisEvent.EventParam = diff;
-//                returnVal = TRUE;
-//                printf("TRACKWIRE_LOST2\r\n");
-//                PostTopHSM(thisEvent);
-//            }
-//
-//
-//            break;
-//    }
-//
-//
-//
-//    //    if ( (diff < TRACKWIRE_ALIGNED_THRESHOLD) && (lastEvent == TRACKWIRE_DETECTED) ) { // is battery connected?
-//    //        curEvent = TRACKWIRE_ALIGNED;
-//    //    } else if(lastEvent == TRACKWIRE_LOST && (front_trackwire_val > TRACKWIRE_DETECTED_THRESHOLD)){
-//    //        curEvent = TRACKWIRE_DETECTED;
-//    //    }else if ((lastEvent == TRACKWIRE_ALIGNED) && ) {
-//    //        
-//    //    }
-//    //    if (curEvent != lastEvent) { // check for change from last time
-//    //        thisEvent.EventType = curEvent;
-//    //        thisEvent.EventParam = diff;
-//    //        returnVal = TRUE;
-//    //        lastEvent = curEvent; // update history
-//    //#ifndef EVENTCHECKER_TEST           // keep this as is for test harness
-//    //        // PostGenericService(thisEvent);
-//    //#else
-//    //        SaveEvent(thisEvent);
-//    //#endif   
-//    //    }
+    uint16_t beacon_signal;
+    if ((IO_PortsReadPort(PORTZ) & BEACON_SIGNAL_PIN) == BEACON_SIGNAL_PIN) {
+        beacon_signal = 1;
+    } else {
+
+        beacon_signal = 0;
+    }
+    if ((curEvent == BEACON_LOST) && (beacon_signal == BEACON_FOUND_STATE)) {
+        curEvent = BEACON_FOUND;
+
+    } else if ((curEvent == BEACON_FOUND) && (beacon_signal == BEACON_NOT_FOUND_STATE)) {
+        curEvent = BEACON_LOST;
+    }
+
+    if (curEvent != lastEvent) {
+        thisEvent.EventType = curEvent;
+        thisEvent.EventParam = 0;
+        returnVal = TRUE;
+        PostTopHSM(thisEvent);
+        lastEvent = curEvent;
+    }
+
+
+
+
     return (returnVal);
 
 }
 static ES_EventTyp_t curEvent = TRACKWIRE_LOST;
-ES_EventTyp_t get_track_wire_state(){
+
+ES_EventTyp_t get_track_wire_state() {
     return curEvent;
 }
+
 /**
  * @Function TemplateCheckBattery(void)
  * @param none
@@ -179,7 +133,7 @@ ES_EventTyp_t get_track_wire_state(){
  * @modified Gabriel H Elkaim/Max Dunne, 2016.09.12 20:08 */
 uint8_t TrackwireChecker(void) {
     //static ES_EventTyp_t lastEvent = TRACKWIRE_LOST;
-    
+
     ES_Event thisEvent;
     uint8_t returnVal = FALSE;
     uint16_t front_trackwire_val = AD_ReadADPin(FRONT_TRACKWIRE);
@@ -270,7 +224,7 @@ void trackwire_init() {
 }
 
 void beacon_init() {
-   // IO_PortsSetPortInputs(PORTZ );
+    IO_PortsSetPortInputs(BEACON_PORT, BEACON_SIGNAL_PIN);
 }
 /* 
  * The Test Harness for the event checkers is conditionally compiled using
