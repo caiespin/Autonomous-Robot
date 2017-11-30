@@ -8,7 +8,6 @@
       <itemPath>C:/CMPE118/include/BOARD.h</itemPath>
       <itemPath>C:/CMPE118/include/IO_Ports.h</itemPath>
       <itemPath>C:/CMPE118/include/LED.h</itemPath>
-      <itemPath>C:/CMPE118/include/RC_Servo.h</itemPath>
       <itemPath>C:/CMPE118/include/pwm.h</itemPath>
       <itemPath>C:/CMPE118/include/roach.h</itemPath>
       <itemPath>C:/CMPE118/include/serial.h</itemPath>
@@ -36,10 +35,13 @@
       <itemPath>FSM_Find_Line.h</itemPath>
       <itemPath>FSM_Service.h</itemPath>
       <itemPath>FSMCollisionAvoidance.h</itemPath>
-      <itemPath>track_wire_event_checker.h</itemPath>
       <itemPath>FSMAlignATM6.h</itemPath>
       <itemPath>FSMShoot.h</itemPath>
       <itemPath>FSM_Mini_Avoid.h</itemPath>
+      <itemPath>RC_Servo.h</itemPath>
+      <itemPath>event_checker.h</itemPath>
+      <itemPath>FSMExitShooter.h</itemPath>
+      <itemPath>FSMAttackRen.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -74,10 +76,12 @@
       <itemPath>TopHSM.c</itemPath>
       <itemPath>FSM_Find_Line.c</itemPath>
       <itemPath>FSMCollisionAvoidance.c</itemPath>
-      <itemPath>track_wire_event_checker.c</itemPath>
       <itemPath>FSMAlignATM6.c</itemPath>
-      <itemPath>FSMShoot.c</itemPath>
       <itemPath>FSM_Mini_Avoid.c</itemPath>
+      <itemPath>FSMShoot.c</itemPath>
+      <itemPath>event_checker.c</itemPath>
+      <itemPath>FSMExitShooter.c</itemPath>
+      <itemPath>FSMAttackRen.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

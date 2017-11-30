@@ -57,17 +57,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=main.c C:/CMPE118/src/AD.c C:/CMPE118/src/BOARD.c C:/CMPE118/src/LED.c C:/CMPE118/src/RC_Servo.c C:/CMPE118/src/pwm.c C:/CMPE118/src/roach.c C:/CMPE118/src/serial.c C:/CMPE118/src/timers.c IO_Ports.c Stepper.c C:/CMPE118/src/ES_CheckEvents.c C:/CMPE118/src/ES_Framework.c C:/CMPE118/src/ES_KeyboardInput.c C:/CMPE118/src/ES_PostList.c C:/CMPE118/src/ES_Queue.c C:/CMPE118/src/ES_TattleTale.c C:/CMPE118/src/ES_Timers.c tape_detector_fsm_service.c bumper_service.c FSM_Line_Follower.c motors.c TopHSM.c FSM_Find_Line.c FSMCollisionAvoidance.c track_wire_event_checker.c FSMAlignATM6.c FSMShoot.c FSM_Mini_Avoid.c
+SOURCEFILES_QUOTED_IF_SPACED=main.c C:/CMPE118/src/AD.c C:/CMPE118/src/BOARD.c C:/CMPE118/src/LED.c C:/CMPE118/src/RC_Servo.c C:/CMPE118/src/pwm.c C:/CMPE118/src/roach.c C:/CMPE118/src/serial.c C:/CMPE118/src/timers.c IO_Ports.c Stepper.c C:/CMPE118/src/ES_CheckEvents.c C:/CMPE118/src/ES_Framework.c C:/CMPE118/src/ES_KeyboardInput.c C:/CMPE118/src/ES_PostList.c C:/CMPE118/src/ES_Queue.c C:/CMPE118/src/ES_TattleTale.c C:/CMPE118/src/ES_Timers.c tape_detector_fsm_service.c bumper_service.c FSM_Line_Follower.c motors.c TopHSM.c FSM_Find_Line.c FSMCollisionAvoidance.c FSMAlignATM6.c FSM_Mini_Avoid.c FSMShoot.c event_checker.c FSMExitShooter.c FSMAttackRen.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/main.o ${OBJECTDIR}/_ext/331920610/AD.o ${OBJECTDIR}/_ext/331920610/BOARD.o ${OBJECTDIR}/_ext/331920610/LED.o ${OBJECTDIR}/_ext/331920610/RC_Servo.o ${OBJECTDIR}/_ext/331920610/pwm.o ${OBJECTDIR}/_ext/331920610/roach.o ${OBJECTDIR}/_ext/331920610/serial.o ${OBJECTDIR}/_ext/331920610/timers.o ${OBJECTDIR}/IO_Ports.o ${OBJECTDIR}/Stepper.o ${OBJECTDIR}/_ext/331920610/ES_CheckEvents.o ${OBJECTDIR}/_ext/331920610/ES_Framework.o ${OBJECTDIR}/_ext/331920610/ES_KeyboardInput.o ${OBJECTDIR}/_ext/331920610/ES_PostList.o ${OBJECTDIR}/_ext/331920610/ES_Queue.o ${OBJECTDIR}/_ext/331920610/ES_TattleTale.o ${OBJECTDIR}/_ext/331920610/ES_Timers.o ${OBJECTDIR}/tape_detector_fsm_service.o ${OBJECTDIR}/bumper_service.o ${OBJECTDIR}/FSM_Line_Follower.o ${OBJECTDIR}/motors.o ${OBJECTDIR}/TopHSM.o ${OBJECTDIR}/FSM_Find_Line.o ${OBJECTDIR}/FSMCollisionAvoidance.o ${OBJECTDIR}/track_wire_event_checker.o ${OBJECTDIR}/FSMAlignATM6.o ${OBJECTDIR}/FSMShoot.o ${OBJECTDIR}/FSM_Mini_Avoid.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/main.o.d ${OBJECTDIR}/_ext/331920610/AD.o.d ${OBJECTDIR}/_ext/331920610/BOARD.o.d ${OBJECTDIR}/_ext/331920610/LED.o.d ${OBJECTDIR}/_ext/331920610/RC_Servo.o.d ${OBJECTDIR}/_ext/331920610/pwm.o.d ${OBJECTDIR}/_ext/331920610/roach.o.d ${OBJECTDIR}/_ext/331920610/serial.o.d ${OBJECTDIR}/_ext/331920610/timers.o.d ${OBJECTDIR}/IO_Ports.o.d ${OBJECTDIR}/Stepper.o.d ${OBJECTDIR}/_ext/331920610/ES_CheckEvents.o.d ${OBJECTDIR}/_ext/331920610/ES_Framework.o.d ${OBJECTDIR}/_ext/331920610/ES_KeyboardInput.o.d ${OBJECTDIR}/_ext/331920610/ES_PostList.o.d ${OBJECTDIR}/_ext/331920610/ES_Queue.o.d ${OBJECTDIR}/_ext/331920610/ES_TattleTale.o.d ${OBJECTDIR}/_ext/331920610/ES_Timers.o.d ${OBJECTDIR}/tape_detector_fsm_service.o.d ${OBJECTDIR}/bumper_service.o.d ${OBJECTDIR}/FSM_Line_Follower.o.d ${OBJECTDIR}/motors.o.d ${OBJECTDIR}/TopHSM.o.d ${OBJECTDIR}/FSM_Find_Line.o.d ${OBJECTDIR}/FSMCollisionAvoidance.o.d ${OBJECTDIR}/track_wire_event_checker.o.d ${OBJECTDIR}/FSMAlignATM6.o.d ${OBJECTDIR}/FSMShoot.o.d ${OBJECTDIR}/FSM_Mini_Avoid.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/main.o ${OBJECTDIR}/_ext/331920610/AD.o ${OBJECTDIR}/_ext/331920610/BOARD.o ${OBJECTDIR}/_ext/331920610/LED.o ${OBJECTDIR}/_ext/331920610/RC_Servo.o ${OBJECTDIR}/_ext/331920610/pwm.o ${OBJECTDIR}/_ext/331920610/roach.o ${OBJECTDIR}/_ext/331920610/serial.o ${OBJECTDIR}/_ext/331920610/timers.o ${OBJECTDIR}/IO_Ports.o ${OBJECTDIR}/Stepper.o ${OBJECTDIR}/_ext/331920610/ES_CheckEvents.o ${OBJECTDIR}/_ext/331920610/ES_Framework.o ${OBJECTDIR}/_ext/331920610/ES_KeyboardInput.o ${OBJECTDIR}/_ext/331920610/ES_PostList.o ${OBJECTDIR}/_ext/331920610/ES_Queue.o ${OBJECTDIR}/_ext/331920610/ES_TattleTale.o ${OBJECTDIR}/_ext/331920610/ES_Timers.o ${OBJECTDIR}/tape_detector_fsm_service.o ${OBJECTDIR}/bumper_service.o ${OBJECTDIR}/FSM_Line_Follower.o ${OBJECTDIR}/motors.o ${OBJECTDIR}/TopHSM.o ${OBJECTDIR}/FSM_Find_Line.o ${OBJECTDIR}/FSMCollisionAvoidance.o ${OBJECTDIR}/FSMAlignATM6.o ${OBJECTDIR}/FSM_Mini_Avoid.o ${OBJECTDIR}/FSMShoot.o ${OBJECTDIR}/event_checker.o ${OBJECTDIR}/FSMExitShooter.o ${OBJECTDIR}/FSMAttackRen.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/main.o.d ${OBJECTDIR}/_ext/331920610/AD.o.d ${OBJECTDIR}/_ext/331920610/BOARD.o.d ${OBJECTDIR}/_ext/331920610/LED.o.d ${OBJECTDIR}/_ext/331920610/RC_Servo.o.d ${OBJECTDIR}/_ext/331920610/pwm.o.d ${OBJECTDIR}/_ext/331920610/roach.o.d ${OBJECTDIR}/_ext/331920610/serial.o.d ${OBJECTDIR}/_ext/331920610/timers.o.d ${OBJECTDIR}/IO_Ports.o.d ${OBJECTDIR}/Stepper.o.d ${OBJECTDIR}/_ext/331920610/ES_CheckEvents.o.d ${OBJECTDIR}/_ext/331920610/ES_Framework.o.d ${OBJECTDIR}/_ext/331920610/ES_KeyboardInput.o.d ${OBJECTDIR}/_ext/331920610/ES_PostList.o.d ${OBJECTDIR}/_ext/331920610/ES_Queue.o.d ${OBJECTDIR}/_ext/331920610/ES_TattleTale.o.d ${OBJECTDIR}/_ext/331920610/ES_Timers.o.d ${OBJECTDIR}/tape_detector_fsm_service.o.d ${OBJECTDIR}/bumper_service.o.d ${OBJECTDIR}/FSM_Line_Follower.o.d ${OBJECTDIR}/motors.o.d ${OBJECTDIR}/TopHSM.o.d ${OBJECTDIR}/FSM_Find_Line.o.d ${OBJECTDIR}/FSMCollisionAvoidance.o.d ${OBJECTDIR}/FSMAlignATM6.o.d ${OBJECTDIR}/FSM_Mini_Avoid.o.d ${OBJECTDIR}/FSMShoot.o.d ${OBJECTDIR}/event_checker.o.d ${OBJECTDIR}/FSMExitShooter.o.d ${OBJECTDIR}/FSMAttackRen.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/main.o ${OBJECTDIR}/_ext/331920610/AD.o ${OBJECTDIR}/_ext/331920610/BOARD.o ${OBJECTDIR}/_ext/331920610/LED.o ${OBJECTDIR}/_ext/331920610/RC_Servo.o ${OBJECTDIR}/_ext/331920610/pwm.o ${OBJECTDIR}/_ext/331920610/roach.o ${OBJECTDIR}/_ext/331920610/serial.o ${OBJECTDIR}/_ext/331920610/timers.o ${OBJECTDIR}/IO_Ports.o ${OBJECTDIR}/Stepper.o ${OBJECTDIR}/_ext/331920610/ES_CheckEvents.o ${OBJECTDIR}/_ext/331920610/ES_Framework.o ${OBJECTDIR}/_ext/331920610/ES_KeyboardInput.o ${OBJECTDIR}/_ext/331920610/ES_PostList.o ${OBJECTDIR}/_ext/331920610/ES_Queue.o ${OBJECTDIR}/_ext/331920610/ES_TattleTale.o ${OBJECTDIR}/_ext/331920610/ES_Timers.o ${OBJECTDIR}/tape_detector_fsm_service.o ${OBJECTDIR}/bumper_service.o ${OBJECTDIR}/FSM_Line_Follower.o ${OBJECTDIR}/motors.o ${OBJECTDIR}/TopHSM.o ${OBJECTDIR}/FSM_Find_Line.o ${OBJECTDIR}/FSMCollisionAvoidance.o ${OBJECTDIR}/track_wire_event_checker.o ${OBJECTDIR}/FSMAlignATM6.o ${OBJECTDIR}/FSMShoot.o ${OBJECTDIR}/FSM_Mini_Avoid.o
+OBJECTFILES=${OBJECTDIR}/main.o ${OBJECTDIR}/_ext/331920610/AD.o ${OBJECTDIR}/_ext/331920610/BOARD.o ${OBJECTDIR}/_ext/331920610/LED.o ${OBJECTDIR}/_ext/331920610/RC_Servo.o ${OBJECTDIR}/_ext/331920610/pwm.o ${OBJECTDIR}/_ext/331920610/roach.o ${OBJECTDIR}/_ext/331920610/serial.o ${OBJECTDIR}/_ext/331920610/timers.o ${OBJECTDIR}/IO_Ports.o ${OBJECTDIR}/Stepper.o ${OBJECTDIR}/_ext/331920610/ES_CheckEvents.o ${OBJECTDIR}/_ext/331920610/ES_Framework.o ${OBJECTDIR}/_ext/331920610/ES_KeyboardInput.o ${OBJECTDIR}/_ext/331920610/ES_PostList.o ${OBJECTDIR}/_ext/331920610/ES_Queue.o ${OBJECTDIR}/_ext/331920610/ES_TattleTale.o ${OBJECTDIR}/_ext/331920610/ES_Timers.o ${OBJECTDIR}/tape_detector_fsm_service.o ${OBJECTDIR}/bumper_service.o ${OBJECTDIR}/FSM_Line_Follower.o ${OBJECTDIR}/motors.o ${OBJECTDIR}/TopHSM.o ${OBJECTDIR}/FSM_Find_Line.o ${OBJECTDIR}/FSMCollisionAvoidance.o ${OBJECTDIR}/FSMAlignATM6.o ${OBJECTDIR}/FSM_Mini_Avoid.o ${OBJECTDIR}/FSMShoot.o ${OBJECTDIR}/event_checker.o ${OBJECTDIR}/FSMExitShooter.o ${OBJECTDIR}/FSMAttackRen.o
 
 # Source Files
-SOURCEFILES=main.c C:/CMPE118/src/AD.c C:/CMPE118/src/BOARD.c C:/CMPE118/src/LED.c C:/CMPE118/src/RC_Servo.c C:/CMPE118/src/pwm.c C:/CMPE118/src/roach.c C:/CMPE118/src/serial.c C:/CMPE118/src/timers.c IO_Ports.c Stepper.c C:/CMPE118/src/ES_CheckEvents.c C:/CMPE118/src/ES_Framework.c C:/CMPE118/src/ES_KeyboardInput.c C:/CMPE118/src/ES_PostList.c C:/CMPE118/src/ES_Queue.c C:/CMPE118/src/ES_TattleTale.c C:/CMPE118/src/ES_Timers.c tape_detector_fsm_service.c bumper_service.c FSM_Line_Follower.c motors.c TopHSM.c FSM_Find_Line.c FSMCollisionAvoidance.c track_wire_event_checker.c FSMAlignATM6.c FSMShoot.c FSM_Mini_Avoid.c
+SOURCEFILES=main.c C:/CMPE118/src/AD.c C:/CMPE118/src/BOARD.c C:/CMPE118/src/LED.c C:/CMPE118/src/RC_Servo.c C:/CMPE118/src/pwm.c C:/CMPE118/src/roach.c C:/CMPE118/src/serial.c C:/CMPE118/src/timers.c IO_Ports.c Stepper.c C:/CMPE118/src/ES_CheckEvents.c C:/CMPE118/src/ES_Framework.c C:/CMPE118/src/ES_KeyboardInput.c C:/CMPE118/src/ES_PostList.c C:/CMPE118/src/ES_Queue.c C:/CMPE118/src/ES_TattleTale.c C:/CMPE118/src/ES_Timers.c tape_detector_fsm_service.c bumper_service.c FSM_Line_Follower.c motors.c TopHSM.c FSM_Find_Line.c FSMCollisionAvoidance.c FSMAlignATM6.c FSM_Mini_Avoid.c FSMShoot.c event_checker.c FSMExitShooter.c FSMAttackRen.c
 
 
 CFLAGS=
@@ -269,17 +269,17 @@ ${OBJECTDIR}/FSMCollisionAvoidance.o: FSMCollisionAvoidance.c  nbproject/Makefil
 	@${RM} ${OBJECTDIR}/FSMCollisionAvoidance.o 
 	@${FIXDEPS} "${OBJECTDIR}/FSMCollisionAvoidance.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"C:/CMPE118/include" -I"C:/CMPE118/src" -I"." -MMD -MF "${OBJECTDIR}/FSMCollisionAvoidance.o.d" -o ${OBJECTDIR}/FSMCollisionAvoidance.o FSMCollisionAvoidance.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
-${OBJECTDIR}/track_wire_event_checker.o: track_wire_event_checker.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}" 
-	@${RM} ${OBJECTDIR}/track_wire_event_checker.o.d 
-	@${RM} ${OBJECTDIR}/track_wire_event_checker.o 
-	@${FIXDEPS} "${OBJECTDIR}/track_wire_event_checker.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"C:/CMPE118/include" -I"C:/CMPE118/src" -I"." -MMD -MF "${OBJECTDIR}/track_wire_event_checker.o.d" -o ${OBJECTDIR}/track_wire_event_checker.o track_wire_event_checker.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
-	
 ${OBJECTDIR}/FSMAlignATM6.o: FSMAlignATM6.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/FSMAlignATM6.o.d 
 	@${RM} ${OBJECTDIR}/FSMAlignATM6.o 
 	@${FIXDEPS} "${OBJECTDIR}/FSMAlignATM6.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"C:/CMPE118/include" -I"C:/CMPE118/src" -I"." -MMD -MF "${OBJECTDIR}/FSMAlignATM6.o.d" -o ${OBJECTDIR}/FSMAlignATM6.o FSMAlignATM6.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+${OBJECTDIR}/FSM_Mini_Avoid.o: FSM_Mini_Avoid.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/FSM_Mini_Avoid.o.d 
+	@${RM} ${OBJECTDIR}/FSM_Mini_Avoid.o 
+	@${FIXDEPS} "${OBJECTDIR}/FSM_Mini_Avoid.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"C:/CMPE118/include" -I"C:/CMPE118/src" -I"." -MMD -MF "${OBJECTDIR}/FSM_Mini_Avoid.o.d" -o ${OBJECTDIR}/FSM_Mini_Avoid.o FSM_Mini_Avoid.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
 ${OBJECTDIR}/FSMShoot.o: FSMShoot.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
@@ -287,11 +287,23 @@ ${OBJECTDIR}/FSMShoot.o: FSMShoot.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/FSMShoot.o 
 	@${FIXDEPS} "${OBJECTDIR}/FSMShoot.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"C:/CMPE118/include" -I"C:/CMPE118/src" -I"." -MMD -MF "${OBJECTDIR}/FSMShoot.o.d" -o ${OBJECTDIR}/FSMShoot.o FSMShoot.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
-${OBJECTDIR}/FSM_Mini_Avoid.o: FSM_Mini_Avoid.c  nbproject/Makefile-${CND_CONF}.mk
+${OBJECTDIR}/event_checker.o: event_checker.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
-	@${RM} ${OBJECTDIR}/FSM_Mini_Avoid.o.d 
-	@${RM} ${OBJECTDIR}/FSM_Mini_Avoid.o 
-	@${FIXDEPS} "${OBJECTDIR}/FSM_Mini_Avoid.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"C:/CMPE118/include" -I"C:/CMPE118/src" -I"." -MMD -MF "${OBJECTDIR}/FSM_Mini_Avoid.o.d" -o ${OBJECTDIR}/FSM_Mini_Avoid.o FSM_Mini_Avoid.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	@${RM} ${OBJECTDIR}/event_checker.o.d 
+	@${RM} ${OBJECTDIR}/event_checker.o 
+	@${FIXDEPS} "${OBJECTDIR}/event_checker.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"C:/CMPE118/include" -I"C:/CMPE118/src" -I"." -MMD -MF "${OBJECTDIR}/event_checker.o.d" -o ${OBJECTDIR}/event_checker.o event_checker.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+${OBJECTDIR}/FSMExitShooter.o: FSMExitShooter.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/FSMExitShooter.o.d 
+	@${RM} ${OBJECTDIR}/FSMExitShooter.o 
+	@${FIXDEPS} "${OBJECTDIR}/FSMExitShooter.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"C:/CMPE118/include" -I"C:/CMPE118/src" -I"." -MMD -MF "${OBJECTDIR}/FSMExitShooter.o.d" -o ${OBJECTDIR}/FSMExitShooter.o FSMExitShooter.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+${OBJECTDIR}/FSMAttackRen.o: FSMAttackRen.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/FSMAttackRen.o.d 
+	@${RM} ${OBJECTDIR}/FSMAttackRen.o 
+	@${FIXDEPS} "${OBJECTDIR}/FSMAttackRen.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"C:/CMPE118/include" -I"C:/CMPE118/src" -I"." -MMD -MF "${OBJECTDIR}/FSMAttackRen.o.d" -o ${OBJECTDIR}/FSMAttackRen.o FSMAttackRen.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
 else
 ${OBJECTDIR}/main.o: main.c  nbproject/Makefile-${CND_CONF}.mk
@@ -444,17 +456,17 @@ ${OBJECTDIR}/FSMCollisionAvoidance.o: FSMCollisionAvoidance.c  nbproject/Makefil
 	@${RM} ${OBJECTDIR}/FSMCollisionAvoidance.o 
 	@${FIXDEPS} "${OBJECTDIR}/FSMCollisionAvoidance.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"C:/CMPE118/include" -I"C:/CMPE118/src" -I"." -MMD -MF "${OBJECTDIR}/FSMCollisionAvoidance.o.d" -o ${OBJECTDIR}/FSMCollisionAvoidance.o FSMCollisionAvoidance.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
-${OBJECTDIR}/track_wire_event_checker.o: track_wire_event_checker.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}" 
-	@${RM} ${OBJECTDIR}/track_wire_event_checker.o.d 
-	@${RM} ${OBJECTDIR}/track_wire_event_checker.o 
-	@${FIXDEPS} "${OBJECTDIR}/track_wire_event_checker.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"C:/CMPE118/include" -I"C:/CMPE118/src" -I"." -MMD -MF "${OBJECTDIR}/track_wire_event_checker.o.d" -o ${OBJECTDIR}/track_wire_event_checker.o track_wire_event_checker.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
-	
 ${OBJECTDIR}/FSMAlignATM6.o: FSMAlignATM6.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/FSMAlignATM6.o.d 
 	@${RM} ${OBJECTDIR}/FSMAlignATM6.o 
 	@${FIXDEPS} "${OBJECTDIR}/FSMAlignATM6.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"C:/CMPE118/include" -I"C:/CMPE118/src" -I"." -MMD -MF "${OBJECTDIR}/FSMAlignATM6.o.d" -o ${OBJECTDIR}/FSMAlignATM6.o FSMAlignATM6.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+${OBJECTDIR}/FSM_Mini_Avoid.o: FSM_Mini_Avoid.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/FSM_Mini_Avoid.o.d 
+	@${RM} ${OBJECTDIR}/FSM_Mini_Avoid.o 
+	@${FIXDEPS} "${OBJECTDIR}/FSM_Mini_Avoid.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"C:/CMPE118/include" -I"C:/CMPE118/src" -I"." -MMD -MF "${OBJECTDIR}/FSM_Mini_Avoid.o.d" -o ${OBJECTDIR}/FSM_Mini_Avoid.o FSM_Mini_Avoid.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
 ${OBJECTDIR}/FSMShoot.o: FSMShoot.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
@@ -462,11 +474,23 @@ ${OBJECTDIR}/FSMShoot.o: FSMShoot.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/FSMShoot.o 
 	@${FIXDEPS} "${OBJECTDIR}/FSMShoot.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"C:/CMPE118/include" -I"C:/CMPE118/src" -I"." -MMD -MF "${OBJECTDIR}/FSMShoot.o.d" -o ${OBJECTDIR}/FSMShoot.o FSMShoot.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
-${OBJECTDIR}/FSM_Mini_Avoid.o: FSM_Mini_Avoid.c  nbproject/Makefile-${CND_CONF}.mk
+${OBJECTDIR}/event_checker.o: event_checker.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
-	@${RM} ${OBJECTDIR}/FSM_Mini_Avoid.o.d 
-	@${RM} ${OBJECTDIR}/FSM_Mini_Avoid.o 
-	@${FIXDEPS} "${OBJECTDIR}/FSM_Mini_Avoid.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"C:/CMPE118/include" -I"C:/CMPE118/src" -I"." -MMD -MF "${OBJECTDIR}/FSM_Mini_Avoid.o.d" -o ${OBJECTDIR}/FSM_Mini_Avoid.o FSM_Mini_Avoid.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	@${RM} ${OBJECTDIR}/event_checker.o.d 
+	@${RM} ${OBJECTDIR}/event_checker.o 
+	@${FIXDEPS} "${OBJECTDIR}/event_checker.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"C:/CMPE118/include" -I"C:/CMPE118/src" -I"." -MMD -MF "${OBJECTDIR}/event_checker.o.d" -o ${OBJECTDIR}/event_checker.o event_checker.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+${OBJECTDIR}/FSMExitShooter.o: FSMExitShooter.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/FSMExitShooter.o.d 
+	@${RM} ${OBJECTDIR}/FSMExitShooter.o 
+	@${FIXDEPS} "${OBJECTDIR}/FSMExitShooter.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"C:/CMPE118/include" -I"C:/CMPE118/src" -I"." -MMD -MF "${OBJECTDIR}/FSMExitShooter.o.d" -o ${OBJECTDIR}/FSMExitShooter.o FSMExitShooter.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+${OBJECTDIR}/FSMAttackRen.o: FSMAttackRen.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/FSMAttackRen.o.d 
+	@${RM} ${OBJECTDIR}/FSMAttackRen.o 
+	@${FIXDEPS} "${OBJECTDIR}/FSMAttackRen.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"C:/CMPE118/include" -I"C:/CMPE118/src" -I"." -MMD -MF "${OBJECTDIR}/FSMAttackRen.o.d" -o ${OBJECTDIR}/FSMAttackRen.o FSMAttackRen.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
 endif
 

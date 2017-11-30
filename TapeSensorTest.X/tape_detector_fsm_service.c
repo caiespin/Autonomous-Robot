@@ -387,6 +387,27 @@ ES_Event RunTapeDetectorFSMService(ES_Event ThisEvent) {
     return ThisEvent;
 }
 
+int is_on_T() {
+    if ((get_front_tape_status() == on_tape) &&
+            (get_center_tape_status() == on_tape) &&
+            (get_left_tape_status() == on_tape) &&
+            (get_right_tape_status() == on_tape) &&
+            (get_center_tape_status() == on_tape)
+            ) {
+        return TRUE;
+    }
+    else if ((get_center_tape_status() == on_tape) &&
+            (get_left_tape_status() == on_tape) &&
+            (get_right_tape_status() == on_tape) &&
+            (get_center_tape_status() == on_tape)) {
+        return TRUE;
+    }
+    else {
+        return FALSE;
+    }
+
+}
+
 /*******************************************************************************
  * PRIVATE FUNCTIONS                                                           *
  ******************************************************************************/
@@ -404,11 +425,11 @@ void read_tape_sensors(TapeDetectorFSMState_t state, int counter) {
         }
     } else if (state == OffReading) {
         for (index = 0; index < TAPE_SENSOR_COUNT; index++) {
-            adc_val =AD_ReadADPin(tape_sensors[index].pin);
+            adc_val = AD_ReadADPin(tape_sensors[index].pin);
             if (adc_val != ((uint16_t) ERROR)) {
-                tape_sensors[index].low_vals[counter] =  adc_val;
+                tape_sensors[index].low_vals[counter] = adc_val;
             }
-        }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+        }
     }
 
 }
@@ -426,11 +447,11 @@ void init_tape_sensors() {
         tape_sensors[index].status = off_tape;
         int rc = AD_AddPins(tape_sensors[index].pin);
         int sample;
-         for ( sample = 0; sample < READING_COUNT; sample++) {
-             tape_sensors[index].low_vals[sample] =  0;
-             tape_sensors[index].high_vals[sample] =  0;
-             
-         }
+        for (sample = 0; sample < READING_COUNT; sample++) {
+            tape_sensors[index].low_vals[sample] = 0;
+            tape_sensors[index].high_vals[sample] = 0;
+
+        }
         //printf("rc=%d\r\n",rc);
 
     }

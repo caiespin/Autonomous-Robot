@@ -35,6 +35,8 @@
 #include "FSMCollisionAvoidance.h"
 #include "bumper_service.h"
 #include "motors.h"
+#include "tape_detector_fsm_service.h"
+#include "FSMExitShooter.h"
 
 /*******************************************************************************
  * MODULE #DEFINES                                                             *
@@ -687,6 +689,10 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
                 case ES_ENTRY:
                     ES_Timer_InitTimer(COLLISION_AVOIDANCE_TIMER, STOP_TIME);
                     stop();
+                    if((is_on_T() == TRUE)  &&  get_ATM6_Counter() ==3 ){
+                        ThisEvent.EventType = T_FOUND;
+                      
+                    }
                     break;
                 case ES_TIMEOUT:
                     if (ThisEvent.EventParam == COLLISION_AVOIDANCE_TIMER) {

@@ -15,18 +15,19 @@
 #include "pwm.h"
 #include "RC_Servo.h"
 #include "motors.h"
-#include "track_wire_event_checker.h"
+#include "event_checker.h"
 #include "tape_detector_fsm_service.h"
-
+#include "FSMShoot.h"
 
 //#define TEST_TAPE_SENSOR
-//#define TEST_TAPE_SENSOR_WITH_ES_FRAMEWORK
+#define TEST_TAPE_SENSOR_WITH_ES_FRAMEWORK
 //#define TEST_BUMPER
 //#define TEST_DRIVING_MOTORS
 //#define TEST_SERVO
 //#define TEST_DRIVING_MOTORS_HELPER_FUNCTIONS
+//#define TEST_DRIVING_MOTORS_HELPER_FUNCTIONS2
 //#define TEST_TRACKWIRE
-#define TEST_SHOOTER
+//#define TEST_SHOOTER
 
 
 
@@ -115,11 +116,12 @@ int main() {
     PWM_Init();
     motors_init(); //PWM_Init goes first
     AD_Init();
-    init_tape_sensors();// AD goes before this 
+    init_tape_sensors(); // AD goes before this 
     RC_Init();
     ES_Timer_Init();
     trackwire_init();
     shooter_init();
+    beacon_init();
 
 
 
@@ -236,7 +238,7 @@ int main() {
 #endif
 
 #ifdef TEST_SERVO
-#define SERVO_PIN RC_PORTX03
+#define SERVO_TILT_PIN RC_PORTZ09
 
 void delay(int x) {
     int i = 0;
@@ -248,16 +250,16 @@ void delay(int x) {
 int main() {
     BOARD_Init();
     RC_Init();
-    RC_AddPins(SERVO_PIN);
+    RC_AddPins(SERVO_TILT_PIN);
 
     //#define MINPULSE 550
     //#define MAXPULSE 2450 metsl serv
 
 
-    RC_SetPulseTime(SERVO_PIN, MINPULSE);
-    delay(3000000);
-    RC_SetPulseTime(SERVO_PIN, MAXPULSE);
-    delay(100000);
+    RC_SetPulseTime(SERVO_TILT_PIN, 1500);
+//    delay(3000000);
+//    RC_SetPulseTime(SERVO_TILT_PIN, MAXPULSE);
+//    delay(100000);
 
     for (;;) {
 
@@ -285,10 +287,9 @@ int main() {
     BOARD_Init();
     motors_init();
     forwards();
-
-
+    
     for (;;) {
-
+        ;
 
     }
 
@@ -399,34 +400,35 @@ int main() {
     PWM_Init();
     shooter_init();
 
-// RC_SetPulseTime(SERVO_TILT_PIN, 1800);
-//    //#define MINPULSE 550
-//    //#define MAXPULSE 2450 metsl serv
-//    IO_PortsSetPortBits(PORTX, SHOOTER_MOTOR_PIN);
-//    // IO_PortsClearPortBits(PORTX, SERVO_DELIVER_PIN);
-//    // RC_SetPulseTime(SERVO_TILT_PIN, 1400);
-//    IO_PortsSetPortBits(PORTX, SERVO_DELIVER_PIN);
-//
-//    //    
-//    //   RC_SetPulseTime(SERVO_TILT_PIN, 1800);
-//    //IO_PortsClearPortBits(PORTX, SERVO_DELIVER_PIN);
-//
-//
-//    //RC_SetPulseTime(SERVO_DELIVER_PIN, 1000);
-RC_SetPulseTime(SERVO_TILT_PIN, MINPULSE);
-PWM_SetDutyCycle(SHOOTER_MOTOR_PIN,350);
-delay(3000000);
-start_trigger_motor();
-delay(300000);
-stop_trigger_motor();
-//start_ball_accelerator();
+    // RC_SetPulseTime(SERVO_TILT_PIN, 1800);
+    //    //#define MINPULSE 550
+    //    //#define MAXPULSE 2450 metsl serv
+    //    IO_PortsSetPortBits(PORTX, SHOOTER_MOTOR_PIN);
+    //    // IO_PortsClearPortBits(PORTX, SERVO_DELIVER_PIN);
+    //    // RC_SetPulseTime(SERVO_TILT_PIN, 1400);
+    //    IO_PortsSetPortBits(PORTX, SERVO_DELIVER_PIN);
+    //
+    //    //    
+    //    //   RC_SetPulseTime(SERVO_TILT_PIN, 1800);
+    //    //IO_PortsClearPortBits(PORTX, SERVO_DELIVER_PIN);
+    //
+    //
+    //    //RC_SetPulseTime(SERVO_DELIVER_PIN, 1000);
+    RC_SetPulseTime(SERVO_TILT_PIN, MINPULSE);
+    PWM_SetDutyCycle(SHOOTER_MOTOR_PIN, 350);
+    delay(3000000);
+    start_trigger_motor();
+    delay(300000);
+    stop_trigger_motor();
+    //start_ball_accelerator();
     for (;;) {
+        ;
         // delay(5000000);
-//        //
-//RC_SetPulseTime(SERVO_TILT_PIN, MAXPULSE);
-//delay(3000000);
-//RC_SetPulseTime(SERVO_TILT_PIN, MINPULSE);
-//delay(3000000);
+        //        //
+        //RC_SetPulseTime(SERVO_TILT_PIN, MAXPULSE);
+        //delay(3000000);
+        //RC_SetPulseTime(SERVO_TILT_PIN, MINPULSE);
+        //delay(3000000);
         //    // RC_SetPulseTime(SERVO_TILT_PIN,  MAXPULSE);
 
 
@@ -434,4 +436,30 @@ stop_trigger_motor();
     }
 
 }
+#endif
+
+#ifdef TEST_DRIVING_MOTORS_HELPER_FUNCTIONS2
+
+#include "motors.h"
+
+void delay(int x) {
+    int i = 0;
+    while (i < x) {
+        i++;
+    }
+}
+
+int main() {
+    BOARD_Init();
+     PWM_Init();
+    motors_init();
+    forwards();
+    
+    for (;;) {
+        ;
+
+    }
+
+}
+
 #endif

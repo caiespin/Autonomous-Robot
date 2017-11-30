@@ -38,12 +38,12 @@
 
 //#define  SHIFT_AMOUNT 3
 
-#define BUMPER_PORT PORTZ
+#define BUMPER_PORT PORTX
 
 #define ALL_BUMPER_PINS (FRONT_LEFT_BUMPER_PIN | FRONT_RIGHT_BUMPER_PIN | BACK_LEFT_BUMPER_PIN |  BACK_RIGHT_BUMPER_PIN |REN_LEFT_PIN | REN_CENTER_PIN |REN_RIGHT_PIN )
 
 
-#define TIMER_BUMPER_TICKS 10 //100Hz (More than enough))
+#define TIMER_BUMPER_TICKS 3 //100Hz (More than enough))
 
 /*******************************************************************************
  * PRIVATE FUNCTION PROTOTYPES                                                 *
@@ -60,16 +60,16 @@ uint8_t CheckBumpers(void);
 typedef union {
 
     struct {
-         unsigned : 3;
+        unsigned : 3;
         unsigned front_left_bumper : 1;
         unsigned front_right_bumper : 1;
         unsigned back_left_bumper : 1;
-        unsigned back_right_bumper : 1;//6
-        unsigned ren_left : 1;//7
-         unsigned : 1;
-        unsigned ren_center : 1;//9
-         unsigned : 1;
-        unsigned ren_right : 1;//11
+        unsigned back_right_bumper : 1; //6
+        unsigned ren_left : 1; //7
+        unsigned : 1;
+        unsigned ren_center : 1; //9
+        unsigned : 1;
+        unsigned ren_right : 1; //11
         unsigned bit7 : 1;
         unsigned bit8 : 1;
         unsigned bit9 : 1;
@@ -219,16 +219,14 @@ int checkBumper(int* flag, int counter, int param) {
     return returnVal;
 }
 
-
-
 int checkRenBumper(int* flag, int counter, int param) {
     int returnVal = FALSE;
     if ((*flag == FALSE) && (counter > MAX_HISTORY_SIZE - 2)) {
         *flag = TRUE;
         ES_Event thisEvent;
         thisEvent.EventType = REN_BUMPER_PRESSED;
-        //thisEvent.EventParam = param;
-        thisEvent.EventParam = all_bumpers.value & ALL_REN_BUMPERS;
+        thisEvent.EventParam = param;
+        //thisEvent.EventParam = all_bumpers.value & ALL_REN_BUMPERS;
         returnVal = TRUE;
         PostTopHSM(thisEvent);
 
@@ -236,10 +234,10 @@ int checkRenBumper(int* flag, int counter, int param) {
         *flag = FALSE;
         ES_Event thisEvent;
         thisEvent.EventType = REN_BUMPER_RELEASE;
-        // thisEvent.EventParam = param;
-        thisEvent.EventParam = all_bumpers.value & ALL_REN_BUMPERS;
+        thisEvent.EventParam = param;
+        //thisEvent.EventParam = all_bumpers.value & ALL_REN_BUMPERS;
         returnVal = TRUE;
-       PostTopHSM(thisEvent);
+        PostTopHSM(thisEvent);
 
     }
     return returnVal;
@@ -247,14 +245,14 @@ int checkRenBumper(int* flag, int counter, int param) {
 #define BUMPER_TRIPPED 1
 #define BUMPER_NOT_TRIPPED 0
 
-#define Front_Right 1
-#define Front_Left 2
-#define Rear_Right 4
-#define Rear_Left 8
+#define Front_Right 8
+#define Front_Left 16
+#define Rear_Right 32
+#define Rear_Left 64
 
-#define Left_Ren 16
-#define Center_Ren 32
-#define Right_Ren 64
+#define Left_Ren 128
+#define Center_Ren 512
+#define Right_Ren 256
 
 uint8_t CheckBumpers(void) {
     ES_Event thisEvent;
@@ -335,13 +333,12 @@ uint8_t CheckBumpers(void) {
     }
 
     if (ReadCenterRenBumper() == BUMPER_TRIPPED) {
-        if (Center_Ren_Bumper_Pressed_Counter < MAX_HISTORY_SIZE - 1) {
-            Center_Ren_Bumper_Pressed_Counter++;
-        }
+
+        Center_Ren_Bumper_Pressed_Counter = MAX_HISTORY_SIZE;
     } else if (ReadCenterRenBumper() == BUMPER_NOT_TRIPPED) {
-        if (Center_Ren_Bumper_Pressed_Counter > (-MAX_HISTORY_SIZE) + 1) {
-            Center_Ren_Bumper_Pressed_Counter--;
-        }
+
+        Center_Ren_Bumper_Pressed_Counter = -MAX_HISTORY_SIZE;
+
     }
 
     if (ReadRightRenBumper() == BUMPER_TRIPPED) {
@@ -387,13 +384,15 @@ int ReadRearLeftBumper() {
     return all_bumpers.back_left_bumper;
 }
 
-int ReadLeftRenBumper(){
+int ReadLeftRenBumper() {
     return all_bumpers.ren_left;
 }
-int ReadCenterRenBumper(){
+
+int ReadCenterRenBumper() {
     return all_bumpers.ren_center;
 }
-int ReadRightRenBumper(){
+
+int ReadRightRenBumper() {
     return all_bumpers.ren_right;
-    
+
 }

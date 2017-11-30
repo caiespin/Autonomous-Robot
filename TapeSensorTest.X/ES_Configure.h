@@ -59,6 +59,12 @@ typedef enum {
     TRACKWIRE_ALIGNED,
     TRACKWIRE_DETECTED,
     ATM6_ALIGNED,
+            BEACON_LOST,
+            BEACON_FOUND,
+            GO_TO_ON_LINE,
+            SHOT,
+            T_FOUND,
+            REN_ALIGNED,
 
 
 
@@ -90,6 +96,12 @@ static const char *EventNames[] = {
 	"TRACKWIRE_ALIGNED",
 	"TRACKWIRE_DETECTED",
 	"ATM6_ALIGNED",
+	"BEACON_LOST",
+	"BEACON_FOUND",
+	"GO_TO_ON_LINE",
+	"SHOT",
+	"T_FOUND",
+	"REN_ALIGNED",
 };
 
 
@@ -97,11 +109,11 @@ static const char *EventNames[] = {
 
 /****************************************************************************/
 // This are the name of the Event checking function header file.
-#define EVENT_CHECK_HEADER "track_wire_event_checker.h"
+#define EVENT_CHECK_HEADER "event_checker.h"
 
 /****************************************************************************/
 // This is the list of event checking functions
-#define EVENT_CHECK_LIST  TrackwireChecker
+#define EVENT_CHECK_LIST  TrackwireChecker,BeaconDetectorChecker
 
 /****************************************************************************/
 // These are the definitions for the post functions to be executed when the
@@ -117,7 +129,7 @@ static const char *EventNames[] = {
 #define TIMER6_RESP_FUNC PostTopHSM
 #define TIMER7_RESP_FUNC PostTopHSM
 #define TIMER8_RESP_FUNC PostTopHSM
-#define TIMER9_RESP_FUNC TIMER_UNUSED
+#define TIMER9_RESP_FUNC PostTopHSM
 #define TIMER10_RESP_FUNC TIMER_UNUSED
 #define TIMER11_RESP_FUNC TIMER_UNUSED
 #define TIMER12_RESP_FUNC TIMER_UNUSED
@@ -141,6 +153,8 @@ static const char *EventNames[] = {
 #define SHOOT_FSM_TIMER 6
 #define TOP_HSM_TIMER 7
 #define MINI_AVOID_TIMER 8
+#define EXIT_SHOOTER_TIMER 9
+#define ATTACK_REN_TIMER 10
 
 
 /****************************************************************************/

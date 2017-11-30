@@ -8,7 +8,8 @@
 #define DIRECTION_A PIN11
 
 #define MOT0R_A_SPEED 1000
-#define MOT0R_B_SPEED 920
+//#define MOT0R_B_SPEED 920
+#define MOT0R_B_SPEED 994
 
 #define ENABLE_B PWM_PORTY10 
 #define DIRECTION_B PIN9
@@ -20,7 +21,7 @@ void motors_init() {
    
     IO_PortsSetPortOutputs(DRIVING_MOTOR_PORT, DIRECTION_A | DIRECTION_B);
     PWM_AddPins(ENABLE_A | ENABLE_B);
-    PWM_SetFrequency(PWM_500HZ);
+    PWM_SetFrequency(MIN_PWM_FREQ);
 }
 
 void turn_right() {

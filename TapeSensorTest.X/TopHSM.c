@@ -39,7 +39,10 @@
 //#include "LED.h"
 #include "FSMAlignATM6.h"
 #include "FSMShoot.h"
+#include "FSMExitShooter.h"
 #include "FSM_Mini_Avoid.h"
+
+#include "FSMAttackRen.h"
 /*******************************************************************************
  * PRIVATE #DEFINES                                                            *
  ******************************************************************************/
@@ -57,7 +60,9 @@ typedef enum {
     CollisionAvoidanceState,
     AlignATM6,
     Shoot,
+    Exit_Shoot,
     MiniAvoidState,
+    ATTACK_REN,
 
 } TemplateHSMState_t;
 
@@ -68,7 +73,9 @@ static const char *StateNames[] = {
 	"CollisionAvoidanceState",
 	"AlignATM6",
 	"Shoot",
+	"Exit_Shoot",
 	"MiniAvoidState",
+	"ATTACK_REN",
 };
 
 
@@ -174,7 +181,7 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                     break;
                 case ES_TIMEOUT:
                    // nextState = FindLineState;
-                    nextState = Shoot;
+                    nextState = ATTACK_REN;
                     makeTransition = TRUE;
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
@@ -278,6 +285,11 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                     makeTransition = TRUE;
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
+                case T_FOUND:
+                    nextState = ATTACK_REN;
+                    makeTransition = TRUE;
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
 
                 case ES_NO_EVENT:
                 default:
@@ -300,6 +312,7 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
 
                 case ATM6_ALIGNED:
+                    set_atm6_config();
                     nextState = Shoot;
                     makeTransition = TRUE;
                     ThisEvent.EventType = ES_NO_EVENT;
@@ -324,7 +337,33 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
             }
             ThisEvent = RunFSMShoot(ThisEvent);
             switch (ThisEvent.EventType) {
+                case SHOT:
+                    nextState = Exit_Shoot;
+                    makeTransition = TRUE;
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case ES_NO_EVENT:
+                default:
+                    break;
+            }
+            break;
 
+        case Exit_Shoot:
+            // run sub-state machine for this state
+            //NOTE: the SubState Machine runs and responds to events before anything in the this
+            //state machine does
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    InitFSMExitShooter();
+                    break;
+            }
+            ThisEvent = RunFSMExitShooter(ThisEvent);
+            switch (ThisEvent.EventType) {
+                case GO_TO_ON_LINE:
+                    nextState = LineFollowerState;
+                    makeTransition = TRUE;
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
                 case ES_NO_EVENT:
                 default:
                     break;
@@ -351,7 +390,27 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
             }
 
             break;
+        case ATTACK_REN:
 
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    InitFSMAttackRen();
+                    break;
+            }
+            ThisEvent = RunFSMAttackRen(ThisEvent);
+            switch (ThisEvent.EventType) {
+                case REN_ALIGNED:
+                    set_ren_config();
+                    nextState = Shoot;
+                    makeTransition = TRUE;
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case ES_NO_EVENT:
+                default:
+                    break;
+            }
+
+            break;
         default: // all unhandled states fall into here
             break;
     } // end switch on Current State

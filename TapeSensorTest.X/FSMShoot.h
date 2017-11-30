@@ -30,9 +30,10 @@
 /*******************************************************************************
  * PUBLIC #DEFINES                                                             *
  ******************************************************************************/
-#define SERVO_TILT_PIN RC_PORTX03
+#define SERVO_TILT_PIN RC_PORTZ09
 #define SERVO_DELIVER_PIN PIN5
-#define SHOOTER_MOTOR_PIN PWM_PORTX11
+#define SHOOTER_MOTOR_PIN PWM_PORTZ06
+#define SHOOT_PORT PORTZ
 
 /*******************************************************************************
  * PUBLIC TYPEDEFS                                                             *
@@ -42,7 +43,18 @@
 /*******************************************************************************
  * PUBLIC FUNCTION PROTOTYPES                                                  *
  ******************************************************************************/
- void shooter_init();
+void shooter_init();
+void start_ball_accelerator_fast();
+
+
+void start_ball_accelerator_slow();
+void start_trigger_motor();
+
+void stop_trigger_motor();
+
+void stop_ball_accelerator();
+void set_atm6_tilt();
+void set_ren_tilt();
 /**
  * @Function InitTemplateSubHSM(void)
  * @param Priority - internal variable to track which event queue to use
