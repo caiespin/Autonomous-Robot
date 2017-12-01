@@ -59,13 +59,13 @@ typedef enum {
     TRACKWIRE_ALIGNED,
     TRACKWIRE_DETECTED,
     ATM6_ALIGNED,
-            BEACON_LOST,
-            BEACON_FOUND,
-            GO_TO_ON_LINE,
-            SHOT,
-            T_FOUND,
-            REN_ALIGNED,
-GO_TO_FIND_LINE,
+    BEACON_LOST,
+    BEACON_FOUND,
+    GO_TO_ON_LINE,
+    SHOT,
+    T_FOUND,
+    REN_ALIGNED,
+    GO_TO_FIND_LINE,
 
 
 } ES_EventTyp_t;

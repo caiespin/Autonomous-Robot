@@ -444,7 +444,7 @@ void init_tape_sensors() {
         printf("Pin:%d done\r\n", index);
         tape_sensors[index].direction = index;
         tape_sensors[index].pin = tape_sensor_pins[index];
-        tape_sensors[index].status = off_tape;
+        tape_sensors[index].status = unknown;
         int rc = AD_AddPins(tape_sensors[index].pin);
 
         int sample;
@@ -491,7 +491,7 @@ void detect_tape_event() {
         //            printf("low Val=%x, high val=%x,diff= %d \r\n", tape_sensors[index].low_val_average, tape_sensors[index].high_val_average, diff);
         //        }
 
-       // printf("index= %d, low Val = %d, high val= %d ,diff= %d | ", index, tape_sensors[index].low_val_average, tape_sensors[index].high_val_average, diff);
+        //printf("index= %d, low Val = %d, high val= %d ,diff= %d | ", index, tape_sensors[index].low_val_average, tape_sensors[index].high_val_average, diff);
 
 
         if (diff < TAPE_LOW_THRESHOLD) {
@@ -538,7 +538,7 @@ void detect_tape_event() {
 
 
     }// for loop
-    printf("\r\n");
+   // printf("\r\n");
 
 
 

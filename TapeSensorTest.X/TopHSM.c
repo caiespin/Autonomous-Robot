@@ -51,7 +51,7 @@
  * PRIVATE #DEFINES                                                            *
  ******************************************************************************/
 //Include any defines you need to do
-#define BOOT_TIME 50
+#define BOOT_TIME 100
 /*******************************************************************************
  * MODULE #DEFINES                                                             *
  ******************************************************************************/
@@ -188,8 +188,9 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
 
                     break;
                 case ES_TIMEOUT:
-                    nextState = Start_War_State;
-                    //nextState = Debug_Stop_State;
+                    // nextState = Start_War_State;
+                   // nextState = Debug_Stop_State;
+                    nextState = FindLineState;
                     makeTransition = TRUE;
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
@@ -198,6 +199,9 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                 case ES_TIMERACTIVE:
                     // printf("enter on_ES_TIMERACTIVE\r\n");
                 case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                default:
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
             }
@@ -340,6 +344,12 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                     break;
                 case T_FOUND:
                     nextState = ATTACK_REN;
+                    makeTransition = TRUE;
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case GO_TO_FIND_LINE:
+                    printf("How Fucked are we??\r\n");
+                    nextState = FindLineState;
                     makeTransition = TRUE;
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;

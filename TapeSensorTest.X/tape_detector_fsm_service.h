@@ -63,7 +63,8 @@
 
 typedef enum {
     on_tape,
-    off_tape
+    off_tape,
+            unknown,
 } tape_sensor_status;
 
 
