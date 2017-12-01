@@ -480,6 +480,10 @@ int get_center_tape_status() {
     return tape_sensors[CENTER_TAPE_SENSOR].status;
 }
 
+int get_back_tape_status() {
+    return tape_sensors[BACK_TAPE_SENSOR].status;
+}
+
 void detect_tape_event() {
     int index = 0;
 

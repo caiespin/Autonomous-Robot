@@ -56,6 +56,7 @@
 
 
 #define ALL_LEDS 0xF
+
 /*******************************************************************************
  * PUBLIC TYPEDEFS                                                             *
  ******************************************************************************/
@@ -64,7 +65,7 @@
 typedef enum {
     on_tape,
     off_tape,
-            unknown,
+    unknown,
 } tape_sensor_status;
 
 
@@ -74,12 +75,14 @@ typedef enum {
  * PUBLIC FUNCTION PROTOTYPES                                                  *
  ******************************************************************************/
 //Returns on_tape for on tape and off_tape for off tape
-int is_on_T() ;
+int is_on_T();
 int get_front_tape_status();
 
 int get_right_tape_status();
 
 int get_left_tape_status();
+int get_center_tape_status();
+int get_center_tape_status();
 void init_tape_sensors();
 /**
  * @Function InitTemplateFSM(uint8_t Priority)

@@ -51,6 +51,7 @@
 
 #define TankTurnLeft3_TIME (1400 + EXTRA_WEIGHT)
 #define TankTurnLeft4_TIME (1100 + EXTRA_WEIGHT)
+#define TankTurnLeft5_TIME (1400 + EXTRA_WEIGHT)
 
 //#define TURN2_TIME 940
 #define RAM_TIME (500 + EXTRA_WEIGHT)
@@ -58,9 +59,13 @@
 
 #define TankTurnLeft1_TIME (1100 + EXTRA_WEIGHT)
 #define TankTurnLeft2_TIME (1100 + EXTRA_WEIGHT)
-#define FORWARDS_1_TIME (1200 + EXTRA_WEIGHT)
+#define FORWARDS_1_TIME (400 + EXTRA_WEIGHT)
 #define FORWARDS_2_TIME (1600 + EXTRA_WEIGHT)
 #define FORWARDS_3_TIME (1100 + EXTRA_WEIGHT)
+#define FORWARDS_4_TIME (1000 + EXTRA_WEIGHT)
+
+
+
 #define INCH_TIME ( 100)
 #define REVERSE_2_TIME (800 + EXTRA_WEIGHT)
 #define MINI_FORWARDS_TIME (300 + EXTRA_WEIGHT)
@@ -98,6 +103,9 @@ typedef enum {
     TankTurnLeft4State,
     InchRightState,
     Stop13State,
+    Stop14State,
+    TankTurnLeft5State,
+    Forwards4State,
 
 } TemplateSubHSMState_t;
 
@@ -132,6 +140,9 @@ static const char *StateNames[] = {
 	"TankTurnLeft4State",
 	"InchRightState",
 	"Stop13State",
+	"Stop14State",
+	"TankTurnLeft5State",
+	"Forwards4State",
 };
 
 
@@ -473,6 +484,7 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
                             nextState = FoundTapeState;
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
+                            break;
                     }
                     break;
                 case ES_TIMEOUT:
@@ -550,6 +562,7 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
                             nextState = InchForwardsState;
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
+                            break;
                     }
                     break;
                 case BUMPER_PRESSED:
@@ -751,7 +764,10 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
 
                     switch (ThisEvent.EventParam) {
                         case BACK_TAPE_SENSOR:
-                            ThisEvent.EventType = GO_TO_FIND_LINE;
+                            nextState = Stop9State;
+                            makeTransition = TRUE;
+                            ThisEvent.EventType = ES_NO_EVENT;
+
                             break;
                     }
 
@@ -778,22 +794,22 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
         case Stop9State: // in the first state, replace this with correct names
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
-                   
+
                     stop();
-                    printf("is_on_T: %d, get_atm6_counter: %d\r\n", is_on_T(),get_ATM6_Counter() );
+                    printf("is_on_T: %d, get_atm6_counter: %d\r\n", is_on_T(), get_ATM6_Counter());
                     if ((is_on_T() == TRUE) && (get_ATM6_Counter() == 3)) {
                         ThisEvent.EventType = T_FOUND;
 
-                    }else if ((is_on_T() == TRUE) && (get_ATM6_Counter() != 3)){
-                         ES_Timer_InitTimer(COLLISION_AVOIDANCE_TIMER, STOP_TIME);
-                         printf("TIMER_STARTED on Stop 9\r\n" );
-                    }else if(is_on_T() == FALSE){
-                        ThisEvent.EventType=GO_TO_FIND_LINE;
-                          PostTopHSM(ThisEvent );
-                          ThisEvent.EventType = ES_NO_EVENT;
-                          printf("reach else if is_on_T() == FALSE\r\n");
-                    }
-                    else{
+                    } else if ((is_on_T() == TRUE) && (get_ATM6_Counter() != 3)) {
+                        ES_Timer_InitTimer(COLLISION_AVOIDANCE_TIMER, STOP_TIME);
+                        printf("TIMER_STARTED on Stop 9\r\n");
+                    } else if (is_on_T() == FALSE) {
+                        nextState = Forwards4State;
+                        makeTransition = TRUE;
+                        // PostTopHSM(ThisEvent);
+                        ThisEvent.EventType = ES_NO_EVENT;
+                        printf("reach else if is_on_T() == FALSE\r\n");
+                    } else {
                         printf("WTF!!!!!!!!!!\r\n");
                     }
                     break;
@@ -815,6 +831,69 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
             }
             break;
 
+        case Forwards4State:
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    if (get_center_tape_status() == TRUE) {
+                        nextState = Stop14State;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    } else {
+                        ES_Timer_InitTimer(COLLISION_AVOIDANCE_TIMER, FORWARDS_4_TIME);
+                        forwards();
+                    }
+                    break;
+
+                case TAPE_DETECTED:
+                    switch (ThisEvent.EventParam) {
+                        case CENTER_TAPE_SENSOR:
+                            nextState = Stop14State;
+                            makeTransition = TRUE;
+                            ThisEvent.EventType = ES_NO_EVENT;
+
+                            break;
+                    }
+                    break;
+                case ES_TIMEOUT:
+                    if (ThisEvent.EventParam == COLLISION_AVOIDANCE_TIMER) {
+                        nextState = Stop14State;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
+                    break;
+
+                case ES_TIMERACTIVE:
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
+                    break;
+            }
+            break;
+        case Stop14State: // in the first state, replace this with correct names
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    ES_Timer_InitTimer(COLLISION_AVOIDANCE_TIMER, STOP_TIME);
+                    stop();
+                    break;
+                case ES_TIMEOUT:
+                    if (ThisEvent.EventParam == COLLISION_AVOIDANCE_TIMER) {
+                        nextState = TankTurnLeft5State;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
+                    break;
+
+                case ES_TIMERACTIVE:
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
+                    break;
+            }
+            break;
         case MiniForwardState:
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
@@ -972,6 +1051,57 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
 
                     if (ThisEvent.EventParam == COLLISION_AVOIDANCE_TIMER) {
                         ThisEvent.EventType = OBSTACLE_AVOIDED;
+                    }
+                    break;
+
+                case ES_TIMERACTIVE:
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
+                    break;
+            }
+            break;
+
+
+        case TankTurnLeft5State:
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+
+                    if ((get_front_tape_status() == TRUE) || (get_back_tape_status() == TRUE)) {
+                        ThisEvent.EventType = GO_TO_ON_LINE;
+                        ThisEvent.EventParam = 0;
+                        PostTopHSM(ThisEvent);
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    } else {
+                        ES_Timer_InitTimer(COLLISION_AVOIDANCE_TIMER, TankTurnLeft5_TIME);
+                        tank_turn_left();
+                    }
+                    break;
+
+
+                case TAPE_DETECTED:
+                    switch (ThisEvent.EventParam) {
+                        case BACK_TAPE_SENSOR:
+                        case FRONT_TAPE_SENSOR:
+                            ThisEvent.EventType = GO_TO_ON_LINE;
+                            ThisEvent.EventParam = 0;
+                            PostTopHSM(ThisEvent);
+                            ThisEvent.EventType = ES_NO_EVENT;
+                            break;
+                    }
+                    break;
+
+
+
+                case ES_TIMEOUT:
+
+                    if (ThisEvent.EventParam == COLLISION_AVOIDANCE_TIMER) {
+                        ThisEvent.EventType = GO_TO_ON_LINE;
+                        ThisEvent.EventParam = 0;
+                        PostTopHSM(ThisEvent);
+                        ThisEvent.EventType = ES_NO_EVENT;
                     }
                     break;
 

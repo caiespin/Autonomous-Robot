@@ -95,6 +95,8 @@ static uint8_t MyPriority;
 #define REVERSE_TIME 200
 #define INCH_RIGHT_TIME 100
 #define INCH_LEFT_TIME 100
+#define CORNER_DETECTED_TIMEOUT_TIME 1000
+#define TURNING_RIGHT_TIMEOUT_TIME 4000
 /*******************************************************************************
  * PUBLIC FUNCTIONS                                                            *
  ******************************************************************************/
@@ -275,10 +277,13 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
                     forwards();
                     //  LED_SetBank(LED_BANK1, 8);
                     //   LED_OffBank(LED_BANK2, ALL_LEDS);
+
+                    ES_Timer_InitTimer(TAPE_FOLLOWER_TIMER, CORNER_DETECTED_TIMEOUT_TIME);
                     break;
                 case TAPE_LOST:
                     switch (ThisEvent.EventParam) {
                         case RIGHT_TAPE_SENSOR:
+                            ES_Timer_StopTimer(TAPE_FOLLOWER_TIMER);
                             nextState = turning_corner;
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
@@ -292,18 +297,38 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
                     tank_turn_right();
+                    ES_Timer_InitTimer(TAPE_FOLLOWER_TIMER, TURNING_RIGHT_TIMEOUT_TIME);
                     //  LED_SetBank(LED_BANK2, 1);
                     //   LED_OffBank(LED_BANK1, ALL_LEDS);
                     break;
                 case TAPE_DETECTED:
                     switch (ThisEvent.EventParam) {
                         case FRONT_TAPE_SENSOR:
+                            ES_Timer_StopTimer(TAPE_FOLLOWER_TIMER);
                             nextState = InchRight;
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
                     }
                     break;
 
+                case ES_TIMEOUT:
+
+                    if (ThisEvent.EventParam == TAPE_FOLLOWER_TIMER) {
+                        ES_Timer_StopTimer(TAPE_FOLLOWER_TIMER);
+                        nextState = InchRight;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
+                    break;
+
+
+                case ES_TIMERACTIVE:
+                    // printf("enter on_ES_TIMERACTIVE\r\n");
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+              
                 case ES_EXIT:
                     // LED_OffBank(LED_BANK3, 0xf);
                     break;
@@ -400,6 +425,7 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
                 case TAPE_DETECTED:
                     switch (ThisEvent.EventParam) {
                         case FRONT_TAPE_SENSOR:
+                            ES_Timer_StopTimer(TAPE_FOLLOWER_TIMER);
                             nextState = on_line;
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
