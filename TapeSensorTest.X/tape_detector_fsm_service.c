@@ -50,8 +50,8 @@
 #define TAPE_LOW_THRESHOLD 300
 
 
-#define TWO_MILLISECOND 2
-#define TWENTY_FIVE_MILLISECOND 12
+#define TWO_MILLISECOND 5
+
 
 
 
@@ -103,6 +103,7 @@ typedef enum {
 } tape_position;
 
 const int tape_sensor_pins[TAPE_SENSOR_COUNT] = {TAPE_PIN_1, TAPE_PIN_2, TAPE_PIN_3, TAPE_PIN_4, TAPE_PIN_5};
+//const int tape_sensor_pins[TAPE_SENSOR_COUNT] = {TAPE_PIN_5, TAPE_PIN_4};
 
 typedef struct {
     int pin;
@@ -337,7 +338,7 @@ ES_Event RunTapeDetectorFSMService(ES_Event ThisEvent) {
                     ES_Timer_InitTimer(TAPE_SENSOR_TIMER, TWO_MILLISECOND);
                     ThisEvent.EventType = ES_NO_EVENT;
 
-
+                    off_reading_counter = 0;
 
 
 
@@ -395,14 +396,12 @@ int is_on_T() {
             (get_center_tape_status() == on_tape)
             ) {
         return TRUE;
-    }
-    else if ((get_center_tape_status() == on_tape) &&
+    } else if ((get_center_tape_status() == on_tape) &&
             (get_left_tape_status() == on_tape) &&
             (get_right_tape_status() == on_tape) &&
             (get_center_tape_status() == on_tape)) {
         return TRUE;
-    }
-    else {
+    } else {
         return FALSE;
     }
 
@@ -413,12 +412,12 @@ int is_on_T() {
  ******************************************************************************/
 void read_tape_sensors(TapeDetectorFSMState_t state, int counter) {
     int index;
-    int adc_val;
+    int adc_val = ERROR;
     if (state == OnReading) {
 
         for (index = 0; index < TAPE_SENSOR_COUNT; index++) {
             adc_val = AD_ReadADPin(tape_sensors[index].pin);
-            if (adc_val != ((uint16_t) ERROR)) {
+            if (adc_val != ERROR) {
                 tape_sensors[index].high_vals[counter] = adc_val;
             }
 
@@ -426,7 +425,7 @@ void read_tape_sensors(TapeDetectorFSMState_t state, int counter) {
     } else if (state == OffReading) {
         for (index = 0; index < TAPE_SENSOR_COUNT; index++) {
             adc_val = AD_ReadADPin(tape_sensors[index].pin);
-            if (adc_val != ((uint16_t) ERROR)) {
+            if (adc_val != ERROR) {
                 tape_sensors[index].low_vals[counter] = adc_val;
             }
         }
@@ -439,19 +438,26 @@ void init_tape_sensors() {
     IO_PortsSetPortOutputs(TAPE_PORT, LED_PIN);
     //Initialize Analog inputs
     // AD_Init();
-    printf("Initializing Tape pins\r\n");
+    //printf("Initializing Tape pins\r\n");
+    //printf("Active Pins=%x\r\n", AD_ActivePins());
     for (index = 0; index < TAPE_SENSOR_COUNT; index++) {
         printf("Pin:%d done\r\n", index);
         tape_sensors[index].direction = index;
         tape_sensors[index].pin = tape_sensor_pins[index];
         tape_sensors[index].status = off_tape;
         int rc = AD_AddPins(tape_sensors[index].pin);
+
         int sample;
         for (sample = 0; sample < READING_COUNT; sample++) {
             tape_sensors[index].low_vals[sample] = 0;
             tape_sensors[index].high_vals[sample] = 0;
 
         }
+        int i;
+        for (i = 0; i < 100000; i++) {
+            ;
+        }
+        //  printf("Active Pins [%d]=%x, on pin=%x\r\n",index, AD_ActivePins()  & tape_sensors[index].pin,tape_sensors[index].pin);
         //printf("rc=%d\r\n",rc);
 
     }
@@ -481,7 +487,13 @@ void detect_tape_event() {
         tape_sensors[index].low_val_average = tape_sensor_average(tape_sensors[index].low_vals, READING_COUNT);
         tape_sensors[index].high_val_average = tape_sensor_average(tape_sensors[index].high_vals, READING_COUNT);
         int diff = tape_sensors[index].low_val_average - tape_sensors[index].high_val_average;
-        // printf("diff-----------------> %d \r\n", diff);
+        //        if (index == 3) {
+        //            printf("low Val=%x, high val=%x,diff= %d \r\n", tape_sensors[index].low_val_average, tape_sensors[index].high_val_average, diff);
+        //        }
+
+       // printf("index= %d, low Val = %d, high val= %d ,diff= %d | ", index, tape_sensors[index].low_val_average, tape_sensors[index].high_val_average, diff);
+
+
         if (diff < TAPE_LOW_THRESHOLD) {
             if (tape_sensors[index].status != on_tape) {
                 tape_sensors[index].status = on_tape;
@@ -525,6 +537,9 @@ void detect_tape_event() {
         }
 
 
-    }
+    }// for loop
+    printf("\r\n");
+
+
 
 }

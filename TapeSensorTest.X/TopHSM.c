@@ -44,6 +44,9 @@
 
 #include "FSMAttackRen.h"
 #include "FSMStartWar.h"
+#include "motors.h"
+#include "tape_detector_fsm_service.h"
+#include "stdio.h"
 /*******************************************************************************
  * PRIVATE #DEFINES                                                            *
  ******************************************************************************/
@@ -64,7 +67,8 @@ typedef enum {
     Exit_Shoot,
     MiniAvoidState,
     ATTACK_REN,
-            Start_War_State,
+    Start_War_State,
+    Debug_Stop_State,
 
 } TemplateHSMState_t;
 
@@ -79,6 +83,7 @@ static const char *StateNames[] = {
 	"MiniAvoidState",
 	"ATTACK_REN",
 	"Start_War_State",
+	"Debug_Stop_State",
 };
 
 
@@ -184,7 +189,7 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                     break;
                 case ES_TIMEOUT:
                     nextState = Start_War_State;
-                    //nextState = ATTACK_REN;
+                    //nextState = Debug_Stop_State;
                     makeTransition = TRUE;
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
@@ -196,6 +201,25 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
             }
+            break;
+        case Debug_Stop_State:
+            // run sub-state machine for this state
+            //NOTE: the SubState Machine runs and responds to events before anything in the this
+            //state machine does
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    stop();
+
+                    nextState = Debug_Stop_State;
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                default:
+                    if (is_on_T() == TRUE) {
+                        printf("On T!!!\r\n");
+                    }
+                    break;
+            }
+
             break;
         case Start_War_State:
             // run sub-state machine for this state
@@ -210,20 +234,20 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
                 case GO_TO_FIND_LINE:
                     //   LED_SetBank(LED_BANK3, 0xf);
-                    nextState =FindLineState ;
+                    nextState = FindLineState;
                     makeTransition = TRUE;
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
 
-               
+
                 case ES_NO_EVENT:
                 default:
                     break;
             }
             break;
-            
-            
-             case FindLineState:
+
+
+        case FindLineState:
             // run sub-state machine for this state
             //NOTE: the SubState Machine runs and responds to events before anything in the this
             //state machine does

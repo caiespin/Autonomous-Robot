@@ -18,7 +18,7 @@
 #include "event_checker.h"
 #include "tape_detector_fsm_service.h"
 #include "FSMShoot.h"
-
+//
 //#define TEST_TAPE_SENSOR
 #define TEST_TAPE_SENSOR_WITH_ES_FRAMEWORK
 //#define TEST_BUMPER
@@ -28,7 +28,7 @@
 //#define TEST_DRIVING_MOTORS_HELPER_FUNCTIONS2
 //#define TEST_TRACKWIRE
 //#define TEST_SHOOTER
-
+//#define TEST_AD_BUG
 
 
 #define TAPE_PIN_1 AD_PORTW3
@@ -67,7 +67,7 @@ int main() {
     ///////
     //Initialize Analog inputs
     AD_Init();
-    AD_AddPins(TAPE_PIN_1);
+    AD_AddPins(TAPE_PIN_5);
 
     IO_PortsSetPortOutputs(TAPE_PORT, LED_PIN);
 
@@ -82,12 +82,12 @@ int main() {
 
         IO_PortsSetPortBits(TAPE_PORT, LED_PIN);
         delay(8000);
-        tape1AdcValHigh = AD_ReadADPin(TAPE_PIN_1);
-        //printf("tape1AdcVal = %d\r\n", tape1AdcVal);
+        tape1AdcValHigh = AD_ReadADPin(TAPE_PIN_5);
+        printf("tape1AdcVal = %d\r\n", tape1AdcValHigh);
         delay(100000);
         IO_PortsClearPortBits(TAPE_PORT, LED_PIN);
         delay(8000);
-        tape1AdcValLow = AD_ReadADPin(TAPE_PIN_1);
+        tape1AdcValLow = AD_ReadADPin(TAPE_PIN_5);
         diff = tape1AdcValLow - tape1AdcValHigh;
         printf("tape1AdcVal diff = %d\r\n", diff);
         delay(100000);
@@ -257,9 +257,9 @@ int main() {
 
 
     RC_SetPulseTime(SERVO_TILT_PIN, 1500);
-//    delay(3000000);
-//    RC_SetPulseTime(SERVO_TILT_PIN, MAXPULSE);
-//    delay(100000);
+    //    delay(3000000);
+    //    RC_SetPulseTime(SERVO_TILT_PIN, MAXPULSE);
+    //    delay(100000);
 
     for (;;) {
 
@@ -287,7 +287,7 @@ int main() {
     BOARD_Init();
     motors_init();
     forwards();
-    
+
     for (;;) {
         ;
 
@@ -451,12 +451,45 @@ void delay(int x) {
 
 int main() {
     BOARD_Init();
-     PWM_Init();
+    PWM_Init();
     motors_init();
     forwards();
-    
+
     for (;;) {
         ;
+
+    }
+
+}
+
+#endif
+
+#ifdef TEST_AD_BUG
+
+#include "motors.h"
+
+void delay(int x) {
+    int i = 0;
+    while (i < x) {
+        i++;
+    }
+}
+
+int main() {
+    BOARD_Init();
+    AD_Init();
+    int index = 0;
+    const int tape_sensor_pins[TAPE_SENSOR_COUNT] = {TAPE_PIN_1, TAPE_PIN_2, TAPE_PIN_3, TAPE_PIN_4, TAPE_PIN_5};
+    
+    for (index = 0; index < TAPE_SENSOR_COUNT; index++) {
+        int rc = AD_AddPins(tape_sensor_pins[index] );
+    }
+    
+    for (;;) {
+       int val=AD_ReadADPin(AD_AddPins(tape_sensor_pins[4]));
+       printf("val=%d\r\n",val);
+        delay(100000);
+       
 
     }
 
