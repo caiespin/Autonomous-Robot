@@ -52,6 +52,17 @@ void tank_turn_left() {
     IO_PortsSetPortBits(DRIVING_MOTOR_PORT, DIRECTION_B);
 }
 
+void turn_back_right() {
+    PWM_SetDutyCycle(ENABLE_A, MOT0R_A_SPEED);
+    PWM_SetDutyCycle(ENABLE_B, 0);
+    IO_PortsSetPortBits(DRIVING_MOTOR_PORT, DIRECTION_A | DIRECTION_B);
+}
+
+void turn_back_left() {
+    PWM_SetDutyCycle(ENABLE_A, 0);
+    PWM_SetDutyCycle(ENABLE_B, MOT0R_B_SPEED);
+   IO_PortsSetPortBits(DRIVING_MOTOR_PORT, DIRECTION_A | DIRECTION_B);
+}
 void reverse() {
     PWM_SetDutyCycle(ENABLE_A, MOT0R_A_SPEED);
     PWM_SetDutyCycle(ENABLE_B, MOT0R_B_SPEED);

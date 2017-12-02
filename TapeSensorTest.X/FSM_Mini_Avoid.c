@@ -54,6 +54,9 @@ typedef enum {
     Stop4State,
     TankLeftState,
     Stop5State,
+    Forward2State,
+    Stop6State,
+    TankLeft2State,
 
 
 
@@ -70,6 +73,9 @@ static const char *StateNames[] = {
 	"Stop4State",
 	"TankLeftState",
 	"Stop5State",
+	"Forward2State",
+	"Stop6State",
+	"TankLeft2State",
 };
 
 
@@ -299,6 +305,22 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
                         case FRONT_TAPE_SENSOR:
                         case LEFT_TAPE_SENSOR:
                             ThisEvent.EventType = OBSTACLE_AVOIDED;
+                            ThisEvent.EventParam = 0;
+                            PostTopHSM(ThisEvent);
+                            ThisEvent.EventType = ES_NO_EVENT;
+                            break;
+                    }
+                    break;
+
+
+                case BUMPER_PRESSED:
+                    switch (ThisEvent.EventParam & FRONT_BUMPERS) {
+                        case FRONT_BUMPERS:
+                        case FRONT_LEFT_BUMPER_PIN:
+                        case FRONT_RIGHT_BUMPER_PIN:
+                            nextState = Stop1State;
+                            makeTransition = TRUE;
+                            ThisEvent.EventType = ES_NO_EVENT;
                             break;
                     }
                     break;
@@ -382,7 +404,10 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
                     break;
                 case ES_TIMEOUT:
                     if (ThisEvent.EventParam == MINI_AVOID_TIMER) {
-                        ThisEvent.EventType = OBSTACLE_AVOIDED;
+                        nextState = Forward1State;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+
                     }
                     break;
 

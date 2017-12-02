@@ -32,23 +32,38 @@
 #include "BOARD.h"
 #include "TopHSM.h"
 #include "FSMAttackRen.h"
+#include "motors.h"
 
 /*******************************************************************************
  * MODULE #DEFINES                                                             *
  ******************************************************************************/
-#define REVERSE_TIME 2000
+#define REVERSE_TIME 1000
+#define TWIST_RIGHT_TIME 200
+#define TWIST_LEFT_TIME 400
+#define  FORWARDS_TIME 200
 
 typedef enum {
     InitPSubState,
     ReverseIntoRenState,
-  //  ShootRen,
+    ReverseLeftIntoRenState,
+    ReverseRightIntoRenState,
+    ForwardsState,
+    TwistLeftState,
+    TwistRightState,
+
+
+    //  ShootRen,
 } TemplateSubHSMState_t;
 
 static const char *StateNames[] = {
 	"InitPSubState",
 	"ReverseIntoRenState",
+	"ReverseLeftIntoRenState",
+	"ReverseRightIntoRenState",
+	"ForwardsState",
+	"TwistLeftState",
+	"TwistRightState",
 };
-
 
 
 /*******************************************************************************
@@ -110,7 +125,7 @@ uint8_t InitFSMAttackRen(void) {
 ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
     uint8_t makeTransition = FALSE; // use to flag transition
     TemplateSubHSMState_t nextState; // <- change type to correct enum
-
+    int bumpers;
     ES_Tattle(); // trace call stack
 
     switch (CurrentState) {
@@ -128,16 +143,63 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
             }
             break;
 
+
+
         case ReverseIntoRenState: // in the first state, replace this with correct names
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
                     ES_Timer_InitTimer(ATTACK_REN_TIMER, REVERSE_TIME);
+                    reverse();
+                    break;
 
                 case ES_TIMEOUT:
                     // printf("--------------------FSMAlignATM6, ForwardsState\r\n");
-                   // nextState = ShootRen;
-                   // makeTransition = TRUE;
-                    ThisEvent.EventType = REN_ALIGNED;
+                    if (ThisEvent.EventParam == ATTACK_REN_TIMER) {
+                        nextState = ForwardsState;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
+                    break;
+
+
+
+
+                case ES_TIMERACTIVE:
+                    // printf("enter on_ES_TIMERACTIVE\r\n");
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
+                    break;
+            }
+            break;
+
+        case ReverseLeftIntoRenState: // in the first state, replace this with correct names
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    ES_Timer_InitTimer(ATTACK_REN_TIMER, REVERSE_TIME);
+                    turn_back_left();
+                    break;
+
+                case ES_TIMEOUT:
+                    // printf("--------------------FSMAlignATM6, ForwardsState\r\n");
+                    if (ThisEvent.EventParam == ATTACK_REN_TIMER) {
+                        nextState = ForwardsState;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
+                    break;
+
+                case BUMPER_PRESSED:
+                    bumpers = (ThisEvent.EventParam & (BACK_BUMPERS));
+                    if ((bumpers == BACK_LEFT_BUMPER_PIN) || (bumpers == BACK_BUMPERS)) {
+                        //NEED to MODIFY THIS ADD FRONT BUMPER , or LEFT OR RIGHT
+                        nextState = ForwardsState;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
                     break;
 
 
@@ -152,7 +214,141 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
                     break;
             }
             break;
-            
+        case ReverseRightIntoRenState: // in the first state, replace this with correct names
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    ES_Timer_InitTimer(ATTACK_REN_TIMER, REVERSE_TIME);
+                    turn_back_right();
+                    break;
+
+                case ES_TIMEOUT:
+                    // printf("--------------------FSMAlignATM6, ForwardsState\r\n");
+                    if (ThisEvent.EventParam == ATTACK_REN_TIMER) {
+                        nextState = ForwardsState;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
+                    break;
+                case BUMPER_PRESSED:
+                    bumpers = (ThisEvent.EventParam & (BACK_BUMPERS));
+                    if ((bumpers == BACK_RIGHT_BUMPER_PIN) || (bumpers == BACK_BUMPERS)) {
+                        //NEED to MODIFY THIS ADD FRONT BUMPER , or LEFT OR RIGHT
+                        nextState = ForwardsState;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
+                    break;
+
+                case ES_TIMERACTIVE:
+                    // printf("enter on_ES_TIMERACTIVE\r\n");
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
+                    break;
+            }
+            break;
+
+        case ForwardsState: // in the first state, replace this with correct names
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    ES_Timer_InitTimer(ATTACK_REN_TIMER, FORWARDS_TIME);
+                    forwards();
+                    break;
+
+                case ES_TIMEOUT:
+                    // printf("--------------------FSMAlignATM6, ForwardsState\r\n");
+                    if (ThisEvent.EventParam == ATTACK_REN_TIMER) {
+                        nextState = TwistLeftState;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
+                    break;
+
+                case BUMPER_RELEASED:
+                    bumpers = (ThisEvent.EventParam & (BACK_BUMPERS));
+                    if ((bumpers == BACK_LEFT_BUMPER_PIN)) {
+
+                        nextState = ReverseRightIntoRenState;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    } else if ((bumpers == BACK_RIGHT_BUMPER_PIN)) {
+
+                        nextState = ReverseLeftIntoRenState;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    } 
+                    break;
+
+
+                case ES_TIMERACTIVE:
+                    // printf("enter on_ES_TIMERACTIVE\r\n");
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
+                    break;
+            }
+            break;
+        case TwistLeftState: // in the first state, replace this with correct names
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    turn_left();
+                    ES_Timer_InitTimer(ATTACK_REN_TIMER, TWIST_LEFT_TIME);
+                    break;
+                case ES_TIMEOUT:
+                    if (ThisEvent.EventParam == ATTACK_REN_TIMER) {
+                        nextState = TwistRightState;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
+                    break;
+
+
+                case ES_TIMERACTIVE:
+                    // printf("enter on_ES_TIMERACTIVE\r\n");
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
+                    break;
+            }
+            break;
+
+
+        case TwistRightState: // in the first state, replace this with correct names
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    tank_turn_right();
+                    ES_Timer_InitTimer(ATTACK_REN_TIMER, TWIST_RIGHT_TIME);
+                    break;
+                case ES_TIMEOUT:
+                    if (ThisEvent.EventParam == ATTACK_REN_TIMER) {
+                        nextState = ReverseIntoRenState;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
+                    break;
+
+
+                case ES_TIMERACTIVE:
+                    // printf("enter on_ES_TIMERACTIVE\r\n");
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
+                    break;
+            }
+            break;
+
 
         default: // all unhandled states fall into here
             break;
