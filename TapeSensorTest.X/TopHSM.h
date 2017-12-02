@@ -37,6 +37,9 @@
  ******************************************************************************/
 
 
+
+
+
 /*******************************************************************************
  * PUBLIC FUNCTION PROTOTYPES                                                  *
  ******************************************************************************/
@@ -84,6 +87,8 @@ uint8_t PostTopHSM(ES_Event ThisEvent);
  * @author J. Edward Carryer, 2011.10.23 19:25
  * @author Gabriel H Elkaim, 2011.10.23 19:25 */
 ES_Event RunTopHSM(ES_Event ThisEvent);
+
+int get_last_top_state();
 
 #endif /* HSM_Template_H */
 

@@ -166,6 +166,7 @@ static TemplateSubHSMState_t CurrentState = InitPSubState; // <- change name to 
 static uint8_t MyPriority;
 
 
+
 /*******************************************************************************
  * PUBLIC FUNCTIONS                                                            *
  ******************************************************************************/

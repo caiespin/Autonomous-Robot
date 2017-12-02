@@ -53,6 +53,7 @@ void start_trigger_motor();
 void stop_trigger_motor();
 
 void stop_ball_accelerator();
+
 void set_atm6_tilt();
 void set_ren_tilt();
 /**

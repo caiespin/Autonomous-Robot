@@ -393,13 +393,13 @@ int is_on_T() {
             (get_center_tape_status() == on_tape) &&
             (get_left_tape_status() == on_tape) &&
             (get_right_tape_status() == on_tape) &&
-            (get_center_tape_status() == on_tape)
+            (get_back_tape_status() == on_tape)
             ) {
         return TRUE;
     } else if ((get_center_tape_status() == on_tape) &&
             (get_left_tape_status() == on_tape) &&
             (get_right_tape_status() == on_tape) &&
-            (get_center_tape_status() == on_tape)) {
+            (get_back_tape_status() == on_tape)) {
         return TRUE;
     } else {
         return FALSE;
@@ -518,6 +518,13 @@ void detect_tape_event() {
                 newEvent.EventType = TAPE_DETECTED;
                 newEvent.EventParam = index;
                 PostTopHSM(newEvent);
+
+                if (is_on_T() == TRUE) {
+
+                    newEvent.EventType = T_FOUND;
+                    newEvent.EventParam = index;
+                    PostTopHSM(newEvent);
+                }
             }
         } else if (diff > TAPE_HIGH_THRESHOLD) {
 
@@ -542,7 +549,7 @@ void detect_tape_event() {
 
 
     }// for loop
-   // printf("\r\n");
+    // printf("\r\n");
 
 
 

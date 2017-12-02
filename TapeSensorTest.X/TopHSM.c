@@ -90,6 +90,9 @@ static const char *StateNames[] = {
 };
 
 
+
+static int Last_Top_State = 0;
+
 /*******************************************************************************
  * PRIVATE FUNCTION PROTOTYPES                                                 *
  ******************************************************************************/
@@ -105,10 +108,12 @@ static const char *StateNames[] = {
 static TemplateHSMState_t CurrentState = InitPState; // <- change enum name to match ENUM
 static uint8_t MyPriority;
 
-
 /*******************************************************************************
  * PUBLIC FUNCTIONS                                                            *
  ******************************************************************************/
+int get_last_top_state() {
+    return Last_Top_State;
+}
 
 /**
  * @Function InitTemplateHSM(uint8_t Priority)
@@ -195,8 +200,9 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                         case TOP_HSM_TIMER:
 
                             // nextState = Start_War_State;
+                            nextState = FindLineState;
                             // nextState = Debug_Stop_State;
-                            nextState = ATTACK_REN;
+                            //nextState = ATTACK_REN;
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
                             break;
@@ -521,6 +527,11 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                     makeTransition = TRUE;
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
+                case T_FOUND:
+                    nextState = Debug_Stop_State;
+                    //nextState= ATTACK_REN;
+                    makeTransition = TRUE;
+                    ThisEvent.EventType = ES_NO_EVENT;
                 case ES_NO_EVENT:
                 default:
                     break;
@@ -581,6 +592,7 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
     if (makeTransition == TRUE) { // making a state transition, send EXIT and ENTRY
         // recursively call the current state with an exit event
         RunTopHSM(EXIT_EVENT); // <- rename to your own Run function
+        Last_Top_State = CurrentState;
         CurrentState = nextState;
         RunTopHSM(ENTRY_EVENT); // <- rename to your own Run function
     }

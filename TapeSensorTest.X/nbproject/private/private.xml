@@ -7,8 +7,17 @@
             <file>file:/C:/Users/igonzalo/Desktop/git/Autonomous-Robot/TapeSensorTest.X/ES_Configure.h</file>
             <file>file:/C:/Users/igonzalo/Desktop/git/Autonomous-Robot/TapeSensorTest.X/tape_detector_fsm_service.h</file>
             <file>file:/C:/Users/igonzalo/Desktop/git/Autonomous-Robot/TapeSensorTest.X/bumper_service.h</file>
-            <file>file:/C:/Users/igonzalo/Desktop/git/Autonomous-Robot/TapeSensorTest.X/FSMCollisionAvoidance.c</file>
+            <file>file:/C:/Users/igonzalo/Desktop/git/Autonomous-Robot/TapeSensorTest.X/FSMStartWar.h</file>
+            <file>file:/C:/Users/igonzalo/Desktop/git/Autonomous-Robot/TapeSensorTest.X/FSM_Line_Follower.c</file>
+            <file>file:/C:/Users/igonzalo/Desktop/git/Autonomous-Robot/TapeSensorTest.X/FSMStartWar.c</file>
+            <file>file:/C:/Users/igonzalo/Desktop/git/Autonomous-Robot/TapeSensorTest.X/FSMShoot.h</file>
+            <file>file:/C:/Users/igonzalo/Desktop/git/Autonomous-Robot/TapeSensorTest.X/motors.h</file>
+            <file>file:/C:/Users/igonzalo/Desktop/git/Autonomous-Robot/TapeSensorTest.X/motors.c</file>
+            <file>file:/C:/Users/igonzalo/Desktop/git/Autonomous-Robot/TapeSensorTest.X/main.c</file>
+            <file>file:/C:/Users/igonzalo/Desktop/git/Autonomous-Robot/TapeSensorTest.X/FSMExitShooter.c</file>
+            <file>file:/C:/Users/igonzalo/Desktop/git/Autonomous-Robot/TapeSensorTest.X/FSMAttackRen.c</file>
             <file>file:/C:/Users/igonzalo/Desktop/git/Autonomous-Robot/TapeSensorTest.X/TopHSM.c</file>
+            <file>file:/C:/Users/igonzalo/Desktop/git/Autonomous-Robot/TapeSensorTest.X/FSM_Mini_Avoid.c</file>
         </group>
     </open-files>
 </project-private>
