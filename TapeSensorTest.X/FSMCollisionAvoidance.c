@@ -45,6 +45,7 @@
 #define EXTRA_WEIGHT 300
 
 #define STOP_TIME 100
+#define STOP_9_TIME 2000
 #define REVERSE_TIME (300 + EXTRA_WEIGHT)
 //#define TURN_TIME 840
 #define TankTurnRight1_TIME (1000 + EXTRA_WEIGHT)
@@ -55,12 +56,14 @@
 
 //#define TURN2_TIME 940
 #define RAM_TIME (500 + EXTRA_WEIGHT)
+//#define TankTurnRight2_TIME (3000 + EXTRA_WEIGHT)
 #define TankTurnRight2_TIME (3000 + EXTRA_WEIGHT)
 
-#define TankTurnLeft1_TIME (1100 + EXTRA_WEIGHT)
+
+#define TankTurnLeft1_TIME (1200 + EXTRA_WEIGHT)
 #define TankTurnLeft2_TIME (1100 + EXTRA_WEIGHT)
-#define FORWARDS_1_TIME (400 + EXTRA_WEIGHT)
-#define FORWARDS_2_TIME (1600 + EXTRA_WEIGHT)
+#define FORWARDS_1_TIME (650 + EXTRA_WEIGHT)
+#define FORWARDS_2_TIME (2000 + EXTRA_WEIGHT)
 #define FORWARDS_3_TIME (1100 + EXTRA_WEIGHT)
 #define FORWARDS_4_TIME (1000 + EXTRA_WEIGHT)
 
@@ -69,7 +72,7 @@
 #define INCH_TIME ( 100)
 #define REVERSE_2_TIME (800 + EXTRA_WEIGHT)
 #define MINI_FORWARDS_TIME (300 + EXTRA_WEIGHT)
-#define INCH_RIGHT_TIME (100 + EXTRA_WEIGHT)
+#define INCH_RIGHT_TIME (3)
 
 typedef enum {
     InitPSubState,
@@ -801,7 +804,7 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
                         ThisEvent.EventType = T_FOUND;
 
                     } else if ((is_on_T() == TRUE) && (get_ATM6_Counter() != 3)) {
-                        ES_Timer_InitTimer(COLLISION_AVOIDANCE_TIMER, STOP_TIME);
+                        ES_Timer_InitTimer(COLLISION_AVOIDANCE_TIMER, STOP_9_TIME);
                         printf("TIMER_STARTED on Stop 9\r\n");
                     } else if (is_on_T() == FALSE) {
                         nextState = Forwards4State;
@@ -1121,6 +1124,7 @@ ES_Event RunFSMCollisionAvoidance(ES_Event ThisEvent) {
 
     if (makeTransition == TRUE) { // making a state transition, send EXIT and ENTRY
         // recursively call the current state with an exit event
+         ES_Timer_InitTimer(OH_SHIT_TIMER, OH_SHIT_TIME);
         RunFSMCollisionAvoidance(EXIT_EVENT); // <- rename to your own Run function
         CurrentState = nextState;
         RunFSMCollisionAvoidance(ENTRY_EVENT); // <- rename to your own Run function

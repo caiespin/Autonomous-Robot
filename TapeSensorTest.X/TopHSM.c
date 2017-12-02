@@ -52,6 +52,7 @@
  ******************************************************************************/
 //Include any defines you need to do
 #define BOOT_TIME 100
+#define UNSTUCK_TIME 1000
 /*******************************************************************************
  * MODULE #DEFINES                                                             *
  ******************************************************************************/
@@ -69,6 +70,7 @@ typedef enum {
     ATTACK_REN,
     Start_War_State,
     Debug_Stop_State,
+    Unstuck_State,
 
 } TemplateHSMState_t;
 
@@ -84,6 +86,7 @@ static const char *StateNames[] = {
 	"ATTACK_REN",
 	"Start_War_State",
 	"Debug_Stop_State",
+	"Unstuck_State",
 };
 
 
@@ -188,11 +191,17 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
 
                     break;
                 case ES_TIMEOUT:
-                    // nextState = Start_War_State;
-                    // nextState = Debug_Stop_State;
-                    nextState = FindLineState;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
+                    switch (ThisEvent.EventParam) {
+                        case TOP_HSM_TIMER:
+
+                            // nextState = Start_War_State;
+                            // nextState = Debug_Stop_State;
+                            nextState = FindLineState;
+                            makeTransition = TRUE;
+                            ThisEvent.EventType = ES_NO_EVENT;
+                            break;
+
+                    }
                     break;
 
 
@@ -278,6 +287,28 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                         ThisEvent.EventType = ES_NO_EVENT;
                     }
                     break;
+
+
+                case ES_TIMEOUT:
+                    switch (ThisEvent.EventParam) {
+                        case OH_SHIT_TIMER:
+                            nextState = Unstuck_State;
+                            makeTransition = TRUE;
+                            ThisEvent.EventType = ES_NO_EVENT;
+                            break;
+
+                    }
+                    break;
+
+                case ES_TIMERACTIVE:
+                    // printf("enter on_ES_TIMERACTIVE\r\n");
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+
+
+
                 case ES_NO_EVENT:
                 default:
                     break;
@@ -312,8 +343,27 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                         ThisEvent.EventType = ES_NO_EVENT;
                     }
                     break;
+
+                case ES_TIMEOUT:
+                    switch (ThisEvent.EventParam) {
+                        case OH_SHIT_TIMER:
+                            nextState = Unstuck_State;
+                            makeTransition = TRUE;
+                            ThisEvent.EventType = ES_NO_EVENT;
+                            break;
+
+                    }
+                    break;
+
+                case ES_TIMERACTIVE:
+                    // printf("enter on_ES_TIMERACTIVE\r\n");
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
                 case ES_NO_EVENT:
                 default:
+                    ThisEvent.EventType = ES_NO_EVENT;
                     break;
             }
             break;
@@ -355,8 +405,25 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                     break;
                 case GO_TO_ON_LINE:
                     printf("GO_TO_ON_LINE\r\n");
-                    nextState =LineFollowerState;
+                    nextState = LineFollowerState;
                     makeTransition = TRUE;
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+                case ES_TIMEOUT:
+                    switch (ThisEvent.EventParam) {
+                        case OH_SHIT_TIMER:
+                            nextState = Unstuck_State;
+                            makeTransition = TRUE;
+                            ThisEvent.EventType = ES_NO_EVENT;
+                            break;
+
+                    }
+                    break;
+
+                case ES_TIMERACTIVE:
+                    // printf("enter on_ES_TIMERACTIVE\r\n");
+                case ES_TIMERSTOPPED:
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
 
@@ -364,6 +431,7 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                 default:
                     break;
             }
+
             break;
         case AlignATM6: // in the first state, replace this with correct names
             // run sub-state machine for this state
@@ -479,6 +547,32 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                     break;
             }
 
+            break;
+
+        case Unstuck_State:
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    forwards();
+                    ES_Timer_InitTimer(UNSTUCK_TIMER, UNSTUCK_TIME);
+                    break;
+
+
+                case ES_TIMEOUT:
+                    if (ThisEvent.EventParam == UNSTUCK_TIMER) {
+                        nextState = FindLineState;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
+                    break;
+
+                case ES_TIMERACTIVE:
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
+                    break;
+            }
             break;
         default: // all unhandled states fall into here
             break;

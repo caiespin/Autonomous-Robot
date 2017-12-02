@@ -454,6 +454,7 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
     } // end switch on Current State
     if (makeTransition == TRUE) { // making a state transition, send EXIT and ENTRY
         // recursively call the current state with an exit event
+        ES_Timer_InitTimer(OH_SHIT_TIMER, OH_SHIT_TIME);
         RunFSMLineFollower(EXIT_EVENT);
         CurrentState = nextState;
         RunFSMLineFollower(ENTRY_EVENT);
