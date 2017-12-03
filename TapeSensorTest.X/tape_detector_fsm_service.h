@@ -82,7 +82,7 @@ int get_right_tape_status();
 
 int get_left_tape_status();
 int get_center_tape_status();
-int get_center_tape_status();
+int get_back_tape_status();
 void init_tape_sensors();
 /**
  * @Function InitTemplateFSM(uint8_t Priority)

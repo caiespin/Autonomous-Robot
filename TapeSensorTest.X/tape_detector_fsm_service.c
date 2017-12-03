@@ -519,12 +519,12 @@ void detect_tape_event() {
                 newEvent.EventParam = index;
                 PostTopHSM(newEvent);
 
-                if (is_on_T() == TRUE) {
-
-                    newEvent.EventType = T_FOUND;
-                    newEvent.EventParam = index;
-                    PostTopHSM(newEvent);
-                }
+//                if (is_on_T() == TRUE) {
+//
+//                    newEvent.EventType = T_FOUND;
+//                    newEvent.EventParam = index;
+//                    PostTopHSM(newEvent);
+//                }
             }
         } else if (diff > TAPE_HIGH_THRESHOLD) {
 
