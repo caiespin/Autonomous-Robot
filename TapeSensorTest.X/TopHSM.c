@@ -527,11 +527,19 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                     makeTransition = TRUE;
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
-                case T_FOUND:
+//                case T_FOUND:
+//                    nextState = Debug_Stop_State;
+//                    //nextState= ATTACK_REN;
+//                    makeTransition = TRUE;
+//                    ThisEvent.EventType = ES_NO_EVENT;
+//                    break;
+                    
+                case GO_TO_ALIGN_REN:
                     nextState = Debug_Stop_State;
-                    //nextState= ATTACK_REN;
                     makeTransition = TRUE;
                     ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                   
                 case ES_NO_EVENT:
                 default:
                     break;
