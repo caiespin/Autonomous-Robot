@@ -20,6 +20,7 @@ void turn_back_right();
 void forwards();
 void reverse();
 void stop();
+void adjust_pwm();
 
 
 #endif	/* MOTORS_H */

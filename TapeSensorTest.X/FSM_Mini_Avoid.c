@@ -43,16 +43,17 @@
 #define ADJUST_TIME 250
 #define REVERSE_TIME 150
 #define TANK_RIGHT_TIME 1000
-#define TANK_LEFT_TIME 1600
-#define FORWARDS1_TIME 1100
+#define TANK_LEFT_TIME 1700
+#define FORWARDS1_TIME 1000
 #define FORWARDS2_TIME 2000
 #define TURN_180_1_TIME 2700
-#define TURN_180_2_TIME 3200
+#define TURN_180_2_TIME 3600
 #define LINE_FOLLOWER_STATE 2
 #define SWEEP_LEFT_1_TIME 1500
 #define SWEEP_RIGHT_1_TIME 2000
 #define SWEEP_RIGHT_2_TIME 2000
-#define INCH_BACK_TIME 250
+#define INCH_BACK_TIME 300
+#define INCH_FOWARDS_TIME 250
 
 typedef enum {
     InitPSubState,
@@ -77,7 +78,9 @@ typedef enum {
     Stop11State,
     Stop12State,
     Stop13State,
+    Stop14State,
     InchBackState,
+    InchForwardsState,
     SweepLeft1State,
     SweepLeft2State,
     SweepRight1State,
@@ -111,7 +114,9 @@ static const char *StateNames[] = {
 	"Stop11State",
 	"Stop12State",
 	"Stop13State",
+	"Stop14State",
 	"InchBackState",
+	"InchForwardsState",
 	"SweepLeft1State",
 	"SweepLeft2State",
 	"SweepRight1State",
@@ -182,7 +187,7 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
     TemplateSubHSMState_t nextState; // <- change type to correct enum
     static uint32_t start_time = 0;
     static uint32_t end_time = 0;
-    static int first_time_flag=0;
+    static int first_time_flag = 0;
     uint32_t difference_time = 0;
     static int forward_flag = 0;
     ES_Tattle(); // trace call stack
@@ -196,10 +201,11 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
                 // initial state
 
                 // now put the machine into the actual initial state
-                first_time_flag=0;
+                first_time_flag = 0;
                 nextState = ReverseState;
                 makeTransition = TRUE;
                 ThisEvent.EventType = ES_NO_EVENT;
+               
             }
             break;
 
@@ -241,6 +247,7 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
                     ES_Timer_InitTimer(MINI_AVOID_TIMER, REVERSE_TIME);
                     reverse();
                     ThisEvent.EventType = ES_NO_EVENT;
+
                     break;
 
 
@@ -274,8 +281,8 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
 
                 case ES_TIMEOUT:
                     if (ThisEvent.EventParam == MINI_AVOID_TIMER) {
-                        if ((get_last_top_state() == LINE_FOLLOWER_STATE)&& (get_ATM6_Counter() == 3) &&(first_time_flag==0)) {
-                            first_time_flag=1;
+                        if ((get_last_top_state() == LINE_FOLLOWER_STATE)&& (get_ATM6_Counter() == 3) &&(first_time_flag == 0)) {
+                            first_time_flag = 1;
                             nextState = Turn_180_1;
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
@@ -641,6 +648,19 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
                     }
                     break;
 
+                case BUMPER_PRESSED:
+                    switch (ThisEvent.EventParam & BACK_BUMPERS) {
+
+                        case BACK_RIGHT_BUMPER_PIN:
+                        case BACK_LEFT_BUMPER_PIN:
+                        case BACK_BUMPERS:
+                            nextState = Stop13State;
+                            makeTransition = TRUE;
+                            ThisEvent.EventType = ES_NO_EVENT;
+                            break;
+                    }
+                    break;
+
                 case ES_TIMERACTIVE:
                 case ES_TIMERSTOPPED:
                     ThisEvent.EventType = ES_NO_EVENT;
@@ -655,7 +675,66 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
 
                 case ES_ENTRY:
-                    ES_Timer_InitTimer(MINI_AVOID_TIMER, 5000);
+                    ES_Timer_InitTimer(MINI_AVOID_TIMER, 3000);
+                    stop();
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+
+                case ES_TIMEOUT:
+                    if (ThisEvent.EventParam == MINI_AVOID_TIMER) {
+                        if (is_on_T() == TRUE) {
+                            ThisEvent.EventType = GO_TO_ALIGN_REN;
+                            ThisEvent.EventParam = 0;
+                            PostTopHSM(ThisEvent);
+                            ThisEvent.EventType = ES_NO_EVENT;
+                        } else {
+                            nextState = InchForwardsState;
+                            makeTransition = TRUE;
+                            ThisEvent.EventType = ES_NO_EVENT;
+                        }
+
+                    }
+                    break;
+
+                case ES_TIMERACTIVE:
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+            }
+            break;
+
+        case InchForwardsState:
+            switch (ThisEvent.EventType) {
+
+                case ES_ENTRY:
+                    ES_Timer_InitTimer(MINI_AVOID_TIMER, INCH_FOWARDS_TIME);
+                    forwards();
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+
+                case ES_TIMEOUT:
+                    if (ThisEvent.EventParam == MINI_AVOID_TIMER) {
+
+                        nextState = Stop14State;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
+                    break;
+
+                case ES_TIMERACTIVE:
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+            }
+            break;
+
+        case Stop14State:
+            switch (ThisEvent.EventType) {
+
+                case ES_ENTRY:
+                    ES_Timer_InitTimer(MINI_AVOID_TIMER, STOP_TIME);
                     stop();
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
@@ -672,6 +751,7 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
                             nextState = Turn_180_2;
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
+
                         }
 
                     }
@@ -690,7 +770,7 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
 
                 case ES_ENTRY:
-                    ES_Timer_InitTimer(MINI_AVOID_TIMER, TURN_180_2_TIME);
+                    ES_Timer_InitTimer(MINI_AVOID_TIMER, TURN_180_2_TIME/2);
                     tank_turn_left();
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
@@ -698,7 +778,8 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
 
                 case ES_TIMEOUT:
                     if (ThisEvent.EventParam == MINI_AVOID_TIMER) {
-                        nextState = Stop8State;
+                       // nextState = Stop8State;
+                        nextState = Stop3State;
                         makeTransition = TRUE;
                         ThisEvent.EventType = ES_NO_EVENT;
                     }
