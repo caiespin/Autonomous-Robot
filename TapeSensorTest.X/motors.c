@@ -21,6 +21,14 @@ uint16_t Motor_Speed_A = 0;
 uint16_t Motor_Speed_B = 0;
 //Sets up the pins for driving the motors.
 
+ void arc_left(){
+  
+    PWM_SetDutyCycle(ENABLE_A, Motor_Speed_A);
+    PWM_SetDutyCycle(ENABLE_B,  Motor_Speed_B*0.40);
+    IO_PortsClearPortBits(DRIVING_MOTOR_PORT, DIRECTION_A);
+    IO_PortsClearPortBits(DRIVING_MOTOR_PORT, DIRECTION_B);   
+ }
+
 void motors_init() {
    
     IO_PortsSetPortOutputs(DRIVING_MOTOR_PORT, DIRECTION_A | DIRECTION_B);

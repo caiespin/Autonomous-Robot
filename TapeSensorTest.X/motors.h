@@ -21,6 +21,7 @@ void forwards();
 void reverse();
 void stop();
 void adjust_pwm();
+void  arc_left();
 
 
 #endif	/* MOTORS_H */

@@ -401,6 +401,18 @@ int is_on_T() {
             (get_right_tape_status() == on_tape) &&
             (get_back_tape_status() == on_tape)) {
         return TRUE;
+    }
+    else if ((get_front_tape_status() == on_tape) &&
+            (get_center_tape_status() == on_tape) &&
+            (get_left_tape_status() == on_tape) &&           
+            (get_back_tape_status() == on_tape)
+            ) {
+        return TRUE;
+    }else if ((get_front_tape_status() == on_tape) &&
+            (get_left_tape_status() == on_tape) &&           
+            (get_back_tape_status() == on_tape)
+            ) {
+        return TRUE;
     } else {
         return FALSE;
     }
