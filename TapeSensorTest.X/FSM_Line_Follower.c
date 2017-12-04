@@ -72,6 +72,8 @@ typedef enum {
     reverse_state,
     InchRight,
     InchLeft,
+            SweepRight,
+            SweepLeft,
 } TemplateFSMState_t;
 
 static const char *StateNames[] = {
@@ -85,6 +87,8 @@ static const char *StateNames[] = {
 	"reverse_state",
 	"InchRight",
 	"InchLeft",
+	"SweepRight",
+	"SweepLeft",
 };
 
 
@@ -154,7 +158,8 @@ uint8_t PostFSMLineFollower(ES_Event ThisEvent) {
 ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
     uint8_t makeTransition = FALSE; // use to flag transition
     TemplateFSMState_t nextState; // <- need to change enum type here
-
+    static int start_time = 0;
+    static int end_time = 0;
     ES_Tattle(); // trace call stack
 
     switch (CurrentState) {
@@ -240,13 +245,15 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
                     tank_turn_right();
+                    start_time = ES_Timer_GetTime();
                     // LED_SetBank(LED_BANK1, 2);
                     // LED_OffBank(LED_BANK2, ALL_LEDS);
                     break;
                 case TAPE_DETECTED:
                     switch (ThisEvent.EventParam) {
-                        case FRONT_TAPE_SENSOR:
-                            nextState = InchRight;
+                        case LEFT_TAPE_SENSOR:
+                            end_time = ES_Timer_GetTime();
+                            nextState = SweepLeft;
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
                     }
@@ -258,13 +265,15 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
                     tank_turn_left();
+                    start_time = ES_Timer_GetTime();
                     // LED_SetBank(LED_BANK1, 4);
                     //  LED_OffBank(LED_BANK2, ALL_LEDS);
                     break;
                 case TAPE_DETECTED:
                     switch (ThisEvent.EventParam) {
-                        case FRONT_TAPE_SENSOR:
-                            nextState = InchLeft;
+                        case RIGHT_TAPE_SENSOR:
+                            end_time = ES_Timer_GetTime();
+                            nextState = SweepRight;
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
                     }
@@ -328,7 +337,7 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
 
-              
+
                 case ES_EXIT:
                     // LED_OffBank(LED_BANK3, 0xf);
                     break;
@@ -340,6 +349,65 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
                 case ES_ENTRY:
                     tank_turn_right();
                     ES_Timer_InitTimer(TAPE_FOLLOWER_TIMER, INCH_RIGHT_TIME);
+
+                    break;
+                case ES_TIMEOUT:
+
+                    if (ThisEvent.EventParam == TAPE_FOLLOWER_TIMER) {
+                        nextState = on_line;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
+                    break;
+
+
+                case ES_TIMERACTIVE:
+                    // printf("enter on_ES_TIMERACTIVE\r\n");
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
+                    break;
+            }
+            break;
+
+
+        case SweepRight: // in the first state, replace this with correct names
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    tank_turn_right();
+
+                    ES_Timer_InitTimer(TAPE_FOLLOWER_TIMER, ((end_time - start_time) >> 1));
+
+                    break;
+                case ES_TIMEOUT:
+
+                    if (ThisEvent.EventParam == TAPE_FOLLOWER_TIMER) {
+                        nextState = on_line;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
+                    break;
+
+
+                case ES_TIMERACTIVE:
+                    // printf("enter on_ES_TIMERACTIVE\r\n");
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
+                    break;
+            }
+            break;
+            
+             case SweepLeft: // in the first state, replace this with correct names
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    tank_turn_left();
+
+                    ES_Timer_InitTimer(TAPE_FOLLOWER_TIMER, ((end_time - start_time) >> 1));
 
                     break;
                 case ES_TIMEOUT:

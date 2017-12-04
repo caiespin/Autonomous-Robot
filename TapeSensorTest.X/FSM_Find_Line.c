@@ -130,6 +130,7 @@ uint8_t InitFSMFindLine(void) {
 ES_Event RunFSMFindLine(ES_Event ThisEvent) {
     uint8_t makeTransition = FALSE; // use to flag transition
     TemplateSubHSMState_t nextState; // <- change type to correct enum
+    
 
     ES_Tattle(); // trace call stack
 
@@ -196,6 +197,7 @@ ES_Event RunFSMFindLine(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
                     turn_right();
+                   
                     // LED_SetBank(LED_BANK1, 2);
                     //LED_OffBank(LED_BANK2, ALL_LEDS);
                     break;
