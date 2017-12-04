@@ -22,6 +22,9 @@
 
 uint16_t Motor_Speed_A = 0;
 uint16_t Motor_Speed_B = 0;
+
+uint16_t  Motor_Speed_Tank_B;
+uint16_t  Motor_Speed_Tank_A;
 //Sets up the pins for driving the motors.
 
  void arc_left(){
@@ -43,7 +46,7 @@ void motors_init() {
 
 void turn_right() {
 
-    PWM_SetDutyCycle(ENABLE_A, 0);
+    PWM_SetDutyCycle(ENABLE_A, Motor_Speed_A*0.5);
     PWM_SetDutyCycle(ENABLE_B, Motor_Speed_B);
     IO_PortsSetPortBits(DRIVING_MOTOR_PORT, DIRECTION_A);
     IO_PortsClearPortBits(DRIVING_MOTOR_PORT, DIRECTION_B);
@@ -52,23 +55,23 @@ void turn_right() {
 void turn_left() {
   
     PWM_SetDutyCycle(ENABLE_A, Motor_Speed_A);
-    PWM_SetDutyCycle(ENABLE_B, 0);
+    PWM_SetDutyCycle(ENABLE_B, Motor_Speed_B*0.5);
     IO_PortsClearPortBits(DRIVING_MOTOR_PORT, DIRECTION_A);
     IO_PortsSetPortBits(DRIVING_MOTOR_PORT, DIRECTION_B);
 }
 
 void tank_turn_right() {
    
-    PWM_SetDutyCycle(ENABLE_A, Motor_Speed_A);
-    PWM_SetDutyCycle(ENABLE_B, Motor_Speed_B);
+    PWM_SetDutyCycle(ENABLE_A, Motor_Speed_Tank_A);
+    PWM_SetDutyCycle(ENABLE_B,Motor_Speed_Tank_B);
     IO_PortsSetPortBits(DRIVING_MOTOR_PORT, DIRECTION_A);
     IO_PortsClearPortBits(DRIVING_MOTOR_PORT, DIRECTION_B);
 }
 
 void tank_turn_left() {
     
-    PWM_SetDutyCycle(ENABLE_A, Motor_Speed_A);
-    PWM_SetDutyCycle(ENABLE_B, Motor_Speed_B);
+    PWM_SetDutyCycle(ENABLE_A,Motor_Speed_Tank_A);
+    PWM_SetDutyCycle(ENABLE_B,Motor_Speed_Tank_B);
     IO_PortsClearPortBits(DRIVING_MOTOR_PORT, DIRECTION_A);
     IO_PortsSetPortBits(DRIVING_MOTOR_PORT, DIRECTION_B);
 }
@@ -114,12 +117,21 @@ void stop() {
 void adjust_pwm() {
     
     float rawBatVoltage = (AD_ReadADPin(BAT_VOLTAGE) * 33) / 1023; // read the battery voltage
-    uint16_t PWM = (uint16_t)((6.5/(rawBatVoltage - 0.6)) * 1000);
-    if(PWM>1000){
-        PWM=1000;
+    uint16_t PWM_ALL = (uint16_t)((6.5/(rawBatVoltage - 0.6)) * 1000);
+    uint16_t PWM_Tank_Turns = (uint16_t)((7.9/(rawBatVoltage - 0.6)) * 1000);
+    if(PWM_ALL>1000){
+        PWM_ALL=1000;
     }
-    printf("pwm-------------------> %d\r\n", PWM);
-    Motor_Speed_A=PWM;
-    Motor_Speed_B=Motor_Speed_A-MOTOR_OFFSET;
+     if(PWM_Tank_Turns>1000){
+        PWM_Tank_Turns=1000;
+    }
+    printf("PWM_ALL-------------------> %d\r\n", PWM_ALL);
+    Motor_Speed_B=PWM_ALL-MOTOR_OFFSET;
+    Motor_Speed_A= Motor_Speed_B;
+    
+    Motor_Speed_Tank_B=PWM_Tank_Turns;
+    Motor_Speed_Tank_A= PWM_Tank_Turns;
+    
+   
     
 }

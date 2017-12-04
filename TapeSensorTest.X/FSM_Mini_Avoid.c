@@ -39,9 +39,9 @@
 /*******************************************************************************
  * MODULE #DEFINES                                                             *
  ******************************************************************************/
-#define STOP_TIME 300
+#define STOP_TIME 1000
 #define ADJUST_TIME 0
-#define REVERSE_TIME 150
+#define REVERSE_TIME 80
 #define TANK_RIGHT_TIME 1000
 #define TANK_LEFT_TIME 1700
 #define FORWARDS1_TIME 1000
@@ -50,7 +50,7 @@
 #define TURN_180_1_TIME 1900
 #define TURN_90_1_TIME 700
 #define LINE_FOLLOWER_STATE 2
-#define SWEEP_LEFT_1_TIME 1100
+#define SWEEP_LEFT_1_TIME 800
 #define SWEEP_RIGHT_1_TIME 1100
 #define SWEEP_RIGHT_2_TIME 1100
 #define INCH_BACK_TIME 200
@@ -668,7 +668,7 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
 
                 case ES_ENTRY:
-                    ES_Timer_InitTimer(MINI_AVOID_TIMER, 1000);
+                    ES_Timer_InitTimer(MINI_AVOID_TIMER, STOP_TIME);
                     stop();
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
@@ -858,7 +858,7 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
 
                 case ES_ENTRY:
-                    ES_Timer_InitTimer(MINI_AVOID_TIMER, 3000);//STOP_TIME);
+                    ES_Timer_InitTimer(MINI_AVOID_TIMER, STOP_TIME);
                     stop();
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
