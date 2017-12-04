@@ -27,7 +27,7 @@ uint16_t Motor_Speed_B = 0;
  void arc_left(){
   
     PWM_SetDutyCycle(ENABLE_A, Motor_Speed_A);
-    PWM_SetDutyCycle(ENABLE_B,  Motor_Speed_B*0.40);
+    PWM_SetDutyCycle(ENABLE_B,  Motor_Speed_B*0.50);
     IO_PortsClearPortBits(DRIVING_MOTOR_PORT, DIRECTION_A);
     IO_PortsClearPortBits(DRIVING_MOTOR_PORT, DIRECTION_B);   
  }
@@ -114,7 +114,7 @@ void stop() {
 void adjust_pwm() {
     
     float rawBatVoltage = (AD_ReadADPin(BAT_VOLTAGE) * 33) / 1023; // read the battery voltage
-    uint16_t PWM = (uint16_t)((6.8/(rawBatVoltage - 0.6)) * 1000);
+    uint16_t PWM = (uint16_t)((6.5/(rawBatVoltage - 0.6)) * 1000);
     if(PWM>1000){
         PWM=1000;
     }

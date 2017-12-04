@@ -239,7 +239,10 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
         case on_left_side:
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
-                    tank_turn_right();
+                    turn_right();
+                   // tank_turn_right();
+                            
+                            
                     // LED_SetBank(LED_BANK1, 2);
                     // LED_OffBank(LED_BANK2, ALL_LEDS);
                     break;
@@ -257,7 +260,8 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
         case on_right_side:
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
-                    tank_turn_left();
+                    //tank_turn_left();
+                    turn_left();
                     // LED_SetBank(LED_BANK1, 4);
                     //  LED_OffBank(LED_BANK2, ALL_LEDS);
                     break;
@@ -338,7 +342,8 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
         case InchRight: // in the first state, replace this with correct names
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
-                    tank_turn_right();
+                    //tank_turn_right();
+                    turn_right();
                     ES_Timer_InitTimer(TAPE_FOLLOWER_TIMER, INCH_RIGHT_TIME);
 
                     break;
@@ -366,7 +371,8 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
         case InchLeft: // in the first state, replace this with correct names
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
-                    tank_turn_left();
+                    //tank_turn_left();
+                    turn_left();
                     ES_Timer_InitTimer(TAPE_FOLLOWER_TIMER, INCH_LEFT_TIME);
 
                     break;

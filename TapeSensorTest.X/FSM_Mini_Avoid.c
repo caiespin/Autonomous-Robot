@@ -39,22 +39,22 @@
 /*******************************************************************************
  * MODULE #DEFINES                                                             *
  ******************************************************************************/
-#define STOP_TIME 100
-#define ADJUST_TIME 250
+#define STOP_TIME 300
+#define ADJUST_TIME 0
 #define REVERSE_TIME 150
 #define TANK_RIGHT_TIME 1000
 #define TANK_LEFT_TIME 1700
 #define FORWARDS1_TIME 1000
 #define ARC_LEFT_TIME 8000
 #define FORWARDS2_TIME 2000
-#define TURN_180_1_TIME 2700
-#define TURN_180_2_TIME 3600
+#define TURN_180_1_TIME 1900
+#define TURN_90_1_TIME 700
 #define LINE_FOLLOWER_STATE 2
-#define SWEEP_LEFT_1_TIME 1500
-#define SWEEP_RIGHT_1_TIME 2000
-#define SWEEP_RIGHT_2_TIME 2000
-#define INCH_BACK_TIME 300
-#define INCH_FOWARDS_TIME 250
+#define SWEEP_LEFT_1_TIME 1100
+#define SWEEP_RIGHT_1_TIME 1100
+#define SWEEP_RIGHT_2_TIME 1100
+#define INCH_BACK_TIME 200
+#define INCH_FOWARDS_TIME 100
 
 typedef enum {
     InitPSubState,
@@ -67,7 +67,7 @@ typedef enum {
     Stop6State,
     TankLeft2State,
     Turn_180_1,
-    Turn_180_2,
+    Turn_90_1,
     Stop7State,
     Stop8State,
     Stop9State,
@@ -99,7 +99,7 @@ static const char *StateNames[] = {
 	"Stop6State",
 	"TankLeft2State",
 	"Turn_180_1",
-	"Turn_180_2",
+	"Turn_90_1",
 	"Stop7State",
 	"Stop8State",
 	"Stop9State",
@@ -398,7 +398,7 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
 
                 case ES_ENTRY:
-                    ES_Timer_InitTimer(MINI_AVOID_TIMER, STOP_TIME);
+                    ES_Timer_InitTimer(MINI_AVOID_TIMER,STOP_TIME);
                     stop();
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
@@ -746,7 +746,7 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
 //                            ThisEvent.EventType = ES_NO_EVENT;
 //
 //                        }
-                         nextState = Turn_180_2;
+                         nextState = Turn_90_1;
                         makeTransition = TRUE;
                         ThisEvent.EventType = ES_NO_EVENT;
 
@@ -761,12 +761,12 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
             break;
 
 
-        case Turn_180_2:
+        case Turn_90_1:
 
             switch (ThisEvent.EventType) {
 
                 case ES_ENTRY:
-                    ES_Timer_InitTimer(MINI_AVOID_TIMER, TURN_180_2_TIME / 2);
+                    ES_Timer_InitTimer(MINI_AVOID_TIMER, TURN_90_1_TIME);
                     tank_turn_left();
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
