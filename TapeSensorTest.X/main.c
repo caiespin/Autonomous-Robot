@@ -20,12 +20,12 @@
 #include "FSMShoot.h"
 //
 //#define TEST_TAPE_SENSOR
-#define TEST_TAPE_SENSOR_WITH_ES_FRAMEWORK
+//#define TEST_TAPE_SENSOR_WITH_ES_FRAMEWORK
 //#define TEST_BUMPER
 //#define TEST_DRIVING_MOTORS
 //#define TEST_SERVO
 //#define TEST_DRIVING_MOTORS_HELPER_FUNCTIONS
-//#define TEST_DRIVING_MOTORS_HELPER_FUNCTIONS2
+#define TEST_DRIVING_MOTORS_HELPER_FUNCTIONS2
 //#define TEST_TRACKWIRE
 //#define TEST_SHOOTER
 //#define TEST_AD_BUG
@@ -453,7 +453,7 @@ int main() {
     BOARD_Init();
     PWM_Init();
     motors_init();
-    forwards();
+    tank_turn_right();
 
     for (;;) {
         ;

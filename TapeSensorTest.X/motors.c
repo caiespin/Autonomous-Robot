@@ -9,13 +9,16 @@
 #define ENABLE_A PWM_PORTY12  
 #define DIRECTION_A PIN11
 
-#define MOT0R_A_SPEED 1000
-//#define MOT0R_B_SPEED 920
-#define MOT0R_B_SPEED 994
-#define MOTOR_OFFSET 6
+//#define MOT0R_A_SPEED 1000
+////#define MOT0R_B_SPEED 920
+//#define MOT0R_B_SPEED 994
+#define MOTOR_OFFSET 0
 
 #define ENABLE_B PWM_PORTY10 
 #define DIRECTION_B PIN9
+
+
+
 
 uint16_t Motor_Speed_A = 0;
 uint16_t Motor_Speed_B = 0;
@@ -94,6 +97,13 @@ void forwards() {
     IO_PortsClearPortBits(DRIVING_MOTOR_PORT, DIRECTION_A | DIRECTION_B);
 }
 
+
+void slow_forwards() {
+    PWM_SetDutyCycle(ENABLE_A, Motor_Speed_A*0.7);
+    PWM_SetDutyCycle(ENABLE_B, Motor_Speed_B*0.7);
+    IO_PortsClearPortBits(DRIVING_MOTOR_PORT, DIRECTION_A | DIRECTION_B);
+}
+
 void stop() {
     PWM_SetDutyCycle(ENABLE_A, 0);
     PWM_SetDutyCycle(ENABLE_B, 0);
@@ -104,7 +114,7 @@ void stop() {
 void adjust_pwm() {
     
     float rawBatVoltage = (AD_ReadADPin(BAT_VOLTAGE) * 33) / 1023; // read the battery voltage
-    uint16_t PWM = (uint16_t)((8.2/(rawBatVoltage - 0.6)) * 1000);
+    uint16_t PWM = (uint16_t)((6.8/(rawBatVoltage - 0.6)) * 1000);
     if(PWM>1000){
         PWM=1000;
     }

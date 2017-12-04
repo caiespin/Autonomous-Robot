@@ -93,9 +93,9 @@ static uint8_t MyPriority;
 
 #define ALL_LEDS 0xF
 #define REVERSE_TIME 200
-#define INCH_RIGHT_TIME 100
-#define INCH_LEFT_TIME 100
-#define CORNER_DETECTED_TIMEOUT_TIME 1000
+#define INCH_RIGHT_TIME 3
+#define INCH_LEFT_TIME 3
+#define CORNER_DETECTED_TIMEOUT_TIME 500
 #define TURNING_RIGHT_TIMEOUT_TIME 4000
 /*******************************************************************************
  * PUBLIC FUNCTIONS                                                            *

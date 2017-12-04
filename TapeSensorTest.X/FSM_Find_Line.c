@@ -255,7 +255,7 @@ ES_Event RunFSMFindLine(ES_Event ThisEvent) {
                         makeTransition = TRUE;
                         ThisEvent.EventType = ES_NO_EVENT;
                     }
-                    forwards();
+                    slow_forwards();
                     //   LED_SetBank(LED_BANK1, 8);
                     //  LED_OffBank(LED_BANK2, ALL_LEDS);
 
