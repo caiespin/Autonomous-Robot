@@ -38,7 +38,7 @@
  * MODULE #DEFINES                                                             *
  ******************************************************************************/
 #define REVERSE_TIME 2000
-#define TWIST_RIGHT_TIME 350
+#define TWIST_RIGHT_TIME 330
 #define TWIST_LEFT_TIME 400
 #define  FORWARDS_TIME 200
 #define REVERSE_LEFT_INTO_REN_TIME 500
@@ -213,7 +213,7 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
 
                         case CENTER_TAPE_SENSOR:
                             if (first_time == TRUE) {
-                                first_time = FALSE;
+                               // first_time = FALSE;
                                 nextState = TurnLeft1State;
                                 makeTransition = TRUE;
                                 ThisEvent.EventType = ES_NO_EVENT;
@@ -221,6 +221,9 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
                             break;
 
                     }
+                    break;
+                case ES_EXIT:
+                    first_time = FALSE;
                     break;
 
                 case ES_TIMERACTIVE:

@@ -245,14 +245,17 @@ int checkRenBumper(int* flag, int counter, int param) {
 #define BUMPER_TRIPPED 1
 #define BUMPER_NOT_TRIPPED 0
 
-#define Front_Right 8
-#define Front_Left 16
-#define Rear_Right 32
-#define Rear_Left 64
+//#define Front_Right 8
+//#define Front_Left 16
+//#define Rear_Right 32
+//#define Rear_Left 64
+//
+//#define Left_Ren 128
+//#define Center_Ren 512
+//#define Right_Ren 256
 
-#define Left_Ren 128
-#define Center_Ren 512
-#define Right_Ren 256
+
+
 
 uint8_t CheckBumpers(void) {
     ES_Event thisEvent;
@@ -351,15 +354,15 @@ uint8_t CheckBumpers(void) {
         }
     }
 
-    checkBumper(&Front_Right_Pressed_Flag, Front_Right_Pressed_Counter, Front_Right);
-    checkBumper(&Front_Left_Pressed_Flag, Front_Left_Pressed_Counter, Front_Left);
-    checkBumper(&Rear_Right_Pressed_Flag, Rear_Right_Pressed_Counter, Rear_Right);
-    checkBumper(&Rear_Left_Pressed_Flag, Rear_Left_Pressed_Counter, Rear_Left);
+    checkBumper(&Front_Right_Pressed_Flag, Front_Right_Pressed_Counter, FRONT_RIGHT_BUMPER_PIN);
+    checkBumper(&Front_Left_Pressed_Flag, Front_Left_Pressed_Counter, FRONT_LEFT_BUMPER_PIN);
+    checkBumper(&Rear_Right_Pressed_Flag, Rear_Right_Pressed_Counter, BACK_RIGHT_BUMPER_PIN);
+    checkBumper(&Rear_Left_Pressed_Flag, Rear_Left_Pressed_Counter, BACK_LEFT_BUMPER_PIN);
 
 
-    checkRenBumper(& Ren_Left_Pressed_Flag, Left_Ren_Bumper_Pressed_Counter, Left_Ren);
-    checkRenBumper(&Ren_Center_Pressed_Flag, Center_Ren_Bumper_Pressed_Counter, Center_Ren);
-    checkRenBumper(&Ren_Right_Pressed_Flag, Right_Ren_Bumper_Pressed_Counter, Right_Ren);
+    checkRenBumper(& Ren_Left_Pressed_Flag, Left_Ren_Bumper_Pressed_Counter, REN_LEFT_PIN);
+    checkRenBumper(&Ren_Center_Pressed_Flag, Center_Ren_Bumper_Pressed_Counter, REN_CENTER_PIN);
+    checkRenBumper(&Ren_Right_Pressed_Flag, Right_Ren_Bumper_Pressed_Counter, REN_RIGHT_PIN);
 
     return (returnVal);
 }
