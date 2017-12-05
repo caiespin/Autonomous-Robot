@@ -67,6 +67,7 @@ typedef enum {
     REN_ALIGNED,
     GO_TO_FIND_LINE,
             GO_TO_ALIGN_REN,
+            GO_TO_ATTACK_REN,
 
 
 } ES_EventTyp_t;
@@ -105,6 +106,7 @@ static const char *EventNames[] = {
 	"REN_ALIGNED",
 	"GO_TO_FIND_LINE",
 	"GO_TO_ALIGN_REN",
+	"GO_TO_ATTACK_REN",
 };
 
 

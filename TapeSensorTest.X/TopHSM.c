@@ -202,7 +202,9 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                             // nextState = Start_War_State;
                             nextState = FindLineState;
                             // nextState = Debug_Stop_State;
-                            //nextState = ATTACK_REN;
+                            // nextState = ATTACK_REN;
+                            //nextState=Shoot;
+
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
                             break;
@@ -288,7 +290,8 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                     bumpers = (ThisEvent.EventParam & (FRONT_BUMPERS));
                     if ((bumpers == FRONT_LEFT_BUMPER_PIN) || (bumpers == FRONT_RIGHT_BUMPER_PIN) || (bumpers == FRONT_BUMPERS)) {
                         //NEED to MODIFY THIS ADD FRONT BUMPER , or LEFT OR RIGHT
-                        nextState = MiniAvoidState;
+                         nextState = MiniAvoidState;
+                       
                         makeTransition = TRUE;
                         ThisEvent.EventType = ES_NO_EVENT;
                     }
@@ -527,19 +530,25 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                     makeTransition = TRUE;
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
-//                case T_FOUND:
-//                    nextState = Debug_Stop_State;
-//                    //nextState= ATTACK_REN;
-//                    makeTransition = TRUE;
-//                    ThisEvent.EventType = ES_NO_EVENT;
-//                    break;
-                    
+                    //                case T_FOUND:
+                    //                    nextState = Debug_Stop_State;
+                    //                    //nextState= ATTACK_REN;
+                    //                    makeTransition = TRUE;
+                    //                    ThisEvent.EventType = ES_NO_EVENT;
+                    //                    break;
+
                 case GO_TO_ALIGN_REN:
                     nextState = Debug_Stop_State;
                     makeTransition = TRUE;
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
-                   
+
+                case GO_TO_ATTACK_REN:
+                    nextState = ATTACK_REN;
+                    makeTransition = TRUE;
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
                 case ES_NO_EVENT:
                 default:
                     break;

@@ -38,9 +38,15 @@
  * MODULE #DEFINES                                                             *
  ******************************************************************************/
 #define REVERSE_TIME 1000
-#define TWIST_RIGHT_TIME 200
+#define TWIST_RIGHT_TIME 300
 #define TWIST_LEFT_TIME 400
 #define  FORWARDS_TIME 200
+#define REVERSE_LEFT_INTO_REN_TIME 500
+#define REVERSE_RIGHT_INTO_REN_TIME 500
+
+#define STOP_TIME 200
+#define INCH_FOWARDS1_TIME 200
+#define INCH_FOWARDS2_TIME 200
 
 typedef enum {
     InitPSubState,
@@ -50,6 +56,12 @@ typedef enum {
     ForwardsState,
     TwistLeftState,
     TwistRightState,
+    StopState1,
+    StopState2,
+    InchFowardsState1,
+    InchFowardsState2,
+    ReverseRightIntoRen1State,
+    ReverseLeftIntoRen1State,
 
 
     //  ShootRen,
@@ -63,6 +75,12 @@ static const char *StateNames[] = {
 	"ForwardsState",
 	"TwistLeftState",
 	"TwistRightState",
+	"StopState1",
+	"StopState2",
+	"InchFowardsState1",
+	"InchFowardsState2",
+	"ReverseRightIntoRen1State",
+	"ReverseLeftIntoRen1State",
 };
 
 
@@ -179,14 +197,14 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
         case ReverseLeftIntoRenState: // in the first state, replace this with correct names
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
-                    ES_Timer_InitTimer(ATTACK_REN_TIMER, REVERSE_TIME);
+                    ES_Timer_InitTimer(ATTACK_REN_TIMER, REVERSE_LEFT_INTO_REN_TIME);
                     turn_back_left();
                     break;
 
                 case ES_TIMEOUT:
                     // printf("--------------------FSMAlignATM6, ForwardsState\r\n");
                     if (ThisEvent.EventParam == ATTACK_REN_TIMER) {
-                        nextState = ForwardsState;
+                        nextState = StopState2;
                         makeTransition = TRUE;
                         ThisEvent.EventType = ES_NO_EVENT;
                     }
@@ -217,14 +235,14 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
         case ReverseRightIntoRenState: // in the first state, replace this with correct names
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
-                    ES_Timer_InitTimer(ATTACK_REN_TIMER, REVERSE_TIME);
+                    ES_Timer_InitTimer(ATTACK_REN_TIMER, REVERSE_RIGHT_INTO_REN_TIME);
                     turn_back_right();
                     break;
 
                 case ES_TIMEOUT:
                     // printf("--------------------FSMAlignATM6, ForwardsState\r\n");
                     if (ThisEvent.EventParam == ATTACK_REN_TIMER) {
-                        nextState = ForwardsState;
+                        nextState = StopState1;
                         makeTransition = TRUE;
                         ThisEvent.EventType = ES_NO_EVENT;
                     }
@@ -279,7 +297,7 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
                         nextState = ReverseLeftIntoRenState;
                         makeTransition = TRUE;
                         ThisEvent.EventType = ES_NO_EVENT;
-                    } 
+                    }
                     break;
 
 
@@ -343,6 +361,161 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
 
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
+                    break;
+            }
+            break;
+        case StopState1:
+            switch (ThisEvent.EventType) {
+
+                case ES_ENTRY:
+                    ES_Timer_InitTimer(ATTACK_REN_TIMER, STOP_TIME);
+                    stop();
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+
+                case ES_TIMEOUT:
+                    if (ThisEvent.EventParam == ATTACK_REN_TIMER) {
+                        nextState = InchFowardsState1;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+
+                        //                        nextState = SweepLeft1State;
+                        //                        makeTransition = TRUE;
+                        //                        ThisEvent.EventType = ES_NO_EVENT;
+
+                    }
+                    break;
+
+                case ES_TIMERACTIVE:
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+            }
+            break;
+        case StopState2:
+            switch (ThisEvent.EventType) {
+
+                case ES_ENTRY:
+                    ES_Timer_InitTimer(ATTACK_REN_TIMER, STOP_TIME);
+                    stop();
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+
+                case ES_TIMEOUT:
+                    if (ThisEvent.EventParam == ATTACK_REN_TIMER) {
+                        nextState = InchFowardsState2;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+
+                        //                        nextState = SweepLeft1State;
+                        //                        makeTransition = TRUE;
+                        //                        ThisEvent.EventType = ES_NO_EVENT;
+
+                    }
+                    break;
+
+                case ES_TIMERACTIVE:
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+            }
+            break;
+        case InchFowardsState1:
+
+            switch (ThisEvent.EventType) {
+
+                case ES_ENTRY:
+                    ES_Timer_InitTimer(ATTACK_REN_TIMER, INCH_FOWARDS1_TIME);
+                    forwards();
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+
+                case ES_TIMEOUT:
+                    if (ThisEvent.EventParam == ATTACK_REN_TIMER) {
+
+                        nextState = ReverseRightIntoRen1State;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
+
+                    break;
+
+                case ES_TIMERACTIVE:
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+            }
+            break;
+
+        case InchFowardsState2:
+            switch (ThisEvent.EventType) {
+
+                case ES_ENTRY:
+                    ES_Timer_InitTimer(ATTACK_REN_TIMER, INCH_FOWARDS2_TIME);
+                    forwards();
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+
+                case ES_TIMEOUT:
+                    if (ThisEvent.EventParam == ATTACK_REN_TIMER) {
+
+                        nextState = ReverseLeftIntoRen1State;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
+
+                    break;
+
+                case ES_TIMERACTIVE:
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+            }
+            break;
+
+        case ReverseRightIntoRen1State:
+
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    turn_back_right();
+                    break;
+
+                case BUMPER_PRESSED:
+                    bumpers = (ThisEvent.EventParam & (BACK_BUMPERS));
+                    if ((bumpers == BACK_RIGHT_BUMPER_PIN) || (bumpers == BACK_BUMPERS)) {
+                        //NEED to MODIFY THIS ADD FRONT BUMPER , or LEFT OR RIGHT
+                        nextState = ForwardsState;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
+                    break;
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
+                    break;
+            }
+
+            break;
+        case ReverseLeftIntoRen1State:
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    turn_back_left();
+                    break;
+
+                case BUMPER_PRESSED:
+                    bumpers = (ThisEvent.EventParam & (BACK_BUMPERS));
+                    if ((bumpers == BACK_LEFT_BUMPER_PIN) || (bumpers == BACK_BUMPERS)) {
+                        //NEED to MODIFY THIS ADD FRONT BUMPER , or LEFT OR RIGHT
+                        nextState = ForwardsState;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
+                    break;
                 case ES_NO_EVENT:
                 default: // all unhandled events pass the event back up to the next level
                     break;
