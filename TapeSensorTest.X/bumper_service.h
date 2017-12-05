@@ -42,6 +42,8 @@
 
 #define ALL_BIG_BUMPERS (FRONT_BUMPERS | BACK_BUMPERS)
 #define ALL_REN_BUMPERS (REN_LEFT_PIN | REN_CENTER_PIN | REN_RIGHT_PIN)
+#define ALL_TRUE_REN_BUMPERS (REN_LEFT_PIN | REN_RIGHT_PIN)
+
 
 
 /*******************************************************************************

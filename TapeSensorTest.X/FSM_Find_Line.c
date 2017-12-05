@@ -153,17 +153,29 @@ ES_Event RunFSMFindLine(ES_Event ThisEvent) {
                 case ES_ENTRY:
                     if ((get_front_tape_status() == on_tape) && (get_center_tape_status() == on_tape)) {
                         ThisEvent.EventType = LINE_FOUND;
-                    } else if ((get_front_tape_status() == on_tape) && (get_center_tape_status() == off_tape)) {
-                        nextState = DrivingForward2State;
-                        makeTransition = TRUE;
+                        ThisEvent.EventParam = 0;
+                        PostTopHSM(ThisEvent);
                         ThisEvent.EventType = ES_NO_EVENT;
-                    } else {
+                    }//                    else if ((get_front_tape_status() == on_tape) && (get_center_tape_status() == off_tape)) {
+                        //                        nextState = DrivingForward2State;
+                        //                        makeTransition = TRUE;
+                        //                        ThisEvent.EventType = ES_NO_EVENT;
+                        //                    } 
+                    else {
                         forwards();
                         ThisEvent.EventType = ES_NO_EVENT;
                     }
                     break;
                 case TAPE_DETECTED:
                     switch (ThisEvent.EventParam) {
+                        case CENTER_TAPE_SENSOR:
+                            ThisEvent.EventType = LINE_FOUND;
+                            ThisEvent.EventParam = 0;
+                            PostTopHSM(ThisEvent);
+                            ThisEvent.EventType = ES_NO_EVENT;
+
+                            break;
+
                         case RIGHT_TAPE_SENSOR:
                             nextState = TurnRightState;
                             makeTransition = TRUE;
@@ -195,7 +207,7 @@ ES_Event RunFSMFindLine(ES_Event ThisEvent) {
         case TurnRightState: // in the first state, replace this with correct names
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
-                    turn_right();
+                    tank_turn_right();
                     // LED_SetBank(LED_BANK1, 2);
                     //LED_OffBank(LED_BANK2, ALL_LEDS);
                     break;
@@ -220,7 +232,7 @@ ES_Event RunFSMFindLine(ES_Event ThisEvent) {
         case TurnLeftState: // in the first state, replace this with correct names
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
-                    turn_left();
+                    tank_turn_left();
                     //  LED_SetBank(LED_BANK1, 4);
                     //  LED_OffBank(LED_BANK2, ALL_LEDS);
                     break;
@@ -250,6 +262,9 @@ ES_Event RunFSMFindLine(ES_Event ThisEvent) {
                     ThisEvent.EventType = ES_NO_EVENT;
                     if ((get_front_tape_status() == on_tape) && (get_center_tape_status() == on_tape)) {
                         ThisEvent.EventType = LINE_FOUND;
+                        ThisEvent.EventParam = 0;
+                        PostTopHSM(ThisEvent);
+                        ThisEvent.EventType = ES_NO_EVENT;
                     } else if (get_center_tape_status() == on_tape) {
                         nextState = TurnRight2State;
                         makeTransition = TRUE;
@@ -316,6 +331,9 @@ ES_Event RunFSMFindLine(ES_Event ThisEvent) {
                     switch (ThisEvent.EventParam) {
                         case FIND_LINE_TIMER:
                             ThisEvent.EventType = LINE_FOUND;
+                            ThisEvent.EventParam = 0;
+                            PostTopHSM(ThisEvent);
+                            ThisEvent.EventType = ES_NO_EVENT;
                             break;
                     }
                     break;

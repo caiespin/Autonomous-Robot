@@ -47,7 +47,7 @@
 #define FORWARDS1_TIME 1000
 #define ARC_LEFT_TIME 8000
 #define FORWARDS2_TIME 2000
-#define TURN_180_1_TIME 1700
+#define TURN_180_1_TIME 1600
 #define TURN_90_1_TIME 700
 #define LINE_FOLLOWER_STATE 2
 #define SWEEP_LEFT_1_TIME 800
@@ -65,23 +65,13 @@ typedef enum {
     Stop3State,
     ArcLeftState,
     Stop6State,
+    Stop7State,
     TankLeft2State,
     Turn_180_1,
     Turn_90_1,
-    Stop7State,
-    Stop8State,
-    Stop9State,
-    Stop10State,
-    Stop11State,
-    Stop12State,
-    Stop13State,
-    Stop14State,
     InchBackState,
     InchForwardsState,
-    SweepLeft1State,
-    SweepLeft2State,
-    SweepRight1State,
-    SweepRight2State,
+    Stop4State,
 
 
 
@@ -97,23 +87,13 @@ static const char *StateNames[] = {
 	"Stop3State",
 	"ArcLeftState",
 	"Stop6State",
+	"Stop7State",
 	"TankLeft2State",
 	"Turn_180_1",
 	"Turn_90_1",
-	"Stop7State",
-	"Stop8State",
-	"Stop9State",
-	"Stop10State",
-	"Stop11State",
-	"Stop12State",
-	"Stop13State",
-	"Stop14State",
 	"InchBackState",
 	"InchForwardsState",
-	"SweepLeft1State",
-	"SweepLeft2State",
-	"SweepRight1State",
-	"SweepRight2State",
+	"Stop4State",
 };
 
 
@@ -151,7 +131,7 @@ static int bumper_pressed_counter = 0;
  * @author J. Edward Carryer, 2011.10.23 19:25 */
 uint8_t InitFSMMiniAvoid(void) {
     ES_Event returnEvent;
-    
+
     CurrentState = InitPSubState;
     returnEvent = RunFSMMiniAvoid(INIT_EVENT);
     if (returnEvent.EventType == ES_NO_EVENT) {
@@ -274,83 +254,10 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
 
                 case ES_TIMEOUT:
                     if (ThisEvent.EventParam == MINI_AVOID_TIMER) {
-                        if ((get_last_top_state() == LINE_FOLLOWER_STATE)&& (get_ATM6_Counter() == 3) &&(bumper_pressed_counter == 2)) {
-                            // first_time_flag = 1;
-                            bumper_pressed_counter = 3;
-                            nextState = Turn_180_1;
-                            makeTransition = TRUE;
-                            ThisEvent.EventType = ES_NO_EVENT;
 
-                        } else {
-                            nextState = TankRightState;
-                            makeTransition = TRUE;
-                            ThisEvent.EventType = ES_NO_EVENT;
-                        }
-                    }
-                    break;
-
-                case ES_TIMERACTIVE:
-                case ES_TIMERSTOPPED:
-                    ThisEvent.EventType = ES_NO_EVENT;
-                    break;
-            }
-            break;
-
-        case Turn_180_1:
-
-            switch (ThisEvent.EventType) {
-
-                case ES_ENTRY:
-                    ES_Timer_InitTimer(MINI_AVOID_TIMER, TURN_180_1_TIME);
-                    tank_turn_right();
-                    ThisEvent.EventType = ES_NO_EVENT;
-                    break;
-
-
-                case ES_TIMEOUT:
-                    if (ThisEvent.EventParam == MINI_AVOID_TIMER) {
-                        nextState = Stop7State;
+                        nextState = TankRightState;
                         makeTransition = TRUE;
                         ThisEvent.EventType = ES_NO_EVENT;
-                    }
-                    break;
-
-                    //                case TAPE_DETECTED:
-                    //                    if (ThisEvent.EventParam == BACK_TAPE_SENSOR) {
-                    //                        nextState = Stop7State;
-                    //                        makeTransition = TRUE;
-                    //                        ThisEvent.EventType = ES_NO_EVENT;
-                    //                    }
-                    //                    break;
-
-                case ES_TIMERACTIVE:
-                case ES_TIMERSTOPPED:
-                    ThisEvent.EventType = ES_NO_EVENT;
-                    break;
-            }
-
-
-            break;
-        case Stop7State: ////// go to attack ren
-            switch (ThisEvent.EventType) {
-
-                case ES_ENTRY:
-                    ES_Timer_InitTimer(MINI_AVOID_TIMER, STOP_TIME);
-                    stop();
-                    ThisEvent.EventType = ES_NO_EVENT;
-                    break;
-
-
-                case ES_TIMEOUT:
-                    if (ThisEvent.EventParam == MINI_AVOID_TIMER) {
-                        ThisEvent.EventType = GO_TO_ATTACK_REN;
-                        ThisEvent.EventParam = 0;
-                        PostTopHSM(ThisEvent);
-                        ThisEvent.EventType = ES_NO_EVENT;
-
-                        //                        nextState = SweepLeft1State;
-                        //                        makeTransition = TRUE;
-                        //                        ThisEvent.EventType = ES_NO_EVENT;
 
                     }
                     break;
@@ -361,12 +268,6 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
                     break;
             }
             break;
-
-
-
-
-
-
 
         case TankRightState:
 
@@ -435,9 +336,8 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
                         case RIGHT_TAPE_SENSOR:
                         case FRONT_TAPE_SENSOR:
                         case LEFT_TAPE_SENSOR:
-                            ThisEvent.EventType = OBSTACLE_AVOIDED;
-                            ThisEvent.EventParam = 0;
-                            PostTopHSM(ThisEvent);
+                            nextState = Stop4State;
+                            makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
                             break;
                     }
@@ -475,6 +375,41 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
 
             break;
 
+        case Stop4State:
+
+            switch (ThisEvent.EventType) {
+
+                case ES_ENTRY:
+                    ES_Timer_InitTimer(MINI_AVOID_TIMER, STOP_TIME);
+                    stop();
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case ES_TIMEOUT:
+                    if (ThisEvent.EventParam == MINI_AVOID_TIMER) {
+                        if (get_ATM6_Counter() >= 3) {
+                            ThisEvent.EventType = GO_TO_ATTACK_REN;
+                            ThisEvent.EventParam = 0;
+                            PostTopHSM(ThisEvent);
+                            ThisEvent.EventType = ES_NO_EVENT;
+
+                        } else {
+                            ThisEvent.EventType = GO_TO_FIND_LINE;
+                            ThisEvent.EventParam = 0;
+                            PostTopHSM(ThisEvent);
+                            ThisEvent.EventType = ES_NO_EVENT;
+                        }
+
+                    }
+                    break;
+
+                case ES_TIMERACTIVE:
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+            }
+
+
+            break;
 
 
 
@@ -494,7 +429,7 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
 }
 
 void reset_bumper_counter() {
-    bumper_pressed_counter=0;
+    bumper_pressed_counter = 0;
 }
 /*******************************************************************************
  * PRIVATE FUNCTIONS                                                           *

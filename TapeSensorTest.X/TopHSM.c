@@ -53,7 +53,7 @@
 //Include any defines you need to do
 #define BOOT_TIME 100
 #define UNSTUCK_TIME 1000
-#define RESET_BUMPER_COUNTER_TIME 5000
+#define RESET_BUMPER_COUNTER_TIME 7000
 /*******************************************************************************
  * MODULE #DEFINES                                                             *
  ******************************************************************************/
@@ -556,6 +556,13 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
 
+                case GO_TO_FIND_LINE:
+                    //   LED_SetBank(LED_BANK3, 0xf);
+                    nextState = FindLineState;
+                    makeTransition = TRUE;
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
                 case ES_NO_EVENT:
                 default:
                     break;
@@ -574,6 +581,12 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                 case REN_ALIGNED:
                     set_ren_config();
                     nextState = Shoot;
+                    makeTransition = TRUE;
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case GO_TO_FIND_LINE:
+                    //   LED_SetBank(LED_BANK3, 0xf);
+                    nextState = FindLineState;
                     makeTransition = TRUE;
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
