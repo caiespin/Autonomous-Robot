@@ -46,7 +46,7 @@
  * MODULE #DEFINES                                                             *
  ******************************************************************************/
 
-#define WIGGLE_LEFT_TIME 600
+#define WIGGLE_LEFT_TIME 400
 /*******************************************************************************
  * PRIVATE FUNCTION PROTOTYPES                                                 *
  ******************************************************************************/
@@ -92,7 +92,7 @@ static TemplateFSMState_t CurrentState = InitPState; // <- change enum name to m
 static uint8_t MyPriority;
 
 #define ALL_LEDS 0xF
-#define REVERSE_TIME 500
+#define REVERSE_TIME 600
 #define INCH_RIGHT_TIME 3
 #define INCH_LEFT_TIME 3
 #define CORNER_DETECTED_TIMEOUT_TIME 500

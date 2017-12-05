@@ -53,6 +53,7 @@
 //Include any defines you need to do
 #define BOOT_TIME 100
 #define UNSTUCK_TIME 1000
+#define RESET_BUMPER_COUNTER_TIME 5000
 /*******************************************************************************
  * MODULE #DEFINES                                                             *
  ******************************************************************************/
@@ -290,8 +291,8 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                     bumpers = (ThisEvent.EventParam & (FRONT_BUMPERS));
                     if ((bumpers == FRONT_LEFT_BUMPER_PIN) || (bumpers == FRONT_RIGHT_BUMPER_PIN) || (bumpers == FRONT_BUMPERS)) {
                         //NEED to MODIFY THIS ADD FRONT BUMPER , or LEFT OR RIGHT
-                         nextState = MiniAvoidState;
-                       
+                        nextState = MiniAvoidState;
+
                         makeTransition = TRUE;
                         ThisEvent.EventType = ES_NO_EVENT;
                     }
@@ -331,6 +332,7 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
             //state machine does
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
+                    ES_Timer_InitTimer(RESET_BUMPER_COUNTER_TIMER, RESET_BUMPER_COUNTER_TIME);
                     InitFSMLineFollower(MyPriority);
                     break;
             }
@@ -360,6 +362,9 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
                             break;
+                        case RESET_BUMPER_COUNTER_TIMER:
+                            reset_bumper_counter();
+                            break;
 
                     }
                     break;
@@ -369,7 +374,9 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                 case ES_TIMERSTOPPED:
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
-
+                case ES_EXIT:
+                    ES_Timer_StopTimer(RESET_BUMPER_COUNTER_TIMER);
+                    break;
                 case ES_NO_EVENT:
                 default:
                     ThisEvent.EventType = ES_NO_EVENT;

@@ -40,7 +40,7 @@
 /*******************************************************************************
  * PUBLIC FUNCTION PROTOTYPES                                                  *
  ******************************************************************************/
-
+void reset_bumper_counter() ;
 /**
  * @Function InitTemplateSubHSM(void)
  * @param Priority - internal variable to track which event queue to use

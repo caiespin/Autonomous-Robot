@@ -42,7 +42,7 @@
 #define STOP_TIME 1000
 #define ADJUST_TIME 0
 #define REVERSE_TIME 80
-#define TANK_RIGHT_TIME 1000
+#define TANK_RIGHT_TIME 650
 #define TANK_LEFT_TIME 1700
 #define FORWARDS1_TIME 1000
 #define ARC_LEFT_TIME 8000
@@ -134,7 +134,7 @@ static const char *StateNames[] = {
 static TemplateSubHSMState_t CurrentState = InitPSubState; // <- change name to match ENUM
 static uint8_t MyPriority;
 
-
+static int bumper_pressed_counter = 0;
 /*******************************************************************************
  * PUBLIC FUNCTIONS                                                            *
  ******************************************************************************/
@@ -151,7 +151,7 @@ static uint8_t MyPriority;
  * @author J. Edward Carryer, 2011.10.23 19:25 */
 uint8_t InitFSMMiniAvoid(void) {
     ES_Event returnEvent;
-
+    
     CurrentState = InitPSubState;
     returnEvent = RunFSMMiniAvoid(INIT_EVENT);
     if (returnEvent.EventType == ES_NO_EVENT) {
@@ -194,7 +194,7 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
                 // initial state
 
                 // now put the machine into the actual initial state
-                first_time_flag = 0;
+                bumper_pressed_counter++;
                 nextState = ReverseState;
                 makeTransition = TRUE;
                 ThisEvent.EventType = ES_NO_EVENT;
@@ -274,8 +274,9 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
 
                 case ES_TIMEOUT:
                     if (ThisEvent.EventParam == MINI_AVOID_TIMER) {
-                        if ((get_last_top_state() == LINE_FOLLOWER_STATE)&& (get_ATM6_Counter() == 3) &&(first_time_flag == 0)) {
-                            first_time_flag = 1;
+                        if ((get_last_top_state() == LINE_FOLLOWER_STATE)&& (get_ATM6_Counter() == 3) &&(bumper_pressed_counter == 2)) {
+                            // first_time_flag = 1;
+                            bumper_pressed_counter = 3;
                             nextState = Turn_180_1;
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
@@ -342,7 +343,7 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
 
                 case ES_TIMEOUT:
                     if (ThisEvent.EventParam == MINI_AVOID_TIMER) {
-                        ThisEvent.EventType =GO_TO_ATTACK_REN;
+                        ThisEvent.EventType = GO_TO_ATTACK_REN;
                         ThisEvent.EventParam = 0;
                         PostTopHSM(ThisEvent);
                         ThisEvent.EventType = ES_NO_EVENT;
@@ -360,11 +361,11 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
                     break;
             }
             break;
-       
-       
 
 
-   
+
+
+
 
 
         case TankRightState:
@@ -448,6 +449,7 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
                         case FRONT_BUMPERS:
                         case FRONT_LEFT_BUMPER_PIN:
                         case FRONT_RIGHT_BUMPER_PIN:
+                            bumper_pressed_counter = 0;
                             nextState = ReverseState;
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
@@ -491,7 +493,9 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
     return ThisEvent;
 }
 
-
+void reset_bumper_counter() {
+    bumper_pressed_counter=0;
+}
 /*******************************************************************************
  * PRIVATE FUNCTIONS                                                           *
  ******************************************************************************/

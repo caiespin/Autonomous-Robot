@@ -29,8 +29,8 @@ uint16_t  Motor_Speed_Tank_A;
 
  void arc_left(){
   
-    PWM_SetDutyCycle(ENABLE_A, Motor_Speed_A);
-    PWM_SetDutyCycle(ENABLE_B,  Motor_Speed_B*0.50);
+    PWM_SetDutyCycle(ENABLE_A, Motor_Speed_A*1.1);
+    PWM_SetDutyCycle(ENABLE_B,  Motor_Speed_B*0.5);
     IO_PortsClearPortBits(DRIVING_MOTOR_PORT, DIRECTION_A);
     IO_PortsClearPortBits(DRIVING_MOTOR_PORT, DIRECTION_B);   
  }
@@ -102,8 +102,8 @@ void forwards() {
 
 
 void slow_forwards() {
-    PWM_SetDutyCycle(ENABLE_A, Motor_Speed_A*0.7);
-    PWM_SetDutyCycle(ENABLE_B, Motor_Speed_B*0.7);
+    PWM_SetDutyCycle(ENABLE_A, Motor_Speed_A*0.50);
+    PWM_SetDutyCycle(ENABLE_B, Motor_Speed_B*0.50);
     IO_PortsClearPortBits(DRIVING_MOTOR_PORT, DIRECTION_A | DIRECTION_B);
 }
 
