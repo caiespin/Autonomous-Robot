@@ -54,7 +54,7 @@ static const char *StateNames[] = {
 };
 
 
-#define FORWARD_TIME 2
+#define FORWARD_TIME 50
 #define STOP_MOTOR_TIME 200
 #define TANK_TURN_TIME 700
 
@@ -132,7 +132,7 @@ ES_Event RunFSMAlignAtm6(ES_Event ThisEvent) {
                 nextState = ForwardsState;
                 makeTransition = TRUE;
                 ThisEvent.EventType = ES_NO_EVENT;
-                
+
                 printf("****************************** FSMAlignATM6\r\n");
             }
             break;
@@ -142,14 +142,14 @@ ES_Event RunFSMAlignAtm6(ES_Event ThisEvent) {
                 case ES_ENTRY:
 
                     ES_Timer_InitTimer(ALIGN_ATM6_TIMER, FORWARD_TIME);
-                   forwards();
+                    slow_reverse();
                     break;
 
 
                 case TRACKWIRE_ALIGNED:
                     ES_Timer_StopTimer(ALIGN_ATM6_TIMER);
                 case ES_TIMEOUT:
-                   // printf("--------------------FSMAlignATM6, ForwardsState\r\n");
+                    // printf("--------------------FSMAlignATM6, ForwardsState\r\n");
                     nextState = StopState;
                     makeTransition = TRUE;
                     ThisEvent.EventType = ES_NO_EVENT;
@@ -198,14 +198,17 @@ ES_Event RunFSMAlignAtm6(ES_Event ThisEvent) {
         case Turn90State:
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
-                    
-                   //  LED_SetBank(LED_BANK1, 0xf);
+
+                    //  LED_SetBank(LED_BANK1, 0xf);
                     ES_Timer_InitTimer(ALIGN_ATM6_TIMER, TANK_TURN_TIME);
                     tank_turn_right();
                     break;
 
-                case ES_TIMEOUT: 
+                case ES_TIMEOUT:
                     ThisEvent.EventType = ATM6_ALIGNED;
+                    ThisEvent.EventParam = 0;
+                    PostTopHSM(ThisEvent);
+                    ThisEvent.EventType = ES_NO_EVENT;
                     break;
 
 

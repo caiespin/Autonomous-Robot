@@ -47,14 +47,15 @@ void motors_init() {
 void turn_right() {
 
     PWM_SetDutyCycle(ENABLE_A, Motor_Speed_A*0.5);
-    PWM_SetDutyCycle(ENABLE_B, Motor_Speed_B);
+    //PWM_SetDutyCycle(ENABLE_B, Motor_Speed_B);
+     PWM_SetDutyCycle(ENABLE_B, Motor_Speed_B*0.7);
     IO_PortsSetPortBits(DRIVING_MOTOR_PORT, DIRECTION_A);
     IO_PortsClearPortBits(DRIVING_MOTOR_PORT, DIRECTION_B);
 }
 
 void turn_left() {
-  
-    PWM_SetDutyCycle(ENABLE_A, Motor_Speed_A);
+  PWM_SetDutyCycle(ENABLE_A, Motor_Speed_A*0.7);
+   // PWM_SetDutyCycle(ENABLE_A, Motor_Speed_A);
     PWM_SetDutyCycle(ENABLE_B, Motor_Speed_B*0.5);
     IO_PortsClearPortBits(DRIVING_MOTOR_PORT, DIRECTION_A);
     IO_PortsSetPortBits(DRIVING_MOTOR_PORT, DIRECTION_B);

@@ -200,8 +200,8 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                     switch (ThisEvent.EventParam) {
                         case TOP_HSM_TIMER:
 
-                             nextState = Start_War_State;
-                            //nextState = FindLineState;
+                            // nextState = Start_War_State;
+                            nextState = FindLineState;
                             // nextState = Debug_Stop_State;
                             // nextState = ATTACK_REN;
                             //nextState=Shoot;

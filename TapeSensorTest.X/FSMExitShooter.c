@@ -73,17 +73,18 @@ static const char *StateNames[] = {
 static TemplateSubHSMState_t CurrentState = InitPSubState; // <- change name to match ENUM
 static uint8_t MyPriority;
 
-//static int  ATM6_Counter=0;
+//static int ATM6_Counter = 0;
 static int  ATM6_Counter=3;
 
 /*******************************************************************************
  * PUBLIC FUNCTIONS                                                            *
  ******************************************************************************/
 
-int get_ATM6_Counter(){
-return ATM6_Counter;    
+int get_ATM6_Counter() {
+    return ATM6_Counter;
 
 }
+
 /**
  * @Function InitTemplateSubHSM(uint8_t Priority)
  * @param Priority - internal variable to track which event queue to use
@@ -188,19 +189,25 @@ ES_Event RunFSMExitShooter(ES_Event ThisEvent) {
                 case ES_TIMEOUT:
                     if (get_track_wire_state() == TRACKWIRE_LOST) {
                         ThisEvent.EventType = GO_TO_ON_LINE;
+                        ThisEvent.EventParam = 0;
+                        PostTopHSM(ThisEvent);
+                        ThisEvent.EventType = ES_NO_EVENT;
                         ATM6_Counter++;
-                        printf("\r\nATM6 DOWN2!!!!!!!, counter= %d\r\n",ATM6_Counter);
+                        printf("\r\nATM6 DOWN2!!!!!!!, counter= %d\r\n", ATM6_Counter);
                     } else {
                         nextState = Reverse;
                         makeTransition = TRUE;
                         ThisEvent.EventType = ES_NO_EVENT;
-                         printf("\r\nATM6 Still UP!!!!!!!, counter= %d\r\n",ATM6_Counter);
+                        printf("\r\nATM6 Still UP!!!!!!!, counter= %d\r\n", ATM6_Counter);
                     }
                     break;
                 case TRACKWIRE_LOST:
                     ThisEvent.EventType = GO_TO_ON_LINE;
+                    ThisEvent.EventParam = 0;
+                    PostTopHSM(ThisEvent);
+                    ThisEvent.EventType = ES_NO_EVENT;
                     ATM6_Counter++;
-                       printf("\r\nATM6 DOWN1!!!!!!!, counter= %d\r\n",ATM6_Counter);
+                    printf("\r\nATM6 DOWN1!!!!!!!, counter= %d\r\n", ATM6_Counter);
                     break;
 
                 case ES_TIMERACTIVE:
@@ -223,6 +230,9 @@ ES_Event RunFSMExitShooter(ES_Event ThisEvent) {
 
                 case ES_TIMEOUT:
                     ThisEvent.EventType = GO_TO_ON_LINE;
+                    ThisEvent.EventParam = 0;
+                    PostTopHSM(ThisEvent);
+                    ThisEvent.EventType = ES_NO_EVENT;
                     break;
 
 

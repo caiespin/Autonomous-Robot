@@ -176,6 +176,16 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
                     forwards();
+
+                    if (get_right_tape_status() == on_tape) {
+                        nextState = on_left_side;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    } else if (get_left_tape_status() == on_tape) {
+                        nextState = on_right_side;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
                     //  LED_SetBank(LED_BANK1, 1);
                     // LED_OffBank(LED_BANK2, ALL_LEDS);
                     break;
@@ -192,9 +202,8 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
                                 makeTransition = TRUE;
                                 ThisEvent.EventType = ES_NO_EVENT;
                             }
-
-
                             break;
+
                         case LEFT_TAPE_SENSOR:
 
                             if (get_front_tape_status() == off_tape) {
@@ -202,9 +211,8 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
                                 makeTransition = TRUE;
                                 ThisEvent.EventType = ES_NO_EVENT;
                             }
-
-
                             break;
+
                     }
 
                     // printf("Tape Detected , param=%d\r\n", ThisEvent.EventParam);
@@ -240,9 +248,9 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
                     turn_right();
-                   // tank_turn_right();
-                            
-                            
+                    // tank_turn_right();
+
+
                     // LED_SetBank(LED_BANK1, 2);
                     // LED_OffBank(LED_BANK2, ALL_LEDS);
                     break;
@@ -332,7 +340,7 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
 
-              
+
                 case ES_EXIT:
                     // LED_OffBank(LED_BANK3, 0xf);
                     break;
