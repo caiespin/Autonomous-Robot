@@ -185,7 +185,7 @@ ES_Event RunBumperService(ES_Event ThisEvent) {
 /*******************************************************************************
  * PRIVATE FUNCTIONs                                                           *
  ******************************************************************************/
-#define MAX_HISTORY_SIZE 5
+#define MAX_HISTORY_SIZE 15
 
 
 #ifdef DEBUG
