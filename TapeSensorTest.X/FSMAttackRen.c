@@ -237,6 +237,7 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
                             back_left_bumper_counter++;
+                            back_right_bumper_counter = 0;
                             break;
 
                         case REN_RIGHT_PIN:
@@ -245,6 +246,7 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
                             back_right_bumper_counter++;
+                            back_left_bumper_counter = 0;
 
                             break;
                     }
@@ -263,18 +265,18 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
 
                 case TAPE_DETECTED:
                     if (is_on_T() == TRUE) {
-                        nextState = StopState_5;
-                        makeTransition = TRUE;
+//                        nextState = StopState_5;
+//                        makeTransition = TRUE;
+//                        ThisEvent.EventType = ES_NO_EVENT;
+//                        Twist_Right_Time = SLOW_TWIST_RIGHT_TIME;
+//                        Twist_Left_Time = SLOW_TWIST_LEFT_TIME;
+
+
+
+                        ThisEvent.EventType = REN_ALIGNED;
+                        ThisEvent.EventParam = 0;
+                        PostTopHSM(ThisEvent);
                         ThisEvent.EventType = ES_NO_EVENT;
-                        Twist_Right_Time = SLOW_TWIST_RIGHT_TIME;
-                        Twist_Left_Time = SLOW_TWIST_LEFT_TIME;
-
-
-
-                        //                                            ThisEvent.EventType = REN_ALIGNED;
-                        //                                            ThisEvent.EventParam = 0;
-                        //                                            PostTopHSM(ThisEvent);
-                        //                                            ThisEvent.EventType = ES_NO_EVENT;
                     }
                     //                    switch (ThisEvent.EventParam) {
                     //
@@ -378,13 +380,13 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
                             nextState = StopState_3;
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
-                            back_right_bumper_counter = 0;
+                          //  back_right_bumper_counter = 0;
 
                         } else if (back_left_bumper_counter >= ADJUST_TURNING_COUNT) {
                             nextState = StopState_4;
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
-                            back_left_bumper_counter = 0;
+                         //   back_left_bumper_counter = 0;
                         } else {
                             nextState = StopState_2;
                             makeTransition = TRUE;

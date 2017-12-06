@@ -50,7 +50,7 @@
 #define LOAD_BALL_TIME 480
 #define SHOOT_POWER_HIGH_PWM 800
 #define SHOOT_POWER_LOW_PWM 250
-static start_motor_low_time = 5000;
+static int start_motor_low_time = 5000;
 
 typedef enum {
     InitPSubState,
@@ -84,11 +84,20 @@ static const char *StateNames[] = {
 /*******************************************************************************
  * PRIVATE MODULE VARIABLES                                                            *
  ******************************************************************************/
+
 /* You will need MyPriority and the state variable; you may need others as well.
  * The type of state variable should match that of enum in header file. */
 
+typedef enum {
+    ATM6,
+    REN,
+} mode_t;
+
+
 static TemplateSubHSMState_t CurrentState = InitPSubState; // <- change name to match ENUM
 static uint8_t MyPriority;
+static mode_t mode = ATM6;
+static int first_time = TRUE;
 
 /*******************************************************************************
  * PUBLIC FUNCTIONS                                                            *
@@ -96,11 +105,16 @@ static uint8_t MyPriority;
 void set_atm6_config() {
     RC_SetPulseTime(SERVO_TILT_PIN, MAXPULSE);
     start_motor_low_time = 1000;
+    mode = ATM6;
+    first_time = TRUE;
+
 }
 
 void set_ren_config() {
     RC_SetPulseTime(SERVO_TILT_PIN, MINPULSE);
     start_motor_low_time = 5000;
+    mode = REN;
+    first_time = TRUE;
 }
 
 void shooter_init() {
@@ -183,7 +197,9 @@ ES_Event RunFSMShoot(ES_Event ThisEvent) {
                     break;
                 case ES_TIMEOUT:
                     if (ThisEvent.EventParam == SHOOT_FSM_TIMER) {
+
                         nextState = StartMotorFast;
+
                         makeTransition = TRUE;
                         ThisEvent.EventType = ES_NO_EVENT;
                     }
@@ -203,7 +219,10 @@ ES_Event RunFSMShoot(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
                     ES_Timer_InitTimer(SHOOT_FSM_TIMER, START_MOTOR_HIGH_TIME);
-                    start_ball_accelerator_fast();
+                    if (first_time == TRUE) {
+                        first_time=FALSE;
+                        start_ball_accelerator_fast();
+                    }
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
                 case ES_TIMEOUT:
@@ -259,7 +278,17 @@ ES_Event RunFSMShoot(ES_Event ThisEvent) {
                 case REN_BUMPER_RELEASE:
                     if (ThisEvent.EventParam == REN_CENTER_PIN) {
                         stop_trigger_motor();
-                        ThisEvent.EventType = SHOT;
+                        if (mode == ATM6) {
+                            ThisEvent.EventType = SHOT_ATM6;
+                            ThisEvent.EventParam = 0;
+                            PostTopHSM(ThisEvent);
+                            ThisEvent.EventType = ES_NO_EVENT;
+                        } else {
+                            ThisEvent.EventType = SHOT_REN;
+                            ThisEvent.EventParam = 0;
+                            PostTopHSM(ThisEvent);
+                            ThisEvent.EventType = ES_NO_EVENT;
+                        }
                     }
                     break;
 

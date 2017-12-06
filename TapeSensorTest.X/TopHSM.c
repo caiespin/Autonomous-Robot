@@ -200,8 +200,8 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                     switch (ThisEvent.EventParam) {
                         case TOP_HSM_TIMER:
 
-                            // nextState = Start_War_State;
-                            nextState = FindLineState;
+                             nextState = Start_War_State;
+                            //nextState = FindLineState;
                             // nextState = Debug_Stop_State;
                             // nextState = ATTACK_REN;
                             //nextState=Shoot;
@@ -490,8 +490,14 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
             }
             ThisEvent = RunFSMShoot(ThisEvent);
             switch (ThisEvent.EventType) {
-                case SHOT:
+
+                case SHOT_ATM6:
                     nextState = Exit_Shoot;
+                    makeTransition = TRUE;
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case SHOT_REN:
+                    nextState =  Shoot;
                     makeTransition = TRUE;
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;

@@ -139,8 +139,12 @@ ES_Event RunFSMStartWar(ES_Event ThisEvent) {
                     break;
                 case BEACON_FOUND:
                 case ES_TIMEOUT:
-                    nextState = TurnAway;
-                    makeTransition = TRUE;
+                    //                    nextState = TurnAway;
+                    //                    makeTransition = TRUE;
+                    //                    ThisEvent.EventType = ES_NO_EVENT;
+                    ThisEvent.EventType = GO_TO_FIND_LINE;
+                    ThisEvent.EventParam = 0;
+                    PostTopHSM(ThisEvent);
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
 
