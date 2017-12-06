@@ -19,6 +19,7 @@ void tank_turn_left();
 void turn_back_right();
 void forwards();
 void reverse();
+void slow_reverse();
 void stop();
 void adjust_pwm();
 void  arc_left();

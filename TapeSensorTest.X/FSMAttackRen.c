@@ -55,6 +55,8 @@
 #define TANK_RIGHT_WU_2_TIME 200
 #define INCH_FORWARDS_1_TIME 200
 #define INCH_FORWARDS_2_TIME 200
+#define ADJUST_LEFT_1_TIME 150
+#define ADJUST_RIGHT_1_TIME 150
 
 typedef enum {
     InitPSubState,
@@ -72,6 +74,10 @@ typedef enum {
     InchForwards2State,
     StopState_1,
     StopState_2,
+    StopState_3,
+    StopState_4,
+    AdjustLeftState1,
+    AdjustRightState1,
 
 
 
@@ -95,6 +101,10 @@ static const char *StateNames[] = {
 	"InchForwards2State",
 	"StopState_1",
 	"StopState_2",
+	"StopState_3",
+	"StopState_4",
+	"AdjustLeftState1",
+	"AdjustRightState1",
 };
 
 
@@ -113,7 +123,8 @@ static const char *StateNames[] = {
 static TemplateSubHSMState_t CurrentState = InitPSubState; // <- change name to match ENUM
 static uint8_t MyPriority;
 static int first_time = TRUE;
-
+static int back_right_bumper_counter = 0;
+static int back_left_bumper_counter = 0;
 
 /*******************************************************************************
  * PUBLIC FUNCTIONS                                                            *
@@ -183,7 +194,8 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
                     ES_Timer_InitTimer(ATTACK_REN_TIMER, REVERSE_TIME);
-                    reverse();
+                    //reverse();
+                    slow_reverse();
                     break;
 
                 case BUMPER_PRESSED:
@@ -193,12 +205,14 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
                             nextState = ForwardsState;
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
+                            back_left_bumper_counter++;
                             break;
                         case BACK_RIGHT_BUMPER_PIN:
                             //nextState = Attack_Ren_TankLeft1State;
-                           nextState = ForwardsState; 
+                            nextState = ForwardsState;
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
+                            back_right_bumper_counter++;
                             break;
 
                     }
@@ -207,17 +221,19 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
                 case REN_BUMPER_PRESSED:
                     switch (ThisEvent.EventParam & ALL_TRUE_REN_BUMPERS) {
                         case REN_LEFT_PIN:
-                           // nextState = TankRight1State;
-                            nextState = ForwardsState; 
+                            // nextState = TankRight1State;
+                            nextState = ForwardsState;
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
+                            back_left_bumper_counter++;
                             break;
 
                         case REN_RIGHT_PIN:
                             //nextState = Attack_Ren_TankLeft2State;
-                            nextState = ForwardsState; 
+                            nextState = ForwardsState;
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
+                            back_right_bumper_counter++;
 
                             break;
                     }
@@ -339,9 +355,22 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
                     break;
                 case ES_TIMEOUT:
                     if (ThisEvent.EventParam == ATTACK_REN_TIMER) {
-                        nextState = StopState_2;
-                        makeTransition = TRUE;
-                        ThisEvent.EventType = ES_NO_EVENT;
+                        if (back_right_bumper_counter >= 3) {
+                            nextState = StopState_3;
+                            makeTransition = TRUE;
+                            ThisEvent.EventType = ES_NO_EVENT;
+                            back_right_bumper_counter = 0;
+
+                        } else if (back_left_bumper_counter >= 3) {
+                            nextState = StopState_4;
+                            makeTransition = TRUE;
+                            ThisEvent.EventType = ES_NO_EVENT;
+                            back_left_bumper_counter = 0;
+                        } else {
+                            nextState = StopState_2;
+                            makeTransition = TRUE;
+                            ThisEvent.EventType = ES_NO_EVENT;
+                        }
                     }
                     break;
 
@@ -664,7 +693,7 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
 
                 case ES_ENTRY:
-                    ES_Timer_InitTimer(ATTACK_REN_TIMER, 1000);
+                    ES_Timer_InitTimer(ATTACK_REN_TIMER, STOP_TIME);
                     stop();
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
@@ -686,6 +715,118 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
                     break;
             }
             break;
+
+
+        case StopState_3:
+            switch (ThisEvent.EventType) {
+
+                case ES_ENTRY:
+                    ES_Timer_InitTimer(ATTACK_REN_TIMER, STOP_TIME);
+                    stop();
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+
+                case ES_TIMEOUT:
+                    if (ThisEvent.EventParam == ATTACK_REN_TIMER) {
+
+                        nextState = AdjustLeftState1;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+
+                    }
+                    break;
+
+                case ES_TIMERACTIVE:
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+            }
+            break;
+
+        case AdjustLeftState1:
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    turn_left();
+                    ES_Timer_InitTimer(ATTACK_REN_TIMER, ADJUST_LEFT_1_TIME);
+                    break;
+
+                case ES_TIMEOUT:
+                    if (ThisEvent.EventParam == ATTACK_REN_TIMER) {
+                        nextState = StopState_2;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
+                    break;
+
+
+                case ES_TIMERACTIVE:
+                    // printf("enter on_ES_TIMERACTIVE\r\n");
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
+                    break;
+            }
+            break;
+
+        case StopState_4:
+            switch (ThisEvent.EventType) {
+
+                case ES_ENTRY:
+                    ES_Timer_InitTimer(ATTACK_REN_TIMER, STOP_TIME);
+                    stop();
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+
+                case ES_TIMEOUT:
+                    if (ThisEvent.EventParam == ATTACK_REN_TIMER) {
+
+                        nextState = AdjustRightState1;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+
+                    }
+                    break;
+
+                case ES_TIMERACTIVE:
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+            }
+            break;
+
+        case AdjustRightState1:
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    turn_right();
+                    ES_Timer_InitTimer(ATTACK_REN_TIMER, ADJUST_RIGHT_1_TIME);
+                    break;
+
+                case ES_TIMEOUT:
+                    if (ThisEvent.EventParam == ATTACK_REN_TIMER) {
+                        nextState = StopState_2;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
+                    break;
+
+
+                case ES_TIMERACTIVE:
+                    // printf("enter on_ES_TIMERACTIVE\r\n");
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
+                    break;
+            }
+            break;
+
 
         default: // all unhandled states fall into here
             break;

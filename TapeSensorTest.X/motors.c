@@ -93,6 +93,11 @@ void reverse() {
     PWM_SetDutyCycle(ENABLE_B, Motor_Speed_B);
     IO_PortsSetPortBits(DRIVING_MOTOR_PORT, DIRECTION_A | DIRECTION_B);
 }
+void slow_reverse() {
+    PWM_SetDutyCycle(ENABLE_A, Motor_Speed_A*0.8);
+    PWM_SetDutyCycle(ENABLE_B, Motor_Speed_B*0.8);
+    IO_PortsSetPortBits(DRIVING_MOTOR_PORT, DIRECTION_A | DIRECTION_B);
+}
 
 void forwards() {
     PWM_SetDutyCycle(ENABLE_A, Motor_Speed_A);
