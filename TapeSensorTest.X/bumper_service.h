@@ -54,7 +54,7 @@
 /*******************************************************************************
  * PUBLIC FUNCTION PROTOTYPES                                                  *
  ******************************************************************************/
-
+int are_bumpers_ren_aligned();
  
 /**
  * @Function InitTemplateService(uint8_t Priority)

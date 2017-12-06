@@ -54,6 +54,14 @@ uint8_t CheckBumpers(void);
 /*******************************************************************************
  * PRIVATE MODULE VARIABLES                                                    *
  ******************************************************************************/
+static int Front_Right_Pressed_Flag = FALSE;
+static int Front_Left_Pressed_Flag = FALSE;
+static int Rear_Right_Pressed_Flag = FALSE;
+static int Rear_Left_Pressed_Flag = FALSE;
+
+static int Ren_Left_Pressed_Flag = FALSE;
+static int Ren_Center_Pressed_Flag = FALSE;
+static int Ren_Right_Pressed_Flag = FALSE;
 
 /* You will need MyPriority and maybe a state variable; you may need others
  * as well. */
@@ -87,6 +95,17 @@ static uint8_t MyPriority;
 /*******************************************************************************
  * PUBLIC FUNCTIONS                                                            *
  ******************************************************************************/
+
+int are_bumpers_ren_aligned(){
+    if ((Rear_Right_Pressed_Flag == TRUE)&&
+            (Rear_Left_Pressed_Flag == TRUE)&&
+            (Ren_Left_Pressed_Flag == FALSE)&&
+            (Ren_Right_Pressed_Flag == FALSE)       ) {
+        return TRUE;
+    }
+    return FALSE;
+
+}
 
 /**
  * @Function InitTemplateService(uint8_t Priority)
@@ -254,20 +273,10 @@ int checkRenBumper(int* flag, int counter, int param) {
 //#define Center_Ren 512
 //#define Right_Ren 256
 
-
-
-
 uint8_t CheckBumpers(void) {
     ES_Event thisEvent;
     uint8_t returnVal = FALSE;
-    static int Front_Right_Pressed_Flag = FALSE;
-    static int Front_Left_Pressed_Flag = FALSE;
-    static int Rear_Right_Pressed_Flag = FALSE;
-    static int Rear_Left_Pressed_Flag = FALSE;
 
-    static int Ren_Left_Pressed_Flag = FALSE;
-    static int Ren_Center_Pressed_Flag = FALSE;
-    static int Ren_Right_Pressed_Flag = FALSE;
 
     static int Front_Right_Pressed_Counter = 0;
     static int Front_Left_Pressed_Counter = 0;

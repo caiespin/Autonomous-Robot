@@ -41,7 +41,7 @@
  ******************************************************************************/
 #define STOP_TIME 1000
 #define ADJUST_TIME 0
-#define REVERSE_TIME 80
+#define REVERSE_TIME 100
 #define TANK_RIGHT_TIME 650
 #define TANK_LEFT_TIME 1700
 #define FORWARDS1_TIME 1000
