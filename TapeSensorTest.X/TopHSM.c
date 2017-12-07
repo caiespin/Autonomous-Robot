@@ -46,6 +46,7 @@
 #include "FSMStartWar.h"
 #include "motors.h"
 #include "tape_detector_fsm_service.h"
+#include "bumper_service.h"
 #include "stdio.h"
 /*******************************************************************************
  * PRIVATE #DEFINES                                                            *
@@ -193,7 +194,7 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
 
                     ES_Timer_InitTimer(TOP_HSM_TIMER, BOOT_TIME);
 
-                    set_atm6_config();
+                  //  set_atm6_config();
 
                     break;
                 case ES_TIMEOUT:
@@ -340,6 +341,12 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
             ThisEvent = RunFSMLineFollower(ThisEvent);
             switch (ThisEvent.EventType) {
 
+                  case GO_TO_FIND_LINE:
+                   
+                    nextState = FindLineState;
+                    makeTransition = TRUE;
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
                 case TRACKWIRE_DETECTED:
                     //NEED to MODIFY THIS ADD FRONT BUMPER , or LEFT OR RIGHT
                     nextState = AlignATM6;
@@ -607,7 +614,14 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
         case Unstuck_State:
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
-                    forwards();
+                    if (are_front_bumpers_pressed() == TRUE) {
+                        reverse();
+                    }else if (are_rear_bumpers_pressed() == TRUE) {
+                        forwards();
+                    }else {
+                        forwards();
+                    }
+                    
                     ES_Timer_InitTimer(UNSTUCK_TIMER, UNSTUCK_TIME);
                     break;
 

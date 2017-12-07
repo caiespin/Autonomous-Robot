@@ -91,6 +91,8 @@ uint8_t PostBumperService(ES_Event ThisEvent);
 ES_Event RunBumperService(ES_Event ThisEvent);
 
 
+int are_front_bumpers_pressed();
 
+int are_rear_bumpers_pressed();
 #endif /* TemplateService_H */
 

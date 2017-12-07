@@ -117,8 +117,8 @@ void mid_speed_forwards() {
 }
 
 void slow_forwards() {
-    PWM_SetDutyCycle(ENABLE_A, Motor_Speed_A * 0.50);
-    PWM_SetDutyCycle(ENABLE_B, Motor_Speed_B * 0.50);
+    PWM_SetDutyCycle(ENABLE_A, Motor_Speed_A * 0.85);
+    PWM_SetDutyCycle(ENABLE_B, Motor_Speed_B * 0.85);
     IO_PortsClearPortBits(DRIVING_MOTOR_PORT, DIRECTION_A | DIRECTION_B);
 }
 

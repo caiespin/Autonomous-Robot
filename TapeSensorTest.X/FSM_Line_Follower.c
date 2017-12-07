@@ -70,8 +70,7 @@ typedef enum {
     turning_corner,
     wiggle_left,
     reverse_state,
-    InchRight,
-    InchLeft,
+
 } TemplateFSMState_t;
 
 static const char *StateNames[] = {
@@ -83,8 +82,6 @@ static const char *StateNames[] = {
 	"turning_corner",
 	"wiggle_left",
 	"reverse_state",
-	"InchRight",
-	"InchLeft",
 };
 
 
@@ -257,7 +254,7 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
                 case TAPE_DETECTED:
                     switch (ThisEvent.EventParam) {
                         case FRONT_TAPE_SENSOR:
-                            nextState = InchRight;
+                            nextState = on_line;
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
                     }
@@ -276,7 +273,7 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
                 case TAPE_DETECTED:
                     switch (ThisEvent.EventParam) {
                         case FRONT_TAPE_SENSOR:
-                            nextState = InchLeft;
+                            nextState = on_line;
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
                     }
@@ -317,7 +314,7 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
                     switch (ThisEvent.EventParam) {
                         case FRONT_TAPE_SENSOR:
                             ES_Timer_StopTimer(TAPE_FOLLOWER_TIMER);
-                            nextState = InchRight;
+                            nextState = on_line;
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
                     }
@@ -327,8 +324,9 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
 
                     if (ThisEvent.EventParam == TAPE_FOLLOWER_TIMER) {
                         ES_Timer_StopTimer(TAPE_FOLLOWER_TIMER);
-                        nextState = InchRight;
-                        makeTransition = TRUE;
+                        ThisEvent.EventType = GO_TO_FIND_LINE;
+                        ThisEvent.EventParam = 0;
+                        PostTopHSM(ThisEvent);
                         ThisEvent.EventType = ES_NO_EVENT;
                     }
                     break;
@@ -347,63 +345,7 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
             }
             break;
 
-        case InchRight: // in the first state, replace this with correct names
-            switch (ThisEvent.EventType) {
-                case ES_ENTRY:
-                    //tank_turn_right();
-                    turn_right();
-                    ES_Timer_InitTimer(TAPE_FOLLOWER_TIMER, INCH_RIGHT_TIME);
 
-                    break;
-                case ES_TIMEOUT:
-
-                    if (ThisEvent.EventParam == TAPE_FOLLOWER_TIMER) {
-                        nextState = on_line;
-                        makeTransition = TRUE;
-                        ThisEvent.EventType = ES_NO_EVENT;
-                    }
-                    break;
-
-
-                case ES_TIMERACTIVE:
-                    // printf("enter on_ES_TIMERACTIVE\r\n");
-                case ES_TIMERSTOPPED:
-                    ThisEvent.EventType = ES_NO_EVENT;
-                    break;
-                case ES_NO_EVENT:
-                default: // all unhandled events pass the event back up to the next level
-                    break;
-            }
-            break;
-
-        case InchLeft: // in the first state, replace this with correct names
-            switch (ThisEvent.EventType) {
-                case ES_ENTRY:
-                    //tank_turn_left();
-                    turn_left();
-                    ES_Timer_InitTimer(TAPE_FOLLOWER_TIMER, INCH_LEFT_TIME);
-
-                    break;
-                case ES_TIMEOUT:
-
-                    if (ThisEvent.EventParam == TAPE_FOLLOWER_TIMER) {
-                        nextState = on_line;
-                        makeTransition = TRUE;
-                        ThisEvent.EventType = ES_NO_EVENT;
-                    }
-                    break;
-
-
-                case ES_TIMERACTIVE:
-                    // printf("enter on_ES_TIMERACTIVE\r\n");
-                case ES_TIMERSTOPPED:
-                    ThisEvent.EventType = ES_NO_EVENT;
-                    break;
-                case ES_NO_EVENT:
-                default: // all unhandled events pass the event back up to the next level
-                    break;
-            }
-            break;
 
         case reverse_state:
             switch (ThisEvent.EventType) {
