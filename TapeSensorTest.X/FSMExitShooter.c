@@ -193,22 +193,22 @@ ES_Event RunFSMExitShooter(ES_Event ThisEvent) {
                         PostTopHSM(ThisEvent);
                         ThisEvent.EventType = ES_NO_EVENT;
                         ATM6_Counter++;
-                        printf("\r\nATM6 DOWN2!!!!!!!, counter= %d\r\n", ATM6_Counter);
+                        printf("\r\nATM6 DOWN2!!!!!!!,--------------------> counter= %d\r\n", ATM6_Counter);
                     } else {
                         nextState = Reverse;
                         makeTransition = TRUE;
                         ThisEvent.EventType = ES_NO_EVENT;
-                        printf("\r\nATM6 Still UP!!!!!!!, counter= %d\r\n", ATM6_Counter);
+                        printf("\r\nATM6 Still UP!!!!!!!, ------------------> counter= %d\r\n", ATM6_Counter);
                     }
                     break;
-                case TRACKWIRE_LOST:
-                    ThisEvent.EventType = GO_TO_ON_LINE;
-                    ThisEvent.EventParam = 0;
-                    PostTopHSM(ThisEvent);
-                    ThisEvent.EventType = ES_NO_EVENT;
-                    ATM6_Counter++;
-                    printf("\r\nATM6 DOWN1!!!!!!!, counter= %d\r\n", ATM6_Counter);
-                    break;
+//                case TRACKWIRE_LOST:
+//                    ThisEvent.EventType = GO_TO_ON_LINE;
+//                    ThisEvent.EventParam = 0;
+//                    PostTopHSM(ThisEvent);
+//                    ThisEvent.EventType = ES_NO_EVENT;
+//                    ATM6_Counter++;
+//                    printf("\r\nATM6 DOWN1!!!!!!!, counter= %d\r\n", ATM6_Counter);
+//                    break;
 
                 case ES_TIMERACTIVE:
                     // printf("enter on_ES_TIMERACTIVE\r\n");

@@ -38,7 +38,7 @@
 #define  RAISE_EXTENSION_MOTOR_PIN PIN7
 
 #define TILT_UP_PWM 187
-#define TILT_DOWN_PWM 55
+#define TILT_DOWN_PWM 62
 /*******************************************************************************
  * PUBLIC TYPEDEFS                                                             *
  ******************************************************************************/

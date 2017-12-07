@@ -39,6 +39,7 @@
 #include "pwm.h"
 #include "bumper_service.h"
 #include "FSMShoot.h"
+#include "stdio.h"
 
 /*******************************************************************************
  * MODULE #DEFINES                                                             *
@@ -52,9 +53,9 @@
 #define  RAISE_SHOOTER_TIME 1000
 #define STUCK_BALL_TIME 5000
 
-#define SHOOT_POWER_HIGH_PWM 800
-#define SHOOT_POWER_MED_PWM 500
-#define SHOOT_POWER_LOW_PWM 350
+#define SHOOT_POWER_HIGH_PWM 700//800
+#define SHOOT_POWER_MED_PWM 420
+#define SHOOT_POWER_LOW_PWM 250
 static int start_motor_low_time = 5000;
 
 typedef enum {
@@ -62,7 +63,7 @@ typedef enum {
     Stop,
     StartMotorFast,
     StartMotorSlow,
-    RaiseShooterExtension,
+    // RaiseShooterExtension,
     LoadBall,
     Stuck_Ball_State,
 
@@ -75,7 +76,6 @@ static const char *StateNames[] = {
 	"Stop",
 	"StartMotorFast",
 	"StartMotorSlow",
-	"RaiseShooterExtension",
 	"LoadBall",
 	"Stuck_Ball_State",
 };
@@ -100,12 +100,12 @@ static const char *StateNames[] = {
 typedef enum {
     ATM6,
     REN,
-} mode_t;
+} shoot_mode_t;
 
 
 static TemplateSubHSMState_t CurrentState = InitPSubState; // <- change name to match ENUM
 static uint8_t MyPriority;
-static mode_t mode = ATM6;
+static shoot_mode_t mode = ATM6;
 static int first_time = TRUE;
 
 /*******************************************************************************
@@ -236,12 +236,17 @@ ES_Event RunFSMShoot(ES_Event ThisEvent) {
                 case ES_ENTRY:
 
                     ES_Timer_InitTimer(SHOOT_FSM_TIMER, START_MOTOR_HIGH_TIME);
+                    printf("startMotorFast, first_time --------> %d\r\n", first_time);
                     if (first_time == TRUE) {
                         if (mode == REN) {
                             start_raise_extension();
                         }
                         first_time = FALSE;
                         start_ball_accelerator_fast();
+                    } else {
+                        nextState = StartMotorSlow;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
                     }
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;

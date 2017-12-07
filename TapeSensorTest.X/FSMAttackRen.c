@@ -40,7 +40,7 @@
 #define ADJUST_TURNING_COUNT 2
 
 #define REVERSE_TIME 2000
-#define FAST_TWIST_RIGHT_TIME 230//250//280
+#define FAST_TWIST_RIGHT_TIME 200//230//250//280
 #define FAST_TWIST_LEFT_TIME 350//400
 #define SLOW_TWIST_RIGHT_TIME 150//280
 #define SLOW_TWIST_LEFT_TIME 300
@@ -54,7 +54,7 @@
 #define STOP_TIME 200
 //#define INCH_FOWARDS1_TIME 200
 //#define INCH_FOWARDS2_TIME 200
-#define TANK_RIGHT_1_TIME (700) //800
+#define TANK_RIGHT_1_TIME (600) //800
 
 #define TANK_LEFT_WU_1_TIME 400
 #define TANK_LEFT_WU_2_TIME 200
@@ -63,9 +63,9 @@
 #define INCH_FORWARDS_1_TIME 200
 #define INCH_FORWARDS_2_TIME 200
 #define ADJUST_LEFT_1_TIME 350 //150
-#define ADJUST_RIGHT_1_TIME 150
+#define ADJUST_RIGHT_1_TIME 350
 
-#define INCH_FORWARDS_3_TIME 520 //600
+#define INCH_FORWARDS_3_TIME 350//380//440//490 //600
 #define BACK_UP_GET_IN_POSITION_TIME 500
 
 typedef enum {
@@ -272,6 +272,7 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
                             back_left_bumper_counter++;
+                             back_right_bumper_counter = 0;
                             break;
                         case BACK_RIGHT_BUMPER_PIN:
 
@@ -279,6 +280,7 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
                             back_right_bumper_counter++;
+                            back_left_bumper_counter = 0;
                             break;
 
                     }
