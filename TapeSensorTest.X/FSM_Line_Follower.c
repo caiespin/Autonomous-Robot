@@ -246,7 +246,12 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
         case on_left_side:
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
-                    // ES_Timer_InitTimer(TAPE_FOLLOWER_TIMER, ON_LEFT_SIDE_MAX_TIME);
+                    if (get_front_tape_status() == on_tape) {
+                        nextState = on_line;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+
+                    }
                     turn_right();
                     // tank_turn_right();
 
@@ -261,11 +266,13 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
                             break;
-                        case LEFT_TAPE_SENSOR:
-                            nextState = on_right_side;
-                            makeTransition = TRUE;
-                            ThisEvent.EventType = ES_NO_EVENT;
-                            break;
+                            //                        case LEFT_TAPE_SENSOR:
+                            //                            if (get_front_tape_status() == FALSE) {
+                            //                                nextState = on_right_side;
+                            //                                makeTransition = TRUE;
+                            //                                ThisEvent.EventType = ES_NO_EVENT;
+                            //                            }
+                            //                            break;
 
                     }
                     break;
@@ -276,7 +283,12 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
                     // ES_Timer_InitTimer(TAPE_FOLLOWER_TIMER, ON_RIGHT_SIDE_MAX_TIME);
+                    if (get_front_tape_status() == on_tape) {
+                        nextState = on_line;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
 
+                    }
 
                     //tank_turn_left();
                     turn_left();
@@ -290,11 +302,11 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
                             break;
-                        case RIGHT_TAPE_SENSOR:
-                            nextState = on_left_side;
-                            makeTransition = TRUE;
-                            ThisEvent.EventType = ES_NO_EVENT;
-                            break;
+                            //                        case RIGHT_TAPE_SENSOR:
+                            //                            nextState = on_left_side;
+                            //                            makeTransition = TRUE;
+                            //                            ThisEvent.EventType = ES_NO_EVENT;
+                            //                            break;
                     }
                     break;
             }
