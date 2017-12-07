@@ -23,6 +23,7 @@
 #define TEST_TAPE_SENSOR_WITH_ES_FRAMEWORK
 //#define TEST_BUMPER
 //#define TEST_DRIVING_MOTORS
+//#define TEST_SERVO_TILT
 //#define TEST_SERVO
 //#define TEST_DRIVING_MOTORS_HELPER_FUNCTIONS
 //#define TEST_DRIVING_MOTORS_HELPER_FUNCTIONS2
@@ -194,11 +195,8 @@ int main() {
 
 #ifdef TEST_DRIVING_MOTORS
 
+#define SHOOTER_MOTOR_PIN PWM_PORTZ06
 
-
-#define DRIVING_MOTOR_PORT  PORTY
-#define ENABLE_A PWM_PORTY12  
-#define DIRECTION_A PIN11
 
 
 #define ENABLE_B PWM_PORTY10 
@@ -215,20 +213,33 @@ int main() {
     BOARD_Init();
     PWM_Init();
 
-    IO_PortsSetPortOutputs(DRIVING_MOTOR_PORT, DIRECTION_A | DIRECTION_B);
-    PWM_AddPins(ENABLE_A | ENABLE_B);
+    //    IO_PortsSetPortOutputs(DRIVING_MOTOR_PORT, DIRECTION_A | DIRECTION_B);
+    PWM_AddPins(SHOOTER_MOTOR_PIN);
 
     //IO_PortsSetPortOutput(BUMPER_PORT,  FRONT_LEFT_BUMPER_PIN);
     //IO_PortsSetPortOutput(BUMPER_PORT,   FRONT_RIGHT_BUMPER_PIN);
     //IO_PortsSetPortInputs(BUMPER_PORT,  BACK_LEFT_BUMPER_PIN);
     //  IO_PortsSetPortInputs(BUMPER_PORT,  BACK_RIGHT_BUMPER_PIN);
-    PWM_SetFrequency(PWM_500HZ);
-    PWM_SetDutyCycle(ENABLE_A, 1000);
-    PWM_SetDutyCycle(ENABLE_B, 950);
-    IO_PortsWritePort(DRIVING_MOTOR_PORT, DIRECTION_A);
-    IO_PortsClearPortBits(DRIVING_MOTOR_PORT, DIRECTION_B);
+    PWM_SetFrequency(MIN_PWM_FREQ);
 
+    //    PWM_SetDutyCycle(ENABLE_B, 950);
+    //    IO_PortsWritePort(DRIVING_MOTOR_PORT, DIRECTION_A);
+    //    IO_PortsClearPortBits(DRIVING_MOTOR_PORT, DIRECTION_B);
+    
+    
+    //PWM_SetDutyCycle(SHOOTER_MOTOR_PIN, 50);
     for (;;) {
+        
+         PWM_SetDutyCycle(SHOOTER_MOTOR_PIN, 50);
+          delay(1000000);
+        PWM_SetDutyCycle(SHOOTER_MOTOR_PIN, 180);
+         delay(1000000);
+        //        int i = 0;
+        //        for (i = 0; i <= 1000; i += 10) {
+        //            PWM_SetDutyCycle(SHOOTER_MOTOR_PIN, i);
+        //            delay(200000);
+        //        }
+
 
 
     }
@@ -236,6 +247,56 @@ int main() {
 }
 
 #endif
+
+
+
+#ifdef TEST_SERVO_TILT
+#include "FSMShoot.h"
+
+void delay(int x) {
+    int i = 0;
+    while (i < x) {
+        i++;
+    }
+}
+
+int main() {
+    BOARD_Init();
+    PWM_Init();
+    shooter_init();
+  
+    for (;;) {
+        
+        set_atm6_tilt();
+          delay(1000000);
+         set_ren_tilt();
+         delay(1000000);
+        //        int i = 0;
+        //        for (i = 0; i <= 1000; i += 10) {
+        //            PWM_SetDutyCycle(SHOOTER_MOTOR_PIN, i);
+        //            delay(200000);
+        //        }
+
+
+
+    }
+
+}
+
+#endif
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #ifdef TEST_SERVO
 #define SERVO_TILT_PIN RC_PORTZ09
@@ -250,18 +311,29 @@ void delay(int x) {
 int main() {
     BOARD_Init();
     RC_Init();
-    RC_AddPins(SERVO_TILT_PIN);
+
+
 
     //#define MINPULSE 550
     //#define MAXPULSE 2450 metsl serv
 
 
-    RC_SetPulseTime(SERVO_TILT_PIN, 1500);
+    // RC_SetPulseTime(SERVO_TILT_PIN, 1500);
     //    delay(3000000);
     //    RC_SetPulseTime(SERVO_TILT_PIN, MAXPULSE);
     //    delay(100000);
 
+    //    IO_PortsSetPortOutputs(SHOOT_PORT, SERVO_TILT_PIN);
+    //    IO_PortsSetPortBits(SHOOT_PORT, SERVO_TILT_PIN);
+    //    delay(2000000);
+
+    RC_AddPins(SERVO_TILT_PIN);
     for (;;) {
+        int i = 0;
+        for (i = MINPULSE; i <= MAXPULSE; i += 10) {
+            RC_SetPulseTime(SERVO_TILT_PIN, i);
+            delay(200000);
+        }
 
 
 
@@ -480,16 +552,16 @@ int main() {
     AD_Init();
     int index = 0;
     const int tape_sensor_pins[TAPE_SENSOR_COUNT] = {TAPE_PIN_1, TAPE_PIN_2, TAPE_PIN_3, TAPE_PIN_4, TAPE_PIN_5};
-    
+
     for (index = 0; index < TAPE_SENSOR_COUNT; index++) {
-        int rc = AD_AddPins(tape_sensor_pins[index] );
+        int rc = AD_AddPins(tape_sensor_pins[index]);
     }
-    
+
     for (;;) {
-       int val=AD_ReadADPin(AD_AddPins(tape_sensor_pins[4]));
-       printf("val=%d\r\n",val);
+        int val = AD_ReadADPin(AD_AddPins(tape_sensor_pins[4]));
+        printf("val=%d\r\n", val);
         delay(100000);
-       
+
 
     }
 

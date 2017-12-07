@@ -3,14 +3,20 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/igonzalo/Desktop/git/Autonomous-Robot/TapeSensorTest.X/FSM_Line_Follower.c</file>
-            <file>file:/C:/Users/igonzalo/Desktop/git/Autonomous-Robot/TapeSensorTest.X/ES_Configure.h</file>
-            <file>file:/C:/Users/igonzalo/Desktop/git/Autonomous-Robot/TapeSensorTest.X/motors.c</file>
-            <file>file:/C:/Users/igonzalo/Desktop/git/Autonomous-Robot/TapeSensorTest.X/bumper_service.h</file>
-            <file>file:/C:/Users/igonzalo/Desktop/git/Autonomous-Robot/TapeSensorTest.X/FSMAttackRen.c</file>
-            <file>file:/C:/Users/igonzalo/Desktop/git/Autonomous-Robot/TapeSensorTest.X/TopHSM.c</file>
-            <file>file:/C:/Users/igonzalo/Desktop/git/Autonomous-Robot/TapeSensorTest.X/FSM_Find_Line.c</file>
-            <file>file:/C:/Users/igonzalo/Desktop/git/Autonomous-Robot/TapeSensorTest.X/FSM_Mini_Avoid.c</file>
+            <file>file:/C:/CMPE118/include/pwm.h</file>
+            <file>file:/C:/Users/wchen38/Desktop/git/Autonomous-Robot/TapeSensorTest.X/FSMExitShooter.c</file>
+            <file>file:/C:/Users/wchen38/Desktop/git/Autonomous-Robot/TapeSensorTest.X/FSM_Mini_Avoid.c</file>
+            <file>file:/C:/Users/wchen38/Desktop/git/Autonomous-Robot/TapeSensorTest.X/FSMAlignATM6.c</file>
+            <file>file:/C:/Users/wchen38/Desktop/git/Autonomous-Robot/TapeSensorTest.X/FSMShoot.h</file>
+            <file>file:/C:/Users/wchen38/Desktop/git/Autonomous-Robot/TapeSensorTest.X/TopHSM.c</file>
+            <file>file:/C:/Users/wchen38/Desktop/git/Autonomous-Robot/TapeSensorTest.X/FSMStartWar.c</file>
+            <file>file:/C:/Users/wchen38/Desktop/git/Autonomous-Robot/TapeSensorTest.X/main.c</file>
+            <file>file:/C:/Users/wchen38/Desktop/git/Autonomous-Robot/TapeSensorTest.X/FSM_Line_Follower.c</file>
+            <file>file:/C:/Users/wchen38/Desktop/git/Autonomous-Robot/TapeSensorTest.X/FSMAttackRen.c</file>
+            <file>file:/C:/Users/wchen38/Desktop/git/Autonomous-Robot/TapeSensorTest.X/FSMShoot.c</file>
+            <file>file:/C:/Users/wchen38/Desktop/git/Autonomous-Robot/TapeSensorTest.X/RC_Servo.h</file>
+            <file>file:/C:/Users/wchen38/Desktop/git/Autonomous-Robot/TapeSensorTest.X/motors.c</file>
+            <file>file:/C:/Users/wchen38/Desktop/git/Autonomous-Robot/TapeSensorTest.X/FSMExitShooter.h</file>
         </group>
     </open-files>
 </project-private>

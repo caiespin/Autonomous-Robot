@@ -24,6 +24,7 @@ void stop();
 void adjust_pwm();
 void  arc_left();
 void slow_forwards();
+void mid_speed_forwards();
 
 #endif	/* MOTORS_H */
 

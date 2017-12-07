@@ -66,6 +66,7 @@
 #define ADJUST_RIGHT_1_TIME 150
 
 #define INCH_FORWARDS_3_TIME 520 //600
+#define BACK_UP_GET_IN_POSITION_TIME 500
 
 typedef enum {
     InitPSubState,
@@ -75,16 +76,20 @@ typedef enum {
     TwistRightState,
     TurnRight1State,
     TurnLeft1State,
-   
+
     StopState_1,
     StopState_2,
     StopState_3,
     StopState_4,
     StopState_5,
     StopState_6,
+    StopState_7,
+    StopState_8,
     AdjustLeftState1,
     AdjustRightState1,
     InchForwards3State,
+
+
 
     //  ShootRen,
 } TemplateSubHSMState_t;
@@ -103,6 +108,8 @@ static const char *StateNames[] = {
 	"StopState_4",
 	"StopState_5",
 	"StopState_6",
+	"StopState_7",
+	"StopState_8",
 	"AdjustLeftState1",
 	"AdjustRightState1",
 	"InchForwards3State",
@@ -260,14 +267,14 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
                 case BUMPER_PRESSED:
                     switch (ThisEvent.EventParam & BACK_BUMPERS) {
                         case BACK_LEFT_BUMPER_PIN:
-                           
+
                             nextState = StopState_5;
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
                             back_left_bumper_counter++;
                             break;
                         case BACK_RIGHT_BUMPER_PIN:
-                           
+
                             nextState = StopState_5;
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
@@ -280,7 +287,7 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
                 case REN_BUMPER_PRESSED:
                     switch (ThisEvent.EventParam & ALL_TRUE_REN_BUMPERS) {
                         case REN_LEFT_PIN:
-                            
+
                             nextState = StopState_5;
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
@@ -289,7 +296,7 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
                             break;
 
                         case REN_RIGHT_PIN:
-                            
+
                             nextState = StopState_5;
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
@@ -321,9 +328,14 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
 
 
 
-                        ThisEvent.EventType = REN_ALIGNED;
-                        ThisEvent.EventParam = 0;
-                        PostTopHSM(ThisEvent);
+                        //                        ThisEvent.EventType = REN_ALIGNED;
+                        //                        ThisEvent.EventParam = 0;
+                        //                        PostTopHSM(ThisEvent);
+                        //                        ThisEvent.EventType = ES_NO_EVENT;
+
+
+                        nextState = StopState_8;
+                        makeTransition = TRUE;
                         ThisEvent.EventType = ES_NO_EVENT;
                     }
                     //                    switch (ThisEvent.EventParam) {
@@ -508,13 +520,13 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
             break;
 
 
-      
 
-        
 
-       
 
-    
+
+
+
+
         case StopState_1:
             switch (ThisEvent.EventType) {
 
@@ -693,10 +705,14 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
                 case ES_TIMEOUT:
                     if (ThisEvent.EventParam == ATTACK_REN_TIMER) {
                         if (are_bumpers_ren_aligned() == TRUE) {
-                            ThisEvent.EventType = REN_ALIGNED;
-                            ThisEvent.EventParam = 0;
-                            PostTopHSM(ThisEvent);
-                            ThisEvent.EventType = ES_NO_EVENT;
+                            //                            ThisEvent.EventType = REN_ALIGNED;
+                            //                            ThisEvent.EventParam = 0;
+                            //                            PostTopHSM(ThisEvent);
+                            //                            ThisEvent.EventType = ES_NO_EVENT;
+
+                            //                            nextState = BackUpToGetInPositionState;
+                            //                            makeTransition = TRUE;
+                            //                            ThisEvent.EventType = ES_NO_EVENT;
                         } else {
                             nextState = ForwardsState;
                             makeTransition = TRUE;
@@ -712,8 +728,31 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
                     break;
             }
             break;
+        case StopState_8:
+            switch (ThisEvent.EventType) {
+
+                case ES_ENTRY:
+                    ES_Timer_InitTimer(ATTACK_REN_TIMER, STOP_TIME);
+                    stop();
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
 
 
+                case ES_TIMEOUT:
+                    ThisEvent.EventType = REN_ALIGNED;
+                    ThisEvent.EventParam = 0;
+                    PostTopHSM(ThisEvent);
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+                case ES_TIMERACTIVE:
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+            }
+            break;
+
+       
 
         default: // all unhandled states fall into here
             break;

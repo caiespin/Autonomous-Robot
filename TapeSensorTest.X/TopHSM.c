@@ -193,18 +193,19 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
 
                     ES_Timer_InitTimer(TOP_HSM_TIMER, BOOT_TIME);
 
-
+                    set_atm6_config();
 
                     break;
                 case ES_TIMEOUT:
                     switch (ThisEvent.EventParam) {
                         case TOP_HSM_TIMER:
 
-                            // nextState = Start_War_State;
-                            nextState = FindLineState;
+                            nextState = Start_War_State;
+                            //nextState = FindLineState;
                             // nextState = Debug_Stop_State;
                             // nextState = ATTACK_REN;
-                            //nextState=Shoot;
+                            //                            nextState=Shoot;
+                            //                            set_ren_config();
 
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
@@ -255,7 +256,7 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
             ThisEvent = RunFSMStartWar(ThisEvent);
             switch (ThisEvent.EventType) {
                 case GO_TO_FIND_LINE:
-                    //   LED_SetBank(LED_BANK3, 0xf);
+
                     nextState = FindLineState;
                     makeTransition = TRUE;
                     ThisEvent.EventType = ES_NO_EVENT;
@@ -497,7 +498,7 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
                 case SHOT_REN:
-                    nextState =  Shoot;
+                    nextState = Shoot;
                     makeTransition = TRUE;
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;

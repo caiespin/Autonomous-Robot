@@ -73,8 +73,8 @@ static const char *StateNames[] = {
 static TemplateSubHSMState_t CurrentState = InitPSubState; // <- change name to match ENUM
 static uint8_t MyPriority;
 
-//static int ATM6_Counter = 0;
-static int  ATM6_Counter=3;
+static int ATM6_Counter = 0;
+//static int  ATM6_Counter=3;
 
 /*******************************************************************************
  * PUBLIC FUNCTIONS                                                            *

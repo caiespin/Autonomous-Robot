@@ -39,10 +39,13 @@
 /*******************************************************************************
  * MODULE #DEFINES                                                             *
  ******************************************************************************/
-#define STOP_TIME 1000
+#define STOP_TIME 100
 #define ADJUST_TIME 0
-#define REVERSE_TIME 100
+//#define REVERSE_TIME 100
+
+#define REVERSE_TIME 150
 #define TANK_RIGHT_TIME 650
+#define TANK_RIGHT_SMALL_TIME 450
 #define TANK_LEFT_TIME 1700
 #define FORWARDS1_TIME 1000
 #define ARC_LEFT_TIME 4000
@@ -163,6 +166,7 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
     static int first_time_flag = 0;
     uint32_t difference_time = 0;
     static int forward_flag = 0;
+    first_time_flag = 0;
     ES_Tattle(); // trace call stack
 
     switch (CurrentState) {
@@ -274,7 +278,12 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
 
                 case ES_ENTRY:
-                    ES_Timer_InitTimer(MINI_AVOID_TIMER, TANK_RIGHT_TIME);
+                    if (first_time_flag == 0) {
+                        ES_Timer_InitTimer(MINI_AVOID_TIMER, TANK_RIGHT_TIME);
+                        first_time_flag = 1;
+                    } else {
+                        ES_Timer_InitTimer(MINI_AVOID_TIMER, TANK_RIGHT_SMALL_TIME);
+                    }
                     tank_turn_right();
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;

@@ -25,16 +25,20 @@
  * PUBLIC #INCLUDES                                                            *
  ******************************************************************************/
 
-#include "ES_Configure.h"   // defines ES_Event, INIT_EVENT, ENTRY_EVENT, and EXIT_EVENT
+#include "ES_Configure.h"
+#include "pwm.h"   // defines ES_Event, INIT_EVENT, ENTRY_EVENT, and EXIT_EVENT
 
 /*******************************************************************************
  * PUBLIC #DEFINES                                                             *
  ******************************************************************************/
-#define SERVO_TILT_PIN RC_PORTZ09
+#define SERVO_TILT_PIN PWM_PORTY04
 #define SERVO_DELIVER_PIN PIN5
 #define SHOOTER_MOTOR_PIN PWM_PORTZ06
 #define SHOOT_PORT PORTZ
+#define  RAISE_EXTENSION_MOTOR_PIN PIN7
 
+#define TILT_UP_PWM 180
+#define TILT_DOWN_PWM 50
 /*******************************************************************************
  * PUBLIC TYPEDEFS                                                             *
  ******************************************************************************/
@@ -46,13 +50,16 @@
 void shooter_init();
 void start_ball_accelerator_fast();
 
-
+void start_ball_accelerator_med();
 void start_ball_accelerator_slow();
 void start_trigger_motor();
 
 void stop_trigger_motor();
 
 void stop_ball_accelerator();
+void start_raise_extension();
+
+void stop_raise_extension();
 
 void set_atm6_tilt();
 void set_ren_tilt();

@@ -38,6 +38,7 @@
 #include "motors.h"
 #include "pwm.h"
 #include "bumper_service.h"
+#include "FSMShoot.h"
 
 /*******************************************************************************
  * MODULE #DEFINES                                                             *
@@ -48,8 +49,12 @@
 //#define START_MOTOR_LOW_TIME 3000
 #define START_MOTOR_LOW_TIME 5000
 #define LOAD_BALL_TIME 480
+#define  RAISE_SHOOTER_TIME 1000
+#define STUCK_BALL_TIME 5000
+
 #define SHOOT_POWER_HIGH_PWM 800
-#define SHOOT_POWER_LOW_PWM 250
+#define SHOOT_POWER_MED_PWM 500
+#define SHOOT_POWER_LOW_PWM 350
 static int start_motor_low_time = 5000;
 
 typedef enum {
@@ -57,7 +62,9 @@ typedef enum {
     Stop,
     StartMotorFast,
     StartMotorSlow,
+    RaiseShooterExtension,
     LoadBall,
+    Stuck_Ball_State,
 
 
 
@@ -68,7 +75,9 @@ static const char *StateNames[] = {
 	"Stop",
 	"StartMotorFast",
 	"StartMotorSlow",
+	"RaiseShooterExtension",
 	"LoadBall",
+	"Stuck_Ball_State",
 };
 
 
@@ -103,7 +112,8 @@ static int first_time = TRUE;
  * PUBLIC FUNCTIONS                                                            *
  ******************************************************************************/
 void set_atm6_config() {
-    RC_SetPulseTime(SERVO_TILT_PIN, MAXPULSE);
+    // RC_SetPulseTime(SERVO_TILT_PIN, MAXPULSE);
+    set_atm6_tilt();
     start_motor_low_time = 1000;
     mode = ATM6;
     first_time = TRUE;
@@ -111,7 +121,8 @@ void set_atm6_config() {
 }
 
 void set_ren_config() {
-    RC_SetPulseTime(SERVO_TILT_PIN, MINPULSE);
+    //  RC_SetPulseTime(SERVO_TILT_PIN, MINPULSE);
+    set_ren_tilt();
     start_motor_low_time = 5000;
     mode = REN;
     first_time = TRUE;
@@ -121,11 +132,16 @@ void shooter_init() {
     // IO_PortsSetPortOutputs(PORTX, SHOOTER_MOTOR_PIN);
     PWM_AddPins(SHOOTER_MOTOR_PIN);
     IO_PortsSetPortOutputs(SHOOT_PORT, SERVO_DELIVER_PIN);
+    IO_PortsSetPortOutputs(SHOOT_PORT, RAISE_EXTENSION_MOTOR_PIN);
+    IO_PortsClearPortBits(SHOOT_PORT, RAISE_EXTENSION_MOTOR_PIN);
 
     // IO_PortsClearPortBits(PORTX, SERVO_DELIVER_PIN | SHOOTER_MOTOR_PIN);
     IO_PortsClearPortBits(SHOOT_PORT, SERVO_DELIVER_PIN);
-    RC_AddPins(SERVO_TILT_PIN);
-    RC_SetPulseTime(SERVO_TILT_PIN, MAXPULSE);
+    PWM_AddPins(SERVO_TILT_PIN);
+    PWM_SetFrequency(MIN_PWM_FREQ);
+    set_atm6_tilt();
+
+    //RC_SetPulseTime(SERVO_TILT_PIN, MAXPULSE);
 
 
     // RC_SetPulseTime(SERVO_TILT_PIN, MINPULSE);
@@ -218,15 +234,20 @@ ES_Event RunFSMShoot(ES_Event ThisEvent) {
         case StartMotorFast: // in the first state, replace this with correct names
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
+
                     ES_Timer_InitTimer(SHOOT_FSM_TIMER, START_MOTOR_HIGH_TIME);
                     if (first_time == TRUE) {
-                        first_time=FALSE;
+                        if (mode == REN) {
+                            start_raise_extension();
+                        }
+                        first_time = FALSE;
                         start_ball_accelerator_fast();
                     }
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
                 case ES_TIMEOUT:
                     if (ThisEvent.EventParam == SHOOT_FSM_TIMER) {
+
                         nextState = StartMotorSlow;
                         makeTransition = TRUE;
                         ThisEvent.EventType = ES_NO_EVENT;
@@ -251,6 +272,8 @@ ES_Event RunFSMShoot(ES_Event ThisEvent) {
                     break;
                 case ES_TIMEOUT:
                     if (ThisEvent.EventParam == SHOOT_FSM_TIMER) {
+                        // nextState = RaiseShooterExtension;
+                        stop_raise_extension();
                         nextState = LoadBall;
                         makeTransition = TRUE;
                         ThisEvent.EventType = ES_NO_EVENT;
@@ -266,6 +289,32 @@ ES_Event RunFSMShoot(ES_Event ThisEvent) {
                     break;
             }
             break;
+
+            //        case RaiseShooterExtension: // in the first state, replace this with correct names
+            //            switch (ThisEvent.EventType) {
+            //                case ES_ENTRY:
+            //                    ES_Timer_InitTimer(SHOOT_FSM_TIMER, RAISE_SHOOTER_TIME);
+            //                    start_raise_motor();
+            //                    ThisEvent.EventType = ES_NO_EVENT;
+            //                    break;
+            //                case ES_TIMEOUT:
+            //                    if (ThisEvent.EventParam == SHOOT_FSM_TIMER) {
+            //                        stop_raise_motor();
+            //                        nextState = LoadBall;
+            //                        makeTransition = TRUE;
+            //                        ThisEvent.EventType = ES_NO_EVENT;
+            //                    }
+            //                    break;
+            //
+            //                case ES_TIMERACTIVE:
+            //                case ES_TIMERSTOPPED:
+            //                    ThisEvent.EventType = ES_NO_EVENT;
+            //                    break;
+            //                case ES_NO_EVENT:
+            //                default: // all unhandled events pass the event back up to the next level
+            //                    break;
+            //            }
+            //            break;
 
         case LoadBall: // in the first state, replace this with correct names
             switch (ThisEvent.EventType) {
@@ -284,10 +333,14 @@ ES_Event RunFSMShoot(ES_Event ThisEvent) {
                             PostTopHSM(ThisEvent);
                             ThisEvent.EventType = ES_NO_EVENT;
                         } else {
-                            ThisEvent.EventType = SHOT_REN;
-                            ThisEvent.EventParam = 0;
-                            PostTopHSM(ThisEvent);
+                            //                            ThisEvent.EventType = SHOT_REN;
+                            //                            ThisEvent.EventParam = 0;
+                            //                            PostTopHSM(ThisEvent);
+                            //                            ThisEvent.EventType = ES_NO_EVENT;
+                            nextState = Stuck_Ball_State;
+                            makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
+
                         }
                     }
                     break;
@@ -301,6 +354,35 @@ ES_Event RunFSMShoot(ES_Event ThisEvent) {
                     break;
             }
             break;
+
+        case Stuck_Ball_State: // in the first state, replace this with correct names
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    ES_Timer_InitTimer(SHOOT_FSM_TIMER, STUCK_BALL_TIME);
+
+                    start_ball_accelerator_med();
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case ES_TIMEOUT:
+                    if (ThisEvent.EventParam == SHOOT_FSM_TIMER) {
+
+                        ThisEvent.EventType = SHOT_REN;
+                        ThisEvent.EventParam = 0;
+                        PostTopHSM(ThisEvent);
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
+                    break;
+
+                case ES_TIMERACTIVE:
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
+                    break;
+            }
+            break;
+
 
 
 
@@ -328,6 +410,11 @@ void start_ball_accelerator_fast() {
     PWM_SetDutyCycle(SHOOTER_MOTOR_PIN, SHOOT_POWER_HIGH_PWM);
 }
 
+void start_ball_accelerator_med() {
+    // IO_PortsSetPortBits(SHOOT_PORT, SHOOTER_MOTOR_PIN);
+    PWM_SetDutyCycle(SHOOTER_MOTOR_PIN, SHOOT_POWER_MED_PWM);
+}
+
 void start_ball_accelerator_slow() {
     // IO_PortsSetPortBits(SHOOT_PORT, SHOOTER_MOTOR_PIN);
     PWM_SetDutyCycle(SHOOTER_MOTOR_PIN, SHOOT_POWER_LOW_PWM);
@@ -337,6 +424,14 @@ void start_trigger_motor() {
     IO_PortsSetPortBits(SHOOT_PORT, SERVO_DELIVER_PIN);
 }
 
+void start_raise_extension() {
+    IO_PortsSetPortBits(SHOOT_PORT, RAISE_EXTENSION_MOTOR_PIN);
+}
+
+void stop_raise_extension() {
+    IO_PortsClearPortBits(SHOOT_PORT, RAISE_EXTENSION_MOTOR_PIN);
+}
+
 void stop_trigger_motor() {
     IO_PortsClearPortBits(SHOOT_PORT, SERVO_DELIVER_PIN);
 }
@@ -344,5 +439,13 @@ void stop_trigger_motor() {
 void stop_ball_accelerator() {
     //IO_PortsClearPortBits(SHOOT_PORT, SHOOTER_MOTOR_PIN);
     PWM_SetDutyCycle(SHOOTER_MOTOR_PIN, 0);
+}
+
+void set_atm6_tilt() {
+    PWM_SetDutyCycle(SERVO_TILT_PIN, TILT_UP_PWM);
+}
+
+void set_ren_tilt() {
+    PWM_SetDutyCycle(SERVO_TILT_PIN, TILT_DOWN_PWM);
 }
 
