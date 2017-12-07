@@ -46,9 +46,12 @@
 #define REVERSE_TIME 150
 #define TANK_RIGHT_TIME 650
 #define TANK_RIGHT_SMALL_TIME 450
+#define TANK_TURN_LEFT_TIME 450
+
 #define TANK_LEFT_TIME 1700
 #define FORWARDS1_TIME 1000
-#define ARC_LEFT_TIME 4000
+#define ARC_LEFT_TIME 5000
+#define  ARC_LEFT_SLOW_TIME 7000
 #define FORWARDS2_TIME 2000
 #define TURN_180_1_TIME 1600
 #define TURN_90_1_TIME 700
@@ -75,6 +78,7 @@ typedef enum {
     InchBackState,
     InchForwardsState,
     Stop4State,
+    TankTurnLeftState,
 
 
 
@@ -97,6 +101,7 @@ static const char *StateNames[] = {
 	"InchBackState",
 	"InchForwardsState",
 	"Stop4State",
+	"TankTurnLeftState",
 };
 
 
@@ -335,9 +340,15 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
 
                 case ES_ENTRY:
-                    ES_Timer_InitTimer(MINI_AVOID_TIMER, ARC_LEFT_TIME);
 
-                    arc_left();
+                    if (get_ATM6_Counter() >= 3) {
+                        ES_Timer_InitTimer(MINI_AVOID_TIMER, ARC_LEFT_TIME);
+                        arc_left();
+                    } else {
+                        ES_Timer_InitTimer(MINI_AVOID_TIMER, ARC_LEFT_SLOW_TIME);
+                        arc_left_long();
+                    }
+
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
                 case TAPE_DETECTED:
@@ -419,7 +430,32 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
 
 
             break;
-
+            //        case TankTurnLeftState:
+            //
+            //            switch (ThisEvent.EventType) {
+            //
+            //                case ES_ENTRY:
+            //                    ES_Timer_InitTimer(MINI_AVOID_TIMER, TANK_TURN_LEFT_TIME);
+            //                    tank_turn_left();
+            //                    ThisEvent.EventType = ES_NO_EVENT;
+            //                    break;
+            //                case ES_TIMEOUT:
+            //
+            //                    ThisEvent.EventType = GO_TO_FIND_LINE;
+            //                    ThisEvent.EventParam = 0;
+            //                    PostTopHSM(ThisEvent);
+            //                    ThisEvent.EventType = ES_NO_EVENT;
+            //
+            //                    break;
+            //
+            //                case ES_TIMERACTIVE:
+            //                case ES_TIMERSTOPPED:
+            //                    ThisEvent.EventType = ES_NO_EVENT;
+            //                    break;
+            //            }
+            //
+            //
+            //            break;
 
 
         default: // all unhandled states fall into here

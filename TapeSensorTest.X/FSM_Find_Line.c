@@ -39,6 +39,8 @@
  * MODULE #DEFINES                                                             *
  ******************************************************************************/
 #define INCH_RIGHT_TIME 200
+#define STOP_TIME 100
+#define INCH_BACK_1_TIME 150
 
 typedef enum {
     InitPSubState,
@@ -48,6 +50,8 @@ typedef enum {
     DrivingForward2State,
     TurnRight2State,
     InchRight,
+    Stop_1_State,
+            InchBackState_1,
 } TemplateSubHSMState_t;
 
 static const char *StateNames[] = {
@@ -58,6 +62,8 @@ static const char *StateNames[] = {
 	"DrivingForward2State",
 	"TurnRight2State",
 	"InchRight",
+	"Stop_1_State",
+	"InchBackState_1",
 };
 
 
@@ -183,7 +189,7 @@ ES_Event RunFSMFindLine(ES_Event ThisEvent) {
 
                             break;
                         case FRONT_TAPE_SENSOR:
-                            nextState = DrivingForward2State;
+                            nextState = Stop_1_State;
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
 
@@ -266,7 +272,8 @@ ES_Event RunFSMFindLine(ES_Event ThisEvent) {
                         PostTopHSM(ThisEvent);
                         ThisEvent.EventType = ES_NO_EVENT;
                     } else if (get_center_tape_status() == on_tape) {
-                        nextState = TurnRight2State;
+                       // nextState = TurnRight2State;
+                        nextState = InchBackState_1;
                         makeTransition = TRUE;
                         ThisEvent.EventType = ES_NO_EVENT;
                     }
@@ -280,7 +287,8 @@ ES_Event RunFSMFindLine(ES_Event ThisEvent) {
 
 
                         case CENTER_TAPE_SENSOR:
-                            nextState = TurnRight2State;
+                           // nextState = TurnRight2State;
+                             nextState = InchBackState_1;
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
                             break;
@@ -349,6 +357,58 @@ ES_Event RunFSMFindLine(ES_Event ThisEvent) {
                     break;
             }
             break;
+        case Stop_1_State:
+            switch (ThisEvent.EventType) {
+
+                case ES_ENTRY:
+                    ES_Timer_InitTimer(FIND_LINE_TIMER, STOP_TIME);
+                    stop();
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+
+                case ES_TIMEOUT:
+                    if (ThisEvent.EventParam == FIND_LINE_TIMER) {
+
+                        nextState = DrivingForward2State;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+
+                    }
+                    break;
+
+                case ES_TIMERACTIVE:
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+            }
+            break;
+
+        case InchBackState_1:
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    reverse();
+                    ES_Timer_InitTimer(FIND_LINE_TIMER, INCH_BACK_1_TIME);
+
+                    break;
+                case ES_TIMEOUT:
+                    nextState = TurnRight2State;
+                    makeTransition = TRUE;
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+
+                case ES_TIMERACTIVE:
+                    // printf("enter on_ES_TIMERACTIVE\r\n");
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
+                    break;
+            }
+            break;
+
 
         default: // all unhandled states fall into here
             break;
