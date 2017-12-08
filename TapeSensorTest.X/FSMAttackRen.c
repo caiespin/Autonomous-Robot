@@ -69,7 +69,8 @@
 #define INCH_FORWARDS_3_TIME 350//380//440//490 //600
 #define BACK_UP_GET_IN_POSITION_TIME 500
 
-#define ARC_LEFT_1_SLOW_TIME 4000
+#define ARC_LEFT_1_SLOW_TIME 1600
+#define TANK_TURN_1_TIME 400
 
 typedef enum {
     InitPSubState,
@@ -88,10 +89,12 @@ typedef enum {
     StopState_6,
     StopState_7,
     StopState_8,
+    StopState_9,
     AdjustLeftState1,
     AdjustRightState1,
     InchForwards3State,
     ArcLeftState_1,
+    TankTurnLeftState_1,
 
 
 
@@ -114,10 +117,12 @@ static const char *StateNames[] = {
 	"StopState_6",
 	"StopState_7",
 	"StopState_8",
+	"StopState_9",
 	"AdjustLeftState1",
 	"AdjustRightState1",
 	"InchForwards3State",
 	"ArcLeftState_1",
+	"TankTurnLeftState_1",
 };
 
 
@@ -483,16 +488,78 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
                     break;
                 case ES_TIMEOUT:
                     if (ThisEvent.EventParam == ATTACK_REN_TIMER) {
-                        if (get_beacon_status() == BEACON_FOUND_STATE) {
+                        if (get_beacon_status() == BEACON_FOUND_STATE && get_ATM6_Counter() >= 3) {
                             nextState = ReverseIntoRenState;
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
                         } else {
-                            nextState = ArcLeftState_1;
+                            nextState = StopState_9;
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
                         }
                     }
+                    break;
+            }
+            break;
+        case StopState_9:
+            switch (ThisEvent.EventType) {
+
+                case ES_ENTRY:
+                    ES_Timer_InitTimer(ATTACK_REN_TIMER, STOP_TIME);
+                    stop();
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+
+                case ES_TIMEOUT:
+                    if (ThisEvent.EventParam == ATTACK_REN_TIMER) {
+
+                        nextState = TankTurnLeftState_1;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+
+                    }
+                    break;
+
+                case ES_TIMERACTIVE:
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+            }
+
+            break;
+        case TankTurnLeftState_1:
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+
+                    //  LED_SetBank(LED_BANK1, 0xf);
+                    ES_Timer_InitTimer(ATTACK_REN_TIMER, TANK_TURN_1_TIME);
+                    tank_turn_left();
+                    break;
+
+                case ES_TIMEOUT:
+                    if (ThisEvent.EventParam == ATTACK_REN_TIMER) {
+                        nextState = ArcLeftState_1;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
+                    break;
+
+                    //                case TRACKWIRE_DETECTED:
+                    //                    if (ThisEvent.EventParam == BACK_TRACKWIRE) {
+                    //                        ThisEvent.EventType = ATM6_ALIGNED;
+                    //                        ThisEvent.EventParam = 0;
+                    //                        PostTopHSM(ThisEvent);
+                    //                        ThisEvent.EventType = ES_NO_EVENT;
+                    //                    }
+                    //                    break;
+
+
+
+                case ES_TIMERACTIVE:
+                    // printf("enter on_ES_TIMERACTIVE\r\n");
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
                     break;
             }
             break;
@@ -506,7 +573,7 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
                     arc_left();
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
-                case TAPE_DETECTED:
+               // case TAPE_DETECTED:
                     //                            switch (ThisEvent.EventParam) {
                     //                                case RIGHT_TAPE_SENSOR:
                     //                                case FRONT_TAPE_SENSOR:
@@ -517,12 +584,19 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
                     //                                    ThisEvent.EventType = ES_NO_EVENT;
                     //                                    break;
                     //                            }
-                    ThisEvent.EventType = GO_TO_FIND_LINE;
-                    ThisEvent.EventParam = 0;
-                    PostTopHSM(ThisEvent);
-                    ThisEvent.EventType = ES_NO_EVENT;
+//                    ThisEvent.EventType = GO_TO_FIND_LINE;
+//                    ThisEvent.EventParam = 0;
+//                    PostTopHSM(ThisEvent);
+//                    ThisEvent.EventType = ES_NO_EVENT;
+              //      break;
+                case ES_TIMEOUT:
+                    if(ThisEvent.EventParam == ATTACK_REN_TIMER) {
+                        ThisEvent.EventType = GO_TO_FIND_LINE;
+                        ThisEvent.EventParam = 0;
+                        PostTopHSM(ThisEvent);
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
                     break;
-
                 case ES_TIMERACTIVE:
                     // printf("enter on_ES_TIMERACTIVE\r\n");
                 case ES_TIMERSTOPPED:

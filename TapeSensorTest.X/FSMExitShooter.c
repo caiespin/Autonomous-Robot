@@ -39,7 +39,7 @@
  ******************************************************************************/
 #define TANK_TURN_TIME 880
 
-#define  WAIT_TIME 2000
+#define  WAIT_TIME 1500
 #define REVERSE_TIME 1000
 
 typedef enum {
@@ -124,7 +124,7 @@ uint8_t InitFSMExitShooter(void) {
 ES_Event RunFSMExitShooter(ES_Event ThisEvent) {
     uint8_t makeTransition = FALSE; // use to flag transition
     TemplateSubHSMState_t nextState; // <- change type to correct enum
-    static int atm6_hit = FALSE;
+
     ES_Tattle(); // trace call stack
 
     switch (CurrentState) {
@@ -136,62 +136,10 @@ ES_Event RunFSMExitShooter(ES_Event ThisEvent) {
                 // initial state
 
                 // now put the machine into the actual initial state
-                nextState = Waiting;
+                nextState = TankTurnLeft;
                 makeTransition = TRUE;
-                atm6_hit = FALSE;
                 ThisEvent.EventType = ES_NO_EVENT;
             }
-            break;
-
-
-
-        case Waiting: // in the first state, replace this with correct names
-            switch (ThisEvent.EventType) {
-                case ES_ENTRY:
-                    stop_ball_accelerator();
-                    stop();
-                    ES_Timer_InitTimer(EXIT_SHOOTER_TIMER, WAIT_TIME);
-
-
-                    break;
-
-                case ES_TIMEOUT:
-                    if (get_back_track_wire_on() == FALSE) {
-                        atm6_hit = TRUE;
-                        printf("\r\n --------------ATM6 HITT ,TIMEOUT\r\n");
-
-                    }
-                    nextState = TankTurnLeft;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
-
-
-                    break;
-                    //                case TRACKWIRE_LOST:
-                    //                    ThisEvent.EventType = GO_TO_ON_LINE;
-                    //                    ThisEvent.EventParam = 0;
-                    //                    PostTopHSM(ThisEvent);
-                    //                    ThisEvent.EventType = ES_NO_EVENT;
-                    //                    ATM6_Counter++;
-                    //                    printf("\r\nATM6 DOWN1!!!!!!!, counter= %d\r\n", ATM6_Counter);
-                    //                    break;
-                case TRACKWIRE_LOST:
-                    if (ThisEvent.EventParam == BACK_TRACKWIRE) {
-                        atm6_hit = TRUE;
-                          printf("\r\n --------------ATM6 HITT ,TRACKWIRE_LOST\r\n");
-                        nextState = TankTurnLeft;
-                        makeTransition = TRUE;
-                        ThisEvent.EventType = ES_NO_EVENT;
-                    }
-
-                    break;
-                case ES_TIMERACTIVE:
-                    // printf("enter on_ES_TIMERACTIVE\r\n");
-                case ES_TIMERSTOPPED:
-                    ThisEvent.EventType = ES_NO_EVENT;
-                    break;
-            };
-
             break;
 
         case TankTurnLeft: // in the first state, replace this with correct names
@@ -202,25 +150,15 @@ ES_Event RunFSMExitShooter(ES_Event ThisEvent) {
                     //  LED_SetBank(LED_BANK1, 0xf);
                     //  ES_Timer_InitTimer(EXIT_SHOOTER_TIMER, TANK_TURN_TIME);
                     tank_turn_left();
-                   
+                    stop_ball_accelerator();
                     break;
 
                 case TAPE_DETECTED:
                     switch (ThisEvent.EventParam) {
                         case FRONT_TAPE_SENSOR:
-                            if (atm6_hit == TRUE) {
-                                ThisEvent.EventType = GO_TO_ON_LINE;
-                                ThisEvent.EventParam = 0;
-                                PostTopHSM(ThisEvent);
-                                ThisEvent.EventType = ES_NO_EVENT;
-                                ATM6_Counter++;
-                                printf("\r\nATM6 DOWN2!!!!!!!,--------------------> counter= %d\r\n", ATM6_Counter);
-                            } else {
-
-                                nextState = Reverse;
-                                makeTransition = TRUE;
-                                ThisEvent.EventType = ES_NO_EVENT;
-                            }
+                            nextState = Waiting;
+                            makeTransition = TRUE;
+                            ThisEvent.EventType = ES_NO_EVENT;
                             break;
                     }
                     break;
@@ -236,6 +174,50 @@ ES_Event RunFSMExitShooter(ES_Event ThisEvent) {
             break;
 
 
+
+        case Waiting: // in the first state, replace this with correct names
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    stop();
+
+                    //  LED_SetBank(LED_BANK1, 0xf);
+                    ES_Timer_InitTimer(EXIT_SHOOTER_TIMER, WAIT_TIME);
+
+
+                    break;
+
+                case ES_TIMEOUT:
+                    if (get_track_wire_state() == TRACKWIRE_LOST) {
+                        ThisEvent.EventType = GO_TO_ON_LINE;
+                        ThisEvent.EventParam = 0;
+                        PostTopHSM(ThisEvent);
+                        ThisEvent.EventType = ES_NO_EVENT;
+                        ATM6_Counter++;
+                        printf("\r\nATM6 DOWN2!!!!!!!,--------------------> counter= %d\r\n", ATM6_Counter);
+                    } else {
+                        nextState = Reverse;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                        printf("\r\nATM6 Still UP!!!!!!!, ------------------> counter= %d\r\n", ATM6_Counter);
+                    }
+                    break;
+//                case TRACKWIRE_LOST:
+//                    ThisEvent.EventType = GO_TO_ON_LINE;
+//                    ThisEvent.EventParam = 0;
+//                    PostTopHSM(ThisEvent);
+//                    ThisEvent.EventType = ES_NO_EVENT;
+//                    ATM6_Counter++;
+//                    printf("\r\nATM6 DOWN1!!!!!!!, counter= %d\r\n", ATM6_Counter);
+//                    break;
+
+                case ES_TIMERACTIVE:
+                    // printf("enter on_ES_TIMERACTIVE\r\n");
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+            };
+
+            break;
 
         case Reverse: // in the first state, replace this with correct names
             switch (ThisEvent.EventType) {
@@ -282,4 +264,3 @@ ES_Event RunFSMExitShooter(ES_Event ThisEvent) {
 /*******************************************************************************
  * PRIVATE FUNCTIONS                                                           *
  ******************************************************************************/
-

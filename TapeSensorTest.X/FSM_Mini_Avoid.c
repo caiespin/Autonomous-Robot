@@ -341,13 +341,13 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
 
                 case ES_ENTRY:
 
-                    if (get_ATM6_Counter() >= 3) {
+                //    if (get_ATM6_Counter() >= 3) {
                         ES_Timer_InitTimer(MINI_AVOID_TIMER, ARC_LEFT_TIME);
                         arc_left();
-                    } else {
-                        ES_Timer_InitTimer(MINI_AVOID_TIMER, ARC_LEFT_SLOW_TIME);
-                        arc_left_long();
-                    }
+//                    } else {
+//                        ES_Timer_InitTimer(MINI_AVOID_TIMER, ARC_LEFT_SLOW_TIME);
+//                        arc_left_long();
+//                    }
 
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
@@ -406,18 +406,18 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
                     break;
                 case ES_TIMEOUT:
                     if (ThisEvent.EventParam == MINI_AVOID_TIMER) {
-                        if (get_ATM6_Counter() >= 3) {
+//                        if (get_ATM6_Counter() >= 3) {
                             ThisEvent.EventType = GO_TO_ATTACK_REN;
                             ThisEvent.EventParam = 0;
                             PostTopHSM(ThisEvent);
                             ThisEvent.EventType = ES_NO_EVENT;
 
-                        } else {
-                            ThisEvent.EventType = GO_TO_FIND_LINE;
-                            ThisEvent.EventParam = 0;
-                            PostTopHSM(ThisEvent);
-                            ThisEvent.EventType = ES_NO_EVENT;
-                        }
+//                        } else {
+//                            ThisEvent.EventType = GO_TO_FIND_LINE;
+//                            ThisEvent.EventParam = 0;
+//                            PostTopHSM(ThisEvent);
+//                            ThisEvent.EventType = ES_NO_EVENT;
+//                        }
 
                     }
                     break;
@@ -430,6 +430,8 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
 
 
             break;
+            
+            
             //        case TankTurnLeftState:
             //
             //            switch (ThisEvent.EventType) {

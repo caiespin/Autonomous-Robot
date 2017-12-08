@@ -114,7 +114,7 @@ static int first_time = TRUE;
 void set_atm6_config() {
     // RC_SetPulseTime(SERVO_TILT_PIN, MAXPULSE);
     set_atm6_tilt();
-    start_motor_low_time = 1000;
+    start_motor_low_time = 2000;
     mode = ATM6;
     first_time = TRUE;
 

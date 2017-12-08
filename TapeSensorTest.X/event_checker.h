@@ -32,10 +32,9 @@
 /*******************************************************************************
  * PUBLIC #DEFINES                                                             *
  ******************************************************************************/
-#define SIDE_TRACKWIRE_PIN AD_PORTV4
-#define BACK_TRACKWIRE_PIN AD_PORTV3
-#define BACK_TRACKWIRE 0
-#define SIDE_TRACKWIRE 1
+#define FRONT_TRACKWIRE_PIN AD_PORTV3
+#define BACK_TRACKWIRE_PIN AD_PORTV4
+
 
 #define BEACON_FOUND_STATE 0
 #define BEACON_NOT_FOUND_STATE 1
@@ -63,13 +62,11 @@
  * @author Gabriel H Elkaim, 2013.09.27 09:18
  * @modified Gabriel H Elkaim/Max Dunne, 2016.09.12 20:08 */
 uint8_t TrackwireChecker(void);
+int get_beacon_status();
 ES_EventTyp_t get_track_wire_state();
 void trackwire_init();
 
-uint8_t  BeaconDetectorChecker();
+uint8_t BeaconDetectorChecker();
 void beacon_init();
-int get_beacon_status();
-int get_back_track_wire_on();
-int get_side_track_wire_on();
-#endif	/* TEMPLATEEVENTCHECKER_H */
 
+#endif	/* TEMPLATEEVENTCHECKER_H */
