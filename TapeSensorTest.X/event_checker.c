@@ -39,8 +39,10 @@
  * MODULE #DEFINES                                                             *
  ******************************************************************************/
 #define TRACKWIRE_ALIGNED_THRESHOLD 20
-#define TRACKWIRE_DETECTED_THRESHOLD 600
+#define TRACKWIRE_DETECTED_THRESHOLD 650
+#define TRACKWIRE_DETECTED_BACK_THRESHOLD 600
 #define TRACKWIRE_LOST_THRESHOLD 500
+
 
 //beacon defines 
 #define BEACON_PORT PORTZ
@@ -48,6 +50,9 @@
 
 #define BEACON_FOUND_STATE 0
 #define BEACON_NOT_FOUND_STATE 1
+
+static int Trackwire_Side_On = FALSE;
+static int Trackwire_Back_On = FALSE;
 /*******************************************************************************
  * EVENTCHECKER_TEST SPECIFIC CODE                                                             *
  ******************************************************************************/
@@ -78,6 +83,16 @@ static ES_Event storedEvent;
 /*******************************************************************************
  * PUBLIC FUNCTIONS                                                            *
  ******************************************************************************/
+
+int get_back_track_wire_on(){
+    return Trackwire_Back_On;
+}
+
+int get_side_track_wire_on(){
+    return Trackwire_Side_On;
+}
+
+
 uint8_t BeaconDetectorChecker() {
     static ES_EventTyp_t lastEvent = BEACON_LOST;
     static ES_EventTyp_t curEvent = BEACON_LOST;
@@ -136,91 +151,57 @@ uint8_t TrackwireChecker(void) {
 
     ES_Event thisEvent;
     uint8_t returnVal = FALSE;
-    uint16_t front_trackwire_val = AD_ReadADPin(FRONT_TRACKWIRE);
-    uint16_t back_trackwire_val = AD_ReadADPin(BACK_TRACKWIRE);
+    uint16_t side_trackwire_val = AD_ReadADPin(SIDE_TRACKWIRE_PIN);
+    uint16_t back_trackwire_val = AD_ReadADPin(BACK_TRACKWIRE_PIN);
 
-    if ((front_trackwire_val == ((uint16_t) ERROR)) || (back_trackwire_val == ((uint16_t) ERROR))) {
+    if ((back_trackwire_val == ((uint16_t) ERROR)) || (side_trackwire_val == ((uint16_t) ERROR))) {
         return returnVal;
     }
-
-    int diff = front_trackwire_val - back_trackwire_val;
-
-    switch (curEvent) {
-        case TRACKWIRE_LOST:
-            if ((front_trackwire_val > TRACKWIRE_DETECTED_THRESHOLD) &&
-                    (back_trackwire_val > TRACKWIRE_DETECTED_THRESHOLD)) {
-
-                curEvent = TRACKWIRE_DETECTED;
-                thisEvent.EventType = curEvent;
-                thisEvent.EventParam = diff;
-                returnVal = TRUE;
-                printf("TRACKWIRE_DETECTED\r\n");
-                PostTopHSM(thisEvent);
-            }
-            break;
-
-        case TRACKWIRE_DETECTED:
-            if ((front_trackwire_val < TRACKWIRE_LOST_THRESHOLD) ||
-                    (back_trackwire_val < TRACKWIRE_LOST_THRESHOLD)) {
-                curEvent = TRACKWIRE_LOST;
-                thisEvent.EventType = curEvent;
-                thisEvent.EventParam = diff;
-                returnVal = TRUE;
-                printf("TRACKWIRE_LOST\r\n");
-                PostTopHSM(thisEvent);
-            } else if ((diff < TRACKWIRE_ALIGNED_THRESHOLD) && (diff > -TRACKWIRE_ALIGNED_THRESHOLD)) {
-                curEvent = TRACKWIRE_ALIGNED;
-                thisEvent.EventType = curEvent;
-                thisEvent.EventParam = diff;
-                returnVal = TRUE;
-                printf("TRACKWIRE_ALIGNED\r\n");
-                PostTopHSM(thisEvent);
-            }
-            break;
-
-        case TRACKWIRE_ALIGNED:
-            if ((front_trackwire_val < TRACKWIRE_LOST_THRESHOLD) ||
-                    (back_trackwire_val < TRACKWIRE_LOST_THRESHOLD)) {
-
-                curEvent = TRACKWIRE_LOST;
-                thisEvent.EventType = curEvent;
-                thisEvent.EventParam = diff;
-                returnVal = TRUE;
-                printf("TRACKWIRE_LOST2\r\n");
-                PostTopHSM(thisEvent);
-            }
+    if ((Trackwire_Side_On == FALSE)&&(side_trackwire_val > TRACKWIRE_DETECTED_THRESHOLD)) {
+        Trackwire_Side_On = TRUE;
+        thisEvent.EventType = TRACKWIRE_DETECTED;
+        thisEvent.EventParam = SIDE_TRACKWIRE;
+        returnVal = TRUE;
+        printf("TRACKWIRE_DETECTED Side\r\n");
+        PostTopHSM(thisEvent);
+    } else if ((Trackwire_Side_On == TRUE) && (side_trackwire_val < TRACKWIRE_LOST_THRESHOLD)) {
+        Trackwire_Side_On = FALSE;
+        thisEvent.EventType = TRACKWIRE_LOST;
+        thisEvent.EventParam = SIDE_TRACKWIRE;
+        returnVal = TRUE;
+        printf("TRACKWIRE_LOST Side\r\n");
+        PostTopHSM(thisEvent);
+    }
 
 
-            break;
+    if ((Trackwire_Back_On == FALSE)&&(back_trackwire_val >  TRACKWIRE_DETECTED_BACK_THRESHOLD)) {
+        Trackwire_Back_On = TRUE;
+        thisEvent.EventType = TRACKWIRE_DETECTED;
+        thisEvent.EventParam = BACK_TRACKWIRE;
+        returnVal = TRUE;
+        printf("TRACKWIRE_DETECTED Back\r\n");
+        PostTopHSM(thisEvent);
+    } else if ((Trackwire_Back_On == TRUE) && (back_trackwire_val < TRACKWIRE_LOST_THRESHOLD)) {
+        Trackwire_Back_On = FALSE;
+        thisEvent.EventType = TRACKWIRE_LOST;
+        thisEvent.EventParam = BACK_TRACKWIRE;
+        returnVal = TRUE;
+        printf("TRACKWIRE_LOST Back\r\n");
+        PostTopHSM(thisEvent);
     }
 
 
 
-    //    if ( (diff < TRACKWIRE_ALIGNED_THRESHOLD) && (lastEvent == TRACKWIRE_DETECTED) ) { // is battery connected?
-    //        curEvent = TRACKWIRE_ALIGNED;
-    //    } else if(lastEvent == TRACKWIRE_LOST && (front_trackwire_val > TRACKWIRE_DETECTED_THRESHOLD)){
-    //        curEvent = TRACKWIRE_DETECTED;
-    //    }else if ((lastEvent == TRACKWIRE_ALIGNED) && ) {
-    //        
-    //    }
-    //    if (curEvent != lastEvent) { // check for change from last time
-    //        thisEvent.EventType = curEvent;
-    //        thisEvent.EventParam = diff;
-    //        returnVal = TRUE;
-    //        lastEvent = curEvent; // update history
-    //#ifndef EVENTCHECKER_TEST           // keep this as is for test harness
-    //        // PostGenericService(thisEvent);
-    //#else
-    //        SaveEvent(thisEvent);
-    //#endif   
-    //    }
+
+
+
     return (returnVal);
 }
 
 void trackwire_init() {
-    AD_AddPins(FRONT_TRACKWIRE | BACK_TRACKWIRE);
-    uint16_t front_trackwire_val = AD_ReadADPin(FRONT_TRACKWIRE);
-    uint16_t back_trackwire_val = AD_ReadADPin(BACK_TRACKWIRE);
+    AD_AddPins(SIDE_TRACKWIRE_PIN | BACK_TRACKWIRE_PIN);
+    uint16_t front_trackwire_val = AD_ReadADPin(SIDE_TRACKWIRE_PIN);
+    uint16_t back_trackwire_val = AD_ReadADPin(BACK_TRACKWIRE_PIN);
 }
 
 void beacon_init() {

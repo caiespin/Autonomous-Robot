@@ -386,13 +386,13 @@ int main() {
 
     for (;;) {
 
-        uint16_t front_trackwire_val = AD_ReadADPin(FRONT_TRACKWIRE);
-        uint16_t back_trackwire_val = AD_ReadADPin(BACK_TRACKWIRE);
+        uint16_t side_trackwire_val = AD_ReadADPin(SIDE_TRACKWIRE_PIN);
+        uint16_t back_trackwire_val = AD_ReadADPin(BACK_TRACKWIRE_PIN);
 
-        if ((front_trackwire_val == ((uint16_t) ERROR)) || (back_trackwire_val == ((uint16_t) ERROR))) {
+        if ((side_trackwire_val == ((uint16_t) ERROR)) || (back_trackwire_val == ((uint16_t) ERROR))) {
             continue;
         }
-        printf("FORWARDS front:%d,  back:%d, diff:%d\r\n", front_trackwire_val, back_trackwire_val, front_trackwire_val - back_trackwire_val);
+        printf("Side:%d,  back:%d, diff:%d\r\n", side_trackwire_val, back_trackwire_val, side_trackwire_val - back_trackwire_val);
         delay(1000000);
     }
 

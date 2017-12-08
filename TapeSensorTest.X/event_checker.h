@@ -32,9 +32,10 @@
 /*******************************************************************************
  * PUBLIC #DEFINES                                                             *
  ******************************************************************************/
-#define FRONT_TRACKWIRE AD_PORTV3
-#define BACK_TRACKWIRE AD_PORTV4
-
+#define SIDE_TRACKWIRE_PIN AD_PORTV4
+#define BACK_TRACKWIRE_PIN AD_PORTV3
+#define BACK_TRACKWIRE 0
+#define SIDE_TRACKWIRE 1
 /*******************************************************************************
  * PUBLIC TYPEDEFS                                                             *
  ******************************************************************************/
@@ -64,6 +65,7 @@ void trackwire_init();
 
 uint8_t  BeaconDetectorChecker();
 void beacon_init();
-
+int get_back_track_wire_on();
+int get_side_track_wire_on();
 #endif	/* TEMPLATEEVENTCHECKER_H */
 
