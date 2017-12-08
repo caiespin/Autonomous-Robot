@@ -40,16 +40,15 @@
  ******************************************************************************/
 #define TRACKWIRE_ALIGNED_THRESHOLD 20
 #define TRACKWIRE_DETECTED_THRESHOLD 650
-#define TRACKWIRE_DETECTED_BACK_THRESHOLD 600
-#define TRACKWIRE_LOST_THRESHOLD 500
+#define TRACKWIRE_DETECTED_BACK_THRESHOLD 510
+#define TRACKWIRE_LOST_THRESHOLD 490
 
 
 //beacon defines 
 #define BEACON_PORT PORTZ
 #define BEACON_SIGNAL_PIN PIN3
 
-#define BEACON_FOUND_STATE 0
-#define BEACON_NOT_FOUND_STATE 1
+
 
 static int Trackwire_Side_On = FALSE;
 static int Trackwire_Back_On = FALSE;
@@ -91,14 +90,18 @@ int get_back_track_wire_on(){
 int get_side_track_wire_on(){
     return Trackwire_Side_On;
 }
+static uint16_t beacon_signal;
 
+int get_beacon_status(){
+    return beacon_signal;
+}
 
 uint8_t BeaconDetectorChecker() {
     static ES_EventTyp_t lastEvent = BEACON_LOST;
     static ES_EventTyp_t curEvent = BEACON_LOST;
     ES_Event thisEvent;
     uint8_t returnVal = FALSE;
-    uint16_t beacon_signal;
+   
     if ((IO_PortsReadPort(PORTZ) & BEACON_SIGNAL_PIN) == BEACON_SIGNAL_PIN) {
         beacon_signal = 1;
     } else {

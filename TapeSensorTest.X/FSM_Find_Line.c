@@ -51,7 +51,7 @@ typedef enum {
     TurnRight2State,
     InchRight,
     Stop_1_State,
-            InchBackState_1,
+    InchBackState_1,
 } TemplateSubHSMState_t;
 
 static const char *StateNames[] = {
@@ -272,7 +272,7 @@ ES_Event RunFSMFindLine(ES_Event ThisEvent) {
                         PostTopHSM(ThisEvent);
                         ThisEvent.EventType = ES_NO_EVENT;
                     } else if (get_center_tape_status() == on_tape) {
-                       // nextState = TurnRight2State;
+                        // nextState = TurnRight2State;
                         nextState = InchBackState_1;
                         makeTransition = TRUE;
                         ThisEvent.EventType = ES_NO_EVENT;
@@ -287,8 +287,8 @@ ES_Event RunFSMFindLine(ES_Event ThisEvent) {
 
 
                         case CENTER_TAPE_SENSOR:
-                           // nextState = TurnRight2State;
-                             nextState = InchBackState_1;
+                            // nextState = TurnRight2State;
+                            nextState = InchBackState_1;
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
                             break;
@@ -313,50 +313,53 @@ ES_Event RunFSMFindLine(ES_Event ThisEvent) {
 
 
                         case FRONT_TAPE_SENSOR:
-
-                            nextState = InchRight;
-                            makeTransition = TRUE;
-                            ThisEvent.EventType = ES_NO_EVENT;
-                            break;
-
-                    }
-                    break;
-                case ES_NO_EVENT:
-                default: // all unhandled events pass the event back up to the next level
-                    break;
-            }
-            break;
-
-        case InchRight: // in the first state, replace this with correct names
-            switch (ThisEvent.EventType) {
-                case ES_ENTRY:
-                    tank_turn_right();
-                    ES_Timer_InitTimer(FIND_LINE_TIMER, INCH_RIGHT_TIME);
-
-                    break;
-                case ES_TIMEOUT:
-
-                    switch (ThisEvent.EventParam) {
-                        case FIND_LINE_TIMER:
                             ThisEvent.EventType = LINE_FOUND;
                             ThisEvent.EventParam = 0;
                             PostTopHSM(ThisEvent);
                             ThisEvent.EventType = ES_NO_EVENT;
+                            //                            nextState = InchRight;
+                            //                            makeTransition = TRUE;
+                            //                            ThisEvent.EventType = ES_NO_EVENT;
                             break;
+
                     }
-                    break;
-
-
-                case ES_TIMERACTIVE:
-                    // printf("enter on_ES_TIMERACTIVE\r\n");
-                case ES_TIMERSTOPPED:
-                    ThisEvent.EventType = ES_NO_EVENT;
                     break;
                 case ES_NO_EVENT:
                 default: // all unhandled events pass the event back up to the next level
                     break;
             }
             break;
+
+            //        case InchRight: // in the first state, replace this with correct names
+            //            switch (ThisEvent.EventType) {
+            //                case ES_ENTRY:
+            //                    tank_turn_right();
+            //                    ES_Timer_InitTimer(FIND_LINE_TIMER, INCH_RIGHT_TIME);
+            //
+            //                    break;
+            //                case ES_TIMEOUT:
+            //
+            //                    switch (ThisEvent.EventParam) {
+            //                        case FIND_LINE_TIMER:
+            //                            ThisEvent.EventType = LINE_FOUND;
+            //                            ThisEvent.EventParam = 0;
+            //                            PostTopHSM(ThisEvent);
+            //                            ThisEvent.EventType = ES_NO_EVENT;
+            //                            break;
+            //                    }
+            //                    break;
+            //
+            //
+            //                case ES_TIMERACTIVE:
+            //                    // printf("enter on_ES_TIMERACTIVE\r\n");
+            //                case ES_TIMERSTOPPED:
+            //                    ThisEvent.EventType = ES_NO_EVENT;
+            //                    break;
+            //                case ES_NO_EVENT:
+            //                default: // all unhandled events pass the event back up to the next level
+            //                    break;
+            //            }
+            //            break;
         case Stop_1_State:
             switch (ThisEvent.EventType) {
 

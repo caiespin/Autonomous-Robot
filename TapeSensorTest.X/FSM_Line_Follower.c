@@ -65,7 +65,9 @@ typedef enum {
     InitPState,
     on_line,
     on_left_side,
+   
     on_right_side,
+   
     corner_detected,
     turning_corner,
     wiggle_left,
@@ -178,13 +180,13 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
                         nextState = on_left_side;
                         makeTransition = TRUE;
                         ThisEvent.EventType = ES_NO_EVENT;
-                    } 
-                    
-//                    else if (get_left_tape_status() == on_tape) {
-//                        nextState = on_right_side;
-//                        makeTransition = TRUE;
-//                        ThisEvent.EventType = ES_NO_EVENT;
-//                    }
+                    }
+
+                    //                    else if (get_left_tape_status() == on_tape) {
+                    //                        nextState = on_right_side;
+                    //                        makeTransition = TRUE;
+                    //                        ThisEvent.EventType = ES_NO_EVENT;
+                    //                    }
 
 
                     //  LED_SetBank(LED_BANK1, 1);
@@ -248,12 +250,12 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
         case on_left_side:
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
-//                    if (get_front_tape_status() == on_tape) {
-//                        nextState = on_line;
-//                        makeTransition = TRUE;
-//                        ThisEvent.EventType = ES_NO_EVENT;
-//
-//                    }
+                    //                    if (get_front_tape_status() == on_tape) {
+                    //                        nextState = on_line;
+                    //                        makeTransition = TRUE;
+                    //                        ThisEvent.EventType = ES_NO_EVENT;
+                    //
+                    //                    }
                     turn_right();
                     // tank_turn_right();
 
@@ -285,12 +287,12 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
                     // ES_Timer_InitTimer(TAPE_FOLLOWER_TIMER, ON_RIGHT_SIDE_MAX_TIME);
-//                    if (get_front_tape_status() == on_tape) {
-//                        nextState = on_line;
-//                        makeTransition = TRUE;
-//                        ThisEvent.EventType = ES_NO_EVENT;
-//
-//                    }
+                    //                    if (get_front_tape_status() == on_tape) {
+                    //                        nextState = on_line;
+                    //                        makeTransition = TRUE;
+                    //                        ThisEvent.EventType = ES_NO_EVENT;
+                    //
+                    //                    }
 
                     //tank_turn_left();
                     turn_left();

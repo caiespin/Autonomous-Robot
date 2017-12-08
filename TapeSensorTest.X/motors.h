@@ -14,7 +14,7 @@ void turn_left();
 void tank_turn_right();
 void tank_turn_left();
 
-void tank_turn_left();
+
 
 void turn_back_right();
 void forwards();

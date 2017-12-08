@@ -32,6 +32,7 @@
 #include "BOARD.h"
 #include "TopHSM.h"
 #include "FSMAttackRen.h"
+#include "event_checker.h"
 #include "motors.h"
 
 /*******************************************************************************
@@ -68,6 +69,8 @@
 #define INCH_FORWARDS_3_TIME 350//380//440//490 //600
 #define BACK_UP_GET_IN_POSITION_TIME 500
 
+#define ARC_LEFT_1_SLOW_TIME 4000
+
 typedef enum {
     InitPSubState,
     ReverseIntoRenState,
@@ -88,6 +91,7 @@ typedef enum {
     AdjustLeftState1,
     AdjustRightState1,
     InchForwards3State,
+    ArcLeftState_1,
 
 
 
@@ -113,6 +117,7 @@ static const char *StateNames[] = {
 	"AdjustLeftState1",
 	"AdjustRightState1",
 	"InchForwards3State",
+	"ArcLeftState_1",
 };
 
 
@@ -272,7 +277,7 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
                             back_left_bumper_counter++;
-                             back_right_bumper_counter = 0;
+                            back_right_bumper_counter = 0;
                             break;
                         case BACK_RIGHT_BUMPER_PIN:
 
@@ -478,12 +483,45 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
                     break;
                 case ES_TIMEOUT:
                     if (ThisEvent.EventParam == ATTACK_REN_TIMER) {
-                        nextState = ReverseIntoRenState;
-                        makeTransition = TRUE;
-                        ThisEvent.EventType = ES_NO_EVENT;
+                        if (get_beacon_status() == BEACON_FOUND_STATE) {
+                            nextState = ReverseIntoRenState;
+                            makeTransition = TRUE;
+                            ThisEvent.EventType = ES_NO_EVENT;
+                        } else {
+                            nextState = ArcLeftState_1;
+                            makeTransition = TRUE;
+                            ThisEvent.EventType = ES_NO_EVENT;
+                        }
                     }
                     break;
+            }
+            break;
 
+        case ArcLeftState_1:
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+
+
+                    ES_Timer_InitTimer(ATTACK_REN_TIMER, ARC_LEFT_1_SLOW_TIME);
+                    arc_left();
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case TAPE_DETECTED:
+                    //                            switch (ThisEvent.EventParam) {
+                    //                                case RIGHT_TAPE_SENSOR:
+                    //                                case FRONT_TAPE_SENSOR:
+                    //                                case LEFT_TAPE_SENSOR:
+                    //                                    ThisEvent.EventType = GO_TO_FIND_LINE;
+                    //                                    ThisEvent.EventParam = 0;
+                    //                                    PostTopHSM(ThisEvent);
+                    //                                    ThisEvent.EventType = ES_NO_EVENT;
+                    //                                    break;
+                    //                            }
+                    ThisEvent.EventType = GO_TO_FIND_LINE;
+                    ThisEvent.EventParam = 0;
+                    PostTopHSM(ThisEvent);
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
 
                 case ES_TIMERACTIVE:
                     // printf("enter on_ES_TIMERACTIVE\r\n");
@@ -754,7 +792,7 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
             }
             break;
 
-       
+
 
         default: // all unhandled states fall into here
             break;

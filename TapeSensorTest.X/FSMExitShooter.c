@@ -39,7 +39,7 @@
  ******************************************************************************/
 #define TANK_TURN_TIME 880
 
-#define  WAIT_TIME 1500
+#define  WAIT_TIME 2000
 #define REVERSE_TIME 1000
 
 typedef enum {
@@ -158,6 +158,7 @@ ES_Event RunFSMExitShooter(ES_Event ThisEvent) {
                 case ES_TIMEOUT:
                     if (get_back_track_wire_on() == FALSE) {
                         atm6_hit = TRUE;
+                        printf("\r\n --------------ATM6 HITT ,TIMEOUT\r\n");
 
                     }
                     nextState = TankTurnLeft;
@@ -177,6 +178,7 @@ ES_Event RunFSMExitShooter(ES_Event ThisEvent) {
                 case TRACKWIRE_LOST:
                     if (ThisEvent.EventParam == BACK_TRACKWIRE) {
                         atm6_hit = TRUE;
+                          printf("\r\n --------------ATM6 HITT ,TRACKWIRE_LOST\r\n");
                         nextState = TankTurnLeft;
                         makeTransition = TRUE;
                         ThisEvent.EventType = ES_NO_EVENT;
@@ -200,7 +202,7 @@ ES_Event RunFSMExitShooter(ES_Event ThisEvent) {
                     //  LED_SetBank(LED_BANK1, 0xf);
                     //  ES_Timer_InitTimer(EXIT_SHOOTER_TIMER, TANK_TURN_TIME);
                     tank_turn_left();
-
+                   
                     break;
 
                 case TAPE_DETECTED:
