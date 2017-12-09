@@ -616,10 +616,13 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                 case ES_ENTRY:
                     if (are_front_bumpers_pressed() == TRUE) {
                         reverse();
+                        printf("Unstuck_state, front bumpers pressed reach if ---------->\r\n");
                     }else if (are_rear_bumpers_pressed() == TRUE) {
                         forwards();
+                        printf("Unstuck_state, rear bumpers pressed reach else if ---------->\r\n");
                     }else {
-                        forwards();
+                        printf("Unstuck_state, reach else ---------->\r\n");
+                        reverse();
                     }
                     
                     ES_Timer_InitTimer(UNSTUCK_TIMER, UNSTUCK_TIME);

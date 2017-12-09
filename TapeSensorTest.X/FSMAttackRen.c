@@ -66,11 +66,12 @@
 #define ADJUST_LEFT_1_TIME 350 //150
 #define ADJUST_RIGHT_1_TIME 350
 
-#define INCH_FORWARDS_3_TIME 350//380//440//490 //600
+#define INCH_FORWARDS_3_TIME 340//350//380//440//490 //600
 #define BACK_UP_GET_IN_POSITION_TIME 500
 
-#define ARC_LEFT_1_SLOW_TIME 1600
-#define TANK_TURN_1_TIME 400
+#define ARC_LEFT_1_TIME 600
+#define ARC_LEFT_2_TIME 1200
+#define TANK_TURN_1_TIME 370//400//500
 
 typedef enum {
     InitPSubState,
@@ -94,6 +95,7 @@ typedef enum {
     AdjustRightState1,
     InchForwards3State,
     ArcLeftState_1,
+    ArcLeftState_2,
     TankTurnLeftState_1,
 
 
@@ -122,6 +124,7 @@ static const char *StateNames[] = {
 	"AdjustRightState1",
 	"InchForwards3State",
 	"ArcLeftState_1",
+	"ArcLeftState_2",
 	"TankTurnLeftState_1",
 };
 
@@ -569,28 +572,54 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
                 case ES_ENTRY:
 
 
-                    ES_Timer_InitTimer(ATTACK_REN_TIMER, ARC_LEFT_1_SLOW_TIME);
-                    arc_left();
+                    ES_Timer_InitTimer(ATTACK_REN_TIMER, ARC_LEFT_1_TIME);
+                    arc_steep_left();
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
-               // case TAPE_DETECTED:
-                    //                            switch (ThisEvent.EventParam) {
-                    //                                case RIGHT_TAPE_SENSOR:
-                    //                                case FRONT_TAPE_SENSOR:
-                    //                                case LEFT_TAPE_SENSOR:
-                    //                                    ThisEvent.EventType = GO_TO_FIND_LINE;
-                    //                                    ThisEvent.EventParam = 0;
-                    //                                    PostTopHSM(ThisEvent);
-                    //                                    ThisEvent.EventType = ES_NO_EVENT;
-                    //                                    break;
-                    //                            }
-//                    ThisEvent.EventType = GO_TO_FIND_LINE;
-//                    ThisEvent.EventParam = 0;
-//                    PostTopHSM(ThisEvent);
-//                    ThisEvent.EventType = ES_NO_EVENT;
-              //      break;
+                 
                 case ES_TIMEOUT:
-                    if(ThisEvent.EventParam == ATTACK_REN_TIMER) {
+                    if (ThisEvent.EventParam == ATTACK_REN_TIMER) {
+                        nextState = ArcLeftState_2;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
+                    break;
+                case ES_TIMERACTIVE:
+                    // printf("enter on_ES_TIMERACTIVE\r\n");
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
+                    break;
+            }
+            break;
+
+        case ArcLeftState_2:
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+
+
+                    ES_Timer_InitTimer(ATTACK_REN_TIMER, ARC_LEFT_2_TIME);
+                    arc_steep_left();
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case TAPE_DETECTED:
+                    switch (ThisEvent.EventParam) {
+                        case RIGHT_TAPE_SENSOR:
+                        case FRONT_TAPE_SENSOR:
+                        case LEFT_TAPE_SENSOR:
+                            ThisEvent.EventType = GO_TO_FIND_LINE;
+                            ThisEvent.EventParam = 0;
+                            PostTopHSM(ThisEvent);
+                            ThisEvent.EventType = ES_NO_EVENT;
+                            break;
+                    }
+                    break;
+                  
+                case ES_TIMEOUT:
+                    if (ThisEvent.EventParam == ATTACK_REN_TIMER) {
                         ThisEvent.EventType = GO_TO_FIND_LINE;
                         ThisEvent.EventParam = 0;
                         PostTopHSM(ThisEvent);
@@ -608,7 +637,6 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
                     break;
             }
             break;
-
 
 
         case TurnLeft1State:

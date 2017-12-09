@@ -65,9 +65,9 @@ typedef enum {
     InitPState,
     on_line,
     on_left_side,
-   
+
     on_right_side,
-   
+
     corner_detected,
     turning_corner,
     wiggle_left,
@@ -95,7 +95,9 @@ static uint8_t MyPriority;
 #define INCH_RIGHT_TIME 3
 #define INCH_LEFT_TIME 3
 #define CORNER_DETECTED_TIMEOUT_TIME 400
-#define TURNING_RIGHT_TIMEOUT_TIME 4000
+#define TURNING_RIGHT_TIMEOUT_TIME 5000//4000
+#define ON_RIGHT_SIDE_MAX_TIME 500
+#define ON_LEFT_SIDE_MAX_TIME ON_RIGHT_SIDE_MAX_TIME
 /*******************************************************************************
  * PUBLIC FUNCTIONS                                                            *
  ******************************************************************************/
@@ -238,11 +240,6 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
                             break;
                     }
 
-
-
-
-                    // printf("Tape Lost , param=%d\r\n", ThisEvent.EventParam);
-
                     break;
             }
             break;
@@ -250,18 +247,8 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
         case on_left_side:
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
-                    //                    if (get_front_tape_status() == on_tape) {
-                    //                        nextState = on_line;
-                    //                        makeTransition = TRUE;
-                    //                        ThisEvent.EventType = ES_NO_EVENT;
-                    //
-                    //                    }
+                    ES_Timer_InitTimer(TAPE_FOLLOWER_TIMER, ON_LEFT_SIDE_MAX_TIME);
                     turn_right();
-                    // tank_turn_right();
-
-
-                    // LED_SetBank(LED_BANK1, 2);
-                    // LED_OffBank(LED_BANK2, ALL_LEDS);
                     break;
                 case TAPE_DETECTED:
                     switch (ThisEvent.EventParam) {
@@ -270,15 +257,22 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
                             break;
-                            //                        case LEFT_TAPE_SENSOR:
-                            //                            if (get_front_tape_status() == FALSE) {
-                            //                                nextState = on_right_side;
-                            //                                makeTransition = TRUE;
-                            //                                ThisEvent.EventType = ES_NO_EVENT;
-                            //                            }
-                            //                            break;
 
                     }
+
+                case ES_TIMEOUT:
+
+                    if (ThisEvent.EventParam == TAPE_FOLLOWER_TIMER) {
+                        nextState = on_line;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
+                    break;
+
+
+                case ES_TIMERACTIVE:
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
                     break;
             }
 
@@ -286,18 +280,25 @@ ES_Event RunFSMLineFollower(ES_Event ThisEvent) {
         case on_right_side:
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
-                    // ES_Timer_InitTimer(TAPE_FOLLOWER_TIMER, ON_RIGHT_SIDE_MAX_TIME);
-                    //                    if (get_front_tape_status() == on_tape) {
-                    //                        nextState = on_line;
-                    //                        makeTransition = TRUE;
-                    //                        ThisEvent.EventType = ES_NO_EVENT;
-                    //
-                    //                    }
+                    ES_Timer_InitTimer(TAPE_FOLLOWER_TIMER, ON_RIGHT_SIDE_MAX_TIME);
 
-                    //tank_turn_left();
                     turn_left();
-                    // LED_SetBank(LED_BANK1, 4);
-                    //  LED_OffBank(LED_BANK2, ALL_LEDS);
+
+                    break;
+
+                case ES_TIMEOUT:
+
+                    if (ThisEvent.EventParam == TAPE_FOLLOWER_TIMER) {
+                        nextState = on_line;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
+                    break;
+
+
+                case ES_TIMERACTIVE:
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
                     break;
                 case TAPE_DETECTED:
                     switch (ThisEvent.EventParam) {

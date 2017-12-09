@@ -53,8 +53,8 @@
 #define  RAISE_SHOOTER_TIME 1000
 #define STUCK_BALL_TIME 5000
 
-#define SHOOT_POWER_HIGH_PWM 700//800
-#define SHOOT_POWER_MED_PWM 420
+#define SHOOT_POWER_HIGH_PWM 600//800
+#define SHOOT_POWER_MED_PWM 480
 #define SHOOT_POWER_LOW_PWM 250
 static int start_motor_low_time = 5000;
 

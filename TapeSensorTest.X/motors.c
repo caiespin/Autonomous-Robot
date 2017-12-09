@@ -36,6 +36,14 @@ void arc_left() {
     IO_PortsClearPortBits(DRIVING_MOTOR_PORT, DIRECTION_A);
     IO_PortsClearPortBits(DRIVING_MOTOR_PORT, DIRECTION_B);
 }
+
+void arc_steep_left(){
+    
+    PWM_SetDutyCycle(ENABLE_A, Motor_Speed_A * 1.13);
+    PWM_SetDutyCycle(ENABLE_B, Motor_Speed_B * 0.4);
+    IO_PortsClearPortBits(DRIVING_MOTOR_PORT, DIRECTION_A);
+    IO_PortsClearPortBits(DRIVING_MOTOR_PORT, DIRECTION_B);
+}
 void arc_left_long() {
 
     PWM_SetDutyCycle(ENABLE_A, Motor_Speed_A );

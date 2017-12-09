@@ -41,7 +41,6 @@
       <itemPath>RC_Servo.h</itemPath>
       <itemPath>event_checker.h</itemPath>
       <itemPath>FSMExitShooter.h</itemPath>
-      <itemPath>TemplateSubHSM.h</itemPath>
       <itemPath>FSMAttackRen.h</itemPath>
       <itemPath>FSMStartWar.h</itemPath>
     </logicalFolder>

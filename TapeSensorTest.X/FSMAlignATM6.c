@@ -59,7 +59,7 @@ static const char *StateNames[] = {
 
 #define FORWARD_TIME 50
 #define STOP_MOTOR_TIME 200
-#define TANK_TURN_TIME 600
+#define TANK_TURN_TIME 650
 
 /*******************************************************************************
  * PRIVATE FUNCTION PROTOTYPES                                                 *
