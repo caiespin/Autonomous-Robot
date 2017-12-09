@@ -37,7 +37,7 @@
 /*******************************************************************************
  * MODULE #DEFINES                                                             *
  ******************************************************************************/
-#define TANK_TURN_TIME 880
+#define TANK_TURN_TIME 800//880
 
 #define  WAIT_TIME 1500
 #define REVERSE_TIME 1000
@@ -73,8 +73,8 @@ static const char *StateNames[] = {
 static TemplateSubHSMState_t CurrentState = InitPSubState; // <- change name to match ENUM
 static uint8_t MyPriority;
 
-//static int ATM6_Counter = 0;
-static int  ATM6_Counter=3;
+static int ATM6_Counter = 0;
+//static int  ATM6_Counter=3;
 
 /*******************************************************************************
  * PUBLIC FUNCTIONS                                                            *

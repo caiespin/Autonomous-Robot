@@ -491,7 +491,7 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
                     break;
                 case ES_TIMEOUT:
                     if (ThisEvent.EventParam == ATTACK_REN_TIMER) {
-                        if (get_beacon_status() == BEACON_FOUND_STATE && get_ATM6_Counter() >= 3) {
+                        if (get_beacon_status() == BEACON_FOUND_STATE ){//&& get_ATM6_Counter() >= 3) {
                             nextState = ReverseIntoRenState;
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;

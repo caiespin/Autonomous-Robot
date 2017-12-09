@@ -118,9 +118,8 @@ int are_front_bumpers_pressed() {
 
 int are_rear_bumpers_pressed() {
     if ((Rear_Right_Pressed_Flag == TRUE) ||
-            (Rear_Left_Pressed_Flag == TRUE) ||
-            (Ren_Left_Pressed_Flag == TRUE) ||
-            (Ren_Right_Pressed_Flag == TRUE)) {
+            (Rear_Left_Pressed_Flag == TRUE) 
+           ) {
         return TRUE;
     }
     return FALSE;

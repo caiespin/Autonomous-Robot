@@ -33,6 +33,7 @@
 #include "TopHSM.h"
 #include "FSM_Find_Line.h"
 #include "motors.h"
+#include "stdio.h"
 //#include "LED.h"
 
 /*******************************************************************************
@@ -214,7 +215,9 @@ ES_Event RunFSMFindLine(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
                     tank_turn_right();
-                    
+                    if(get_front_tape_status() == TRUE) {
+                        printf("In FSM_find_line.c, turnRightState->ES_ENTRY->FRONT_TAPE_DECTECTED\r\n");
+                    }
                     break;
                 case TAPE_DETECTED:
                     switch (ThisEvent.EventParam) {

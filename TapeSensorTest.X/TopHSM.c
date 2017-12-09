@@ -53,7 +53,7 @@
  ******************************************************************************/
 //Include any defines you need to do
 #define BOOT_TIME 100
-#define UNSTUCK_TIME 1000
+#define UNSTUCK_TIME 600
 #define RESET_BUMPER_COUNTER_TIME 7000
 /*******************************************************************************
  * MODULE #DEFINES                                                             *
@@ -617,12 +617,9 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                     if (are_front_bumpers_pressed() == TRUE) {
                         reverse();
                         printf("Unstuck_state, front bumpers pressed reach if ---------->\r\n");
-                    }else if (are_rear_bumpers_pressed() == TRUE) {
-                        forwards();
-                        printf("Unstuck_state, rear bumpers pressed reach else if ---------->\r\n");
                     }else {
                         printf("Unstuck_state, reach else ---------->\r\n");
-                        reverse();
+                        turn_back_left();
                     }
                     
                     ES_Timer_InitTimer(UNSTUCK_TIMER, UNSTUCK_TIME);
