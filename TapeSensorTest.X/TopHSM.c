@@ -194,7 +194,7 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
 
                     ES_Timer_InitTimer(TOP_HSM_TIMER, BOOT_TIME);
 
-                  //  set_atm6_config();
+                    //  set_atm6_config();
 
                     break;
                 case ES_TIMEOUT:
@@ -341,8 +341,8 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
             ThisEvent = RunFSMLineFollower(ThisEvent);
             switch (ThisEvent.EventType) {
 
-                  case GO_TO_FIND_LINE:
-                   
+                case GO_TO_FIND_LINE:
+
                     nextState = FindLineState;
                     makeTransition = TRUE;
                     ThisEvent.EventType = ES_NO_EVENT;
@@ -604,6 +604,12 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                     makeTransition = TRUE;
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
+                case GO_TO_ON_LINE:
+                    printf("GO_TO_ON_LINE\r\n");
+                    nextState = LineFollowerState;
+                    makeTransition = TRUE;
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
                 case ES_NO_EVENT:
                 default:
                     break;
@@ -617,11 +623,11 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                     if (are_front_bumpers_pressed() == TRUE) {
                         reverse();
                         printf("Unstuck_state, front bumpers pressed reach if ---------->\r\n");
-                    }else {
+                    } else {
                         printf("Unstuck_state, reach else ---------->\r\n");
                         turn_back_left();
                     }
-                    
+
                     ES_Timer_InitTimer(UNSTUCK_TIMER, UNSTUCK_TIME);
                     break;
 

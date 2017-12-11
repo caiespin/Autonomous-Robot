@@ -56,6 +56,7 @@
 //#define INCH_FOWARDS1_TIME 200
 //#define INCH_FOWARDS2_TIME 200
 #define TANK_RIGHT_1_TIME (600) //800
+//#define TANK_RIGHT_2_TIME (500) //800
 
 #define TANK_LEFT_WU_1_TIME 400
 #define TANK_LEFT_WU_2_TIME 200
@@ -80,6 +81,7 @@ typedef enum {
     TwistLeftState,
     TwistRightState,
     TurnRight1State,
+    TurnRight2State,
     TurnLeft1State,
 
     StopState_1,
@@ -110,6 +112,7 @@ static const char *StateNames[] = {
 	"TwistLeftState",
 	"TwistRightState",
 	"TurnRight1State",
+	"TurnRight2State",
 	"TurnLeft1State",
 	"StopState_1",
 	"StopState_2",
@@ -228,7 +231,20 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
                         ThisEvent.EventType = ES_NO_EVENT;
                     }
                     break;
-
+//                case TAPE_DETECTED:
+//                    switch (ThisEvent.EventParam) {
+//                        case RIGHT_TAPE_SENSOR:
+//                        case FRONT_TAPE_SENSOR:
+//                        case LEFT_TAPE_SENSOR:
+//                            if ((get_front_tape_status() == on_tape) && (get_left_tape_status() == on_tape) && (get_right_tape_status() == on_tape)) {
+//                                ThisEvent.EventType = GO_TO_FIND_LINE;
+//                                ThisEvent.EventParam = 0;
+//                                PostTopHSM(ThisEvent);
+//                                ThisEvent.EventType = ES_NO_EVENT;
+//                            }
+//                            break;
+//                    }
+//                    break;
 
                 case ES_TIMERACTIVE:
                     // printf("enter on_ES_TIMERACTIVE\r\n");
@@ -491,7 +507,7 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
                     break;
                 case ES_TIMEOUT:
                     if (ThisEvent.EventParam == ATTACK_REN_TIMER) {
-                        if (get_beacon_status() == BEACON_FOUND_STATE ){//&& get_ATM6_Counter() >= 3) {
+                        if (get_beacon_status() == BEACON_FOUND_STATE) {//&& get_ATM6_Counter() >= 3) {
                             nextState = ReverseIntoRenState;
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
@@ -504,6 +520,8 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
                     break;
             }
             break;
+
+
         case StopState_9:
             switch (ThisEvent.EventType) {
 
@@ -576,7 +594,7 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
                     arc_steep_left();
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
-                 
+
                 case ES_TIMEOUT:
                     if (ThisEvent.EventParam == ATTACK_REN_TIMER) {
                         nextState = ArcLeftState_2;
@@ -617,7 +635,7 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
                             break;
                     }
                     break;
-                  
+
                 case ES_TIMEOUT:
                     if (ThisEvent.EventParam == ATTACK_REN_TIMER) {
                         ThisEvent.EventType = GO_TO_FIND_LINE;

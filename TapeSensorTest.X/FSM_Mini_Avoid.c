@@ -35,6 +35,7 @@
 #include "motors.h"
 #include "FSMExitShooter.h"
 #include "stdio.h"
+#include "ES_Timers.h"
 
 /*******************************************************************************
  * MODULE #DEFINES                                                             *
@@ -62,6 +63,10 @@
 #define INCH_BACK_TIME 200
 #define INCH_FOWARDS_TIME 100
 
+#define ARC_LEFT_2_TIME 600
+#define ARC_LEFT_3_TIME 1200
+#define INCH_FORWARDS_3_TIME 750
+
 typedef enum {
     InitPSubState,
     Stop1State,
@@ -70,6 +75,10 @@ typedef enum {
     TankRightState,
     Stop3State,
     ArcLeftState,
+            
+            InchForwards3State,
+    ArcLeftState_2,
+    ArcLeftState_3,
     Stop6State,
     Stop7State,
     TankLeft2State,
@@ -79,6 +88,7 @@ typedef enum {
     InchForwardsState,
     Stop4State,
     TankTurnLeftState,
+            StopState_6,
 
 
 
@@ -93,6 +103,9 @@ static const char *StateNames[] = {
 	"TankRightState",
 	"Stop3State",
 	"ArcLeftState",
+	"InchForwards3State",
+	"ArcLeftState_2",
+	"ArcLeftState_3",
 	"Stop6State",
 	"Stop7State",
 	"TankLeft2State",
@@ -102,6 +115,7 @@ static const char *StateNames[] = {
 	"InchForwardsState",
 	"Stop4State",
 	"TankTurnLeftState",
+	"StopState_6",
 };
 
 
@@ -341,13 +355,15 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
 
                 case ES_ENTRY:
 
-                //    if (get_ATM6_Counter() >= 3) {
-                        ES_Timer_InitTimer(MINI_AVOID_TIMER, ARC_LEFT_TIME);
-                        arc_left();
-//                    } else {
-//                        ES_Timer_InitTimer(MINI_AVOID_TIMER, ARC_LEFT_SLOW_TIME);
-//                        arc_left_long();
-//                    }
+                    //    if (get_ATM6_Counter() >= 3) {
+                    ES_Timer_InitTimer(MINI_AVOID_TIMER, ARC_LEFT_TIME);
+                    arc_left();
+                    static int start_time;
+                    start_time = ES_Timer_GetTime();
+                    //                    } else {
+                    //                        ES_Timer_InitTimer(MINI_AVOID_TIMER, ARC_LEFT_SLOW_TIME);
+                    //                        arc_left_long();
+                    //                    }
 
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
@@ -356,9 +372,21 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
                         case RIGHT_TAPE_SENSOR:
                         case FRONT_TAPE_SENSOR:
                         case LEFT_TAPE_SENSOR:
-                            nextState = Stop4State;
-                            makeTransition = TRUE;
-                            ThisEvent.EventType = ES_NO_EVENT;
+                            if ((ES_Timer_GetTime() - start_time) > 1000 && ((ES_Timer_GetTime() - start_time) < 1800)) {
+                                printf("\r\nTIME IS:%d -------->>\r\n", ES_Timer_GetTime() - start_time);
+                                //1272
+                                //1653
+                                //1714
+                                //1564
+                                nextState = Stop4State;
+                                makeTransition = TRUE;
+                                ThisEvent.EventType = ES_NO_EVENT;
+                            } else {
+                                ThisEvent.EventType = OBSTACLE_AVOIDED;
+                                ThisEvent.EventParam = 0;
+                                PostTopHSM(ThisEvent);
+                                ThisEvent.EventType = ES_NO_EVENT;
+                            }
                             break;
                     }
                     break;
@@ -406,18 +434,18 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
                     break;
                 case ES_TIMEOUT:
                     if (ThisEvent.EventParam == MINI_AVOID_TIMER) {
-//                        if (get_ATM6_Counter() >= 3) {
+                        if (get_ATM6_Counter() >= 3) {
                             ThisEvent.EventType = GO_TO_ATTACK_REN;
                             ThisEvent.EventParam = 0;
                             PostTopHSM(ThisEvent);
                             ThisEvent.EventType = ES_NO_EVENT;
 
-//                        } else {
-//                            ThisEvent.EventType = GO_TO_FIND_LINE;
-//                            ThisEvent.EventParam = 0;
-//                            PostTopHSM(ThisEvent);
-//                            ThisEvent.EventType = ES_NO_EVENT;
-//                        }
+                        } else {
+                            nextState =InchForwards3State;
+                            makeTransition = TRUE;
+                            ThisEvent.EventType = ES_NO_EVENT;
+                            
+                        }
 
                     }
                     break;
@@ -430,8 +458,8 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
 
 
             break;
-            
-            
+
+
             //        case TankTurnLeftState:
             //
             //            switch (ThisEvent.EventType) {
@@ -458,8 +486,132 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
             //
             //
             //            break;
+        case InchForwards3State: // in the first state, replace this with correct names
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    ES_Timer_InitTimer(MINI_AVOID_TIMER, INCH_FORWARDS_3_TIME);
+                    forwards();
+                    break;
+
+                case ES_TIMEOUT:
+                    // printf("--------------------FSMAlignATM6, ForwardsState\r\n");
+                    if (ThisEvent.EventParam == MINI_AVOID_TIMER) {
+                        nextState = StopState_6;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
+                    break;
 
 
+                case ES_TIMERACTIVE:
+                    // printf("enter on_ES_TIMERACTIVE\r\n");
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
+                    break;
+            }
+            break;
+            
+             case StopState_6:
+            switch (ThisEvent.EventType) {
+
+                case ES_ENTRY:
+                    ES_Timer_InitTimer(MINI_AVOID_TIMER, STOP_TIME);
+                    stop();
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+
+                case ES_TIMEOUT:
+                    if (ThisEvent.EventParam == MINI_AVOID_TIMER) {
+
+                        nextState = ArcLeftState_2;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+
+                    }
+                    break;
+
+                case ES_TIMERACTIVE:
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+            }
+            break;
+
+        case ArcLeftState_2:
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+
+
+                    ES_Timer_InitTimer(MINI_AVOID_TIMER, ARC_LEFT_2_TIME);
+                    arc_left();
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+                case ES_TIMEOUT:
+                    if (ThisEvent.EventParam == MINI_AVOID_TIMER) {
+                        nextState = ArcLeftState_3;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
+                    break;
+                case ES_TIMERACTIVE:
+                    // printf("enter on_ES_TIMERACTIVE\r\n");
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
+                    break;
+            }
+            break;
+
+        case ArcLeftState_3:
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+
+
+                    ES_Timer_InitTimer(MINI_AVOID_TIMER, ARC_LEFT_3_TIME);
+                    arc_left();
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case TAPE_DETECTED:
+                    switch (ThisEvent.EventParam) {
+                        case RIGHT_TAPE_SENSOR:
+                        case FRONT_TAPE_SENSOR:
+                        case LEFT_TAPE_SENSOR:
+                            ThisEvent.EventType = GO_TO_FIND_LINE;
+                            ThisEvent.EventParam = 0;
+                            PostTopHSM(ThisEvent);
+                            ThisEvent.EventType = ES_NO_EVENT;
+                            break;
+                    }
+                    break;
+
+                case ES_TIMEOUT:
+                    if (ThisEvent.EventParam == MINI_AVOID_TIMER) {
+                        ThisEvent.EventType = GO_TO_FIND_LINE;
+                        ThisEvent.EventParam = 0;
+                        PostTopHSM(ThisEvent);
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
+                    break;
+                case ES_TIMERACTIVE:
+                    // printf("enter on_ES_TIMERACTIVE\r\n");
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
+                    break;
+            }
+            break;
         default: // all unhandled states fall into here
             break;
     } // end switch on Current State

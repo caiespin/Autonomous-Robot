@@ -43,7 +43,7 @@ typedef enum {
     InitPState,
     ForwardsState,
     Stop1State,
-            Stop2State,
+    Stop2State,
     Turn90State,
 
 } TemplateSubHSMState_t;
@@ -57,9 +57,9 @@ static const char *StateNames[] = {
 };
 
 
-#define FORWARD_TIME 50
+#define FORWARD_TIME 75
 #define STOP_MOTOR_TIME 200
-#define TANK_TURN_TIME 650
+#define TANK_TURN_TIME 675
 
 /*******************************************************************************
  * PRIVATE FUNCTION PROTOTYPES                                                 *
@@ -132,7 +132,7 @@ ES_Event RunFSMAlignAtm6(ES_Event ThisEvent) {
                 // initial state
 
                 // now put the machine into the actual initial state
-                nextState = ForwardsState;
+                nextState = Stop1State;
                 makeTransition = TRUE;
                 ThisEvent.EventType = ES_NO_EVENT;
 
@@ -148,9 +148,19 @@ ES_Event RunFSMAlignAtm6(ES_Event ThisEvent) {
 
 
                 case ES_TIMEOUT:
-                    nextState = ForwardsState;
+                    if (ThisEvent.EventParam == ALIGN_ATM6_TIMER) {
+                        nextState = ForwardsState;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
+                    break;
+                case TRACKWIRE_ALIGNED:
+
+
+                    nextState = Stop2State;
                     makeTransition = TRUE;
                     ThisEvent.EventType = ES_NO_EVENT;
+
                     break;
 
 
@@ -167,17 +177,23 @@ ES_Event RunFSMAlignAtm6(ES_Event ThisEvent) {
                 case ES_ENTRY:
 
                     ES_Timer_InitTimer(ALIGN_ATM6_TIMER, FORWARD_TIME);
-                    slow_reverse();
+                    forwards();
                     break;
 
 
                 case TRACKWIRE_ALIGNED:
                     ES_Timer_StopTimer(ALIGN_ATM6_TIMER);
-                case ES_TIMEOUT:
-                    // printf("--------------------FSMAlignATM6, ForwardsState\r\n");
                     nextState = Stop2State;
                     makeTransition = TRUE;
                     ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case ES_TIMEOUT:
+                    if (ThisEvent.EventParam == ALIGN_ATM6_TIMER) {
+                        // printf("--------------------FSMAlignATM6, ForwardsState\r\n");
+                        nextState = Stop2State;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
                     break;
 
 
@@ -205,9 +221,11 @@ ES_Event RunFSMAlignAtm6(ES_Event ThisEvent) {
 
 
                 case ES_TIMEOUT:
-                    nextState = Turn90State;
-                    makeTransition = TRUE;
-                    ThisEvent.EventType = ES_NO_EVENT;
+                    if (ThisEvent.EventParam == ALIGN_ATM6_TIMER) {
+                        nextState = Turn90State;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
                     break;
 
 
@@ -230,10 +248,12 @@ ES_Event RunFSMAlignAtm6(ES_Event ThisEvent) {
                     break;
 
                 case ES_TIMEOUT:
-                    ThisEvent.EventType = ATM6_ALIGNED;
-                    ThisEvent.EventParam = 0;
-                    PostTopHSM(ThisEvent);
-                    ThisEvent.EventType = ES_NO_EVENT;
+                    if (ThisEvent.EventParam == ALIGN_ATM6_TIMER) {
+                        ThisEvent.EventType = ATM6_ALIGNED;
+                        ThisEvent.EventParam = 0;
+                        PostTopHSM(ThisEvent);
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
                     break;
 
                     //                case TRACKWIRE_DETECTED:
