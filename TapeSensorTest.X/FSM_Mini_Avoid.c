@@ -65,7 +65,7 @@
 
 #define ARC_LEFT_2_TIME 600
 #define ARC_LEFT_3_TIME 1200
-#define INCH_FORWARDS_3_TIME 750
+#define INCH_FORWARDS_3_TIME 650
 
 typedef enum {
     InitPSubState,
@@ -75,8 +75,8 @@ typedef enum {
     TankRightState,
     Stop3State,
     ArcLeftState,
-            
-            InchForwards3State,
+
+    InchForwards3State,
     ArcLeftState_2,
     ArcLeftState_3,
     Stop6State,
@@ -88,7 +88,7 @@ typedef enum {
     InchForwardsState,
     Stop4State,
     TankTurnLeftState,
-            StopState_6,
+    StopState_6,
 
 
 
@@ -354,10 +354,15 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
 
                 case ES_ENTRY:
-
+                    if (first_time_flag == 0) {
+                       arc_left();
+                        first_time_flag = 1;
+                    } else {
+                        arc_steep_left();
+                    }
                     //    if (get_ATM6_Counter() >= 3) {
                     ES_Timer_InitTimer(MINI_AVOID_TIMER, ARC_LEFT_TIME);
-                    arc_left();
+                   
                     static int start_time;
                     start_time = ES_Timer_GetTime();
                     //                    } else {
@@ -441,10 +446,10 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
                             ThisEvent.EventType = ES_NO_EVENT;
 
                         } else {
-                            nextState =InchForwards3State;
+                            nextState = InchForwards3State;
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
-                            
+
                         }
 
                     }
@@ -514,8 +519,8 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
                     break;
             }
             break;
-            
-             case StopState_6:
+
+        case StopState_6:
             switch (ThisEvent.EventType) {
 
                 case ES_ENTRY:
@@ -548,7 +553,7 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
 
 
                     ES_Timer_InitTimer(MINI_AVOID_TIMER, ARC_LEFT_2_TIME);
-                    arc_left();
+                    arc_steep_left();
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
 
@@ -577,7 +582,7 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
 
 
                     ES_Timer_InitTimer(MINI_AVOID_TIMER, ARC_LEFT_3_TIME);
-                    arc_left();
+                    arc_steep_left();
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
                 case TAPE_DETECTED:

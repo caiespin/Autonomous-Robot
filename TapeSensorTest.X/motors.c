@@ -32,7 +32,7 @@ uint16_t Motor_Speed_Tank_A;
 void arc_left() {
 
     PWM_SetDutyCycle(ENABLE_A, Motor_Speed_A * 1.10);
-    PWM_SetDutyCycle(ENABLE_B, Motor_Speed_B * 0.6);
+    PWM_SetDutyCycle(ENABLE_B, Motor_Speed_B * 0.50);
     IO_PortsClearPortBits(DRIVING_MOTOR_PORT, DIRECTION_A);
     IO_PortsClearPortBits(DRIVING_MOTOR_PORT, DIRECTION_B);
 }

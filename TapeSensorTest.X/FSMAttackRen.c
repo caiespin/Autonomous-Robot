@@ -48,7 +48,7 @@
 
 
 
-#define  FORWARDS_TIME 200
+#define  FORWARDS_TIME 150//200
 #define REVERSE_LEFT_INTO_REN_TIME 500
 #define REVERSE_RIGHT_INTO_REN_TIME 500
 
@@ -64,10 +64,10 @@
 #define TANK_RIGHT_WU_2_TIME 200
 #define INCH_FORWARDS_1_TIME 200
 #define INCH_FORWARDS_2_TIME 200
-#define ADJUST_LEFT_1_TIME 350 //150
-#define ADJUST_RIGHT_1_TIME 350
+#define ADJUST_LEFT_1_TIME 300//350 //150
+#define ADJUST_RIGHT_1_TIME 300//350
 
-#define INCH_FORWARDS_3_TIME 340//350//380//440//490 //600
+#define INCH_FORWARDS_3_TIME 320//340//350//380//440//490 //600
 #define BACK_UP_GET_IN_POSITION_TIME 500
 
 #define ARC_LEFT_1_TIME 600
@@ -149,6 +149,7 @@ static uint8_t MyPriority;
 static int first_time = TRUE;
 static int back_right_bumper_counter = 0;
 static int back_left_bumper_counter = 0;
+static int go_to_reverse = FALSE;
 
 /*******************************************************************************
  * PUBLIC FUNCTIONS                                                            *
@@ -173,6 +174,10 @@ uint8_t InitFSMAttackRen(void) {
         return TRUE;
     }
     return FALSE;
+}
+
+void set_ATTACK_REN_to_reverse() {
+    go_to_reverse = TRUE;
 }
 
 /**
@@ -208,7 +213,11 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
 
                 // now put the machine into the actual initial state
                 //nextState = TurnRight1State;
-                nextState = InchForwards3State;
+                if (go_to_reverse == TRUE) {
+                    nextState = ReverseIntoRenState;
+                } else {
+                    nextState = InchForwards3State;
+                }
                 first_time = TRUE;
                 makeTransition = TRUE;
                 ThisEvent.EventType = ES_NO_EVENT;
@@ -231,20 +240,20 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
                         ThisEvent.EventType = ES_NO_EVENT;
                     }
                     break;
-//                case TAPE_DETECTED:
-//                    switch (ThisEvent.EventParam) {
-//                        case RIGHT_TAPE_SENSOR:
-//                        case FRONT_TAPE_SENSOR:
-//                        case LEFT_TAPE_SENSOR:
-//                            if ((get_front_tape_status() == on_tape) && (get_left_tape_status() == on_tape) && (get_right_tape_status() == on_tape)) {
-//                                ThisEvent.EventType = GO_TO_FIND_LINE;
-//                                ThisEvent.EventParam = 0;
-//                                PostTopHSM(ThisEvent);
-//                                ThisEvent.EventType = ES_NO_EVENT;
-//                            }
-//                            break;
-//                    }
-//                    break;
+                    //                case TAPE_DETECTED:
+                    //                    switch (ThisEvent.EventParam) {
+                    //                        case RIGHT_TAPE_SENSOR:
+                    //                        case FRONT_TAPE_SENSOR:
+                    //                        case LEFT_TAPE_SENSOR:
+                    //                            if ((get_front_tape_status() == on_tape) && (get_left_tape_status() == on_tape) && (get_right_tape_status() == on_tape)) {
+                    //                                ThisEvent.EventType = GO_TO_FIND_LINE;
+                    //                                ThisEvent.EventParam = 0;
+                    //                                PostTopHSM(ThisEvent);
+                    //                                ThisEvent.EventType = ES_NO_EVENT;
+                    //                            }
+                    //                            break;
+                    //                    }
+                    //                    break;
 
                 case ES_TIMERACTIVE:
                     // printf("enter on_ES_TIMERACTIVE\r\n");
@@ -315,41 +324,49 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
                     }
                     break;
 
-                case REN_BUMPER_PRESSED:
-                    switch (ThisEvent.EventParam & ALL_TRUE_REN_BUMPERS) {
-                        case REN_LEFT_PIN:
-
-                            nextState = StopState_5;
-                            makeTransition = TRUE;
-                            ThisEvent.EventType = ES_NO_EVENT;
-                            back_left_bumper_counter++;
-                            back_right_bumper_counter = 0;
-                            break;
-
-                        case REN_RIGHT_PIN:
-
-                            nextState = StopState_5;
-                            makeTransition = TRUE;
-                            ThisEvent.EventType = ES_NO_EVENT;
-                            back_right_bumper_counter++;
-                            back_left_bumper_counter = 0;
-
-                            break;
-                    }
-                    break;
+                    //                case REN_BUMPER_PRESSED:
+                    //                    switch (ThisEvent.EventParam & ALL_TRUE_REN_BUMPERS) {
+                    //                        case REN_LEFT_PIN:
+                    //
+                    //                            nextState = StopState_5;
+                    //                            makeTransition = TRUE;
+                    //                            ThisEvent.EventType = ES_NO_EVENT;
+                    //                            back_left_bumper_counter++;
+                    //                            back_right_bumper_counter = 0;
+                    //                            break;
+                    //
+                    //                        case REN_RIGHT_PIN:
+                    //
+                    //                            nextState = StopState_5;
+                    //                            makeTransition = TRUE;
+                    //                            ThisEvent.EventType = ES_NO_EVENT;
+                    //                            back_right_bumper_counter++;
+                    //                            back_left_bumper_counter = 0;
+                    //
+                    //                            break;
+                    //                    }
+                    //                    break;
 
                 case ES_TIMEOUT:
-                    // printf("--------------------FSMAlignATM6, ForwardsState\r\n");
-                    if (ThisEvent.EventParam == ATTACK_REN_TIMER) {
-                        ThisEvent.EventType = GO_TO_FIND_LINE;
-                        ThisEvent.EventParam = 0;
-                        PostTopHSM(ThisEvent);
-                        ThisEvent.EventType = ES_NO_EVENT;
-                    }
+                    //                    // printf("--------------------FSMAlignATM6, ForwardsState\r\n");
+                    //                    if (ThisEvent.EventParam == ATTACK_REN_TIMER) {
+                    //                        ThisEvent.EventType = GO_TO_FIND_LINE;
+                    //                        ThisEvent.EventParam = 0;
+                    //                        PostTopHSM(ThisEvent);
+                    //                        ThisEvent.EventType = ES_NO_EVENT;
+                    //                    }
                     break;
 
 
                 case TAPE_DETECTED:
+                    printf("REACHED TAPE DETECTED ------------------------------ \r\n");
+                    printf("Front = %d\r\n", get_front_tape_status());
+                    printf("LEft = %d\r\n", get_left_tape_status());
+                    printf("Right = %d\r\n", get_right_tape_status());
+                    printf("Center = %d\r\n", get_center_tape_status());
+                    printf("Back = %d\r\n", get_back_tape_status());
+                    printf("REACHED TAPE DETECTED ------------------------------ \r\n");
+                    
                     if (is_on_T() == TRUE) {
                         //                        nextState = StopState_5;
                         //                        makeTransition = TRUE;
@@ -856,6 +873,13 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
 
                 case ES_ENTRY:
+                    if (is_on_T() == TRUE) {
+                        nextState = StopState_8;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
+
+
                     ES_Timer_InitTimer(ATTACK_REN_TIMER, STOP_TIME);
                     stop();
                     ThisEvent.EventType = ES_NO_EVENT;
@@ -864,20 +888,20 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
 
                 case ES_TIMEOUT:
                     if (ThisEvent.EventParam == ATTACK_REN_TIMER) {
-                        if (are_bumpers_ren_aligned() == TRUE) {
-                            //                            ThisEvent.EventType = REN_ALIGNED;
-                            //                            ThisEvent.EventParam = 0;
-                            //                            PostTopHSM(ThisEvent);
-                            //                            ThisEvent.EventType = ES_NO_EVENT;
+                        //    if (are_bumpers_ren_aligned() == TRUE) {
+                        //                            ThisEvent.EventType = REN_ALIGNED;
+                        //                            ThisEvent.EventParam = 0;
+                        //                            PostTopHSM(ThisEvent);
+                        //                            ThisEvent.EventType = ES_NO_EVENT;
 
-                            //                            nextState = BackUpToGetInPositionState;
-                            //                            makeTransition = TRUE;
-                            //                            ThisEvent.EventType = ES_NO_EVENT;
-                        } else {
-                            nextState = ForwardsState;
-                            makeTransition = TRUE;
-                            ThisEvent.EventType = ES_NO_EVENT;
-                        }
+                        //                            nextState = BackUpToGetInPositionState;
+                        //                            makeTransition = TRUE;
+                        //                            ThisEvent.EventType = ES_NO_EVENT;
+                        //                        } else {
+                        nextState = ForwardsState;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                        //}
 
                     }
                     break;
@@ -920,6 +944,7 @@ ES_Event RunFSMAttackRen(ES_Event ThisEvent) {
 
     if (makeTransition == TRUE) { // making a state transition, send EXIT and ENTRY
         // recursively call the current state with an exit event
+        ES_Timer_InitTimer(OH_SHIT_TIMER, OH_SHIT_TIME);
         RunFSMAttackRen(EXIT_EVENT); // <- rename to your own Run function
         CurrentState = nextState;
         RunFSMAttackRen(ENTRY_EVENT); // <- rename to your own Run function

@@ -98,9 +98,7 @@ static uint8_t MyPriority;
 
 int are_bumpers_ren_aligned() {
     if ((Rear_Right_Pressed_Flag == TRUE)&&
-            (Rear_Left_Pressed_Flag == TRUE)&&
-            (Ren_Left_Pressed_Flag == FALSE)&&
-            (Ren_Right_Pressed_Flag == FALSE)) {
+            (Rear_Left_Pressed_Flag == TRUE)) {
         return TRUE;
     }
     return FALSE;

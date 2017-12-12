@@ -54,9 +54,13 @@
 #define STUCK_BALL_TIME 5000
 
 #define SHOOT_POWER_HIGH_PWM 600//800
-#define SHOOT_POWER_MED_PWM 500
+#define SHOOT_POWER_MED_PWM 600
 #define SHOOT_POWER_LOW_PWM 250
 static int start_motor_low_time = 5000;
+#define REVERSE_LITTLE_BIT_TIME 10
+#define STUCK_WIGGLE_RIGHT_TIME 150
+#define STUCK_WIGGLE_LEFT_TIME 150
+#define LONG_STOP_TIME 5000
 
 typedef enum {
     InitPSubState,
@@ -65,7 +69,11 @@ typedef enum {
     StartMotorSlow,
     // RaiseShooterExtension,
     LoadBall,
-    Stuck_Ball_State,
+    Stuck_Ball_State_1,
+    Stuck_Ball_State_2,
+    Stuck_Ball_State_3,
+    Stop3,
+    Stop2,
 
 
 
@@ -77,7 +85,11 @@ static const char *StateNames[] = {
 	"StartMotorFast",
 	"StartMotorSlow",
 	"LoadBall",
-	"Stuck_Ball_State",
+	"Stuck_Ball_State_1",
+	"Stuck_Ball_State_2",
+	"Stuck_Ball_State_3",
+	"Stop3",
+	"Stop2",
 };
 
 
@@ -107,6 +119,7 @@ static TemplateSubHSMState_t CurrentState = InitPSubState; // <- change name to 
 static uint8_t MyPriority;
 static shoot_mode_t mode = ATM6;
 static int first_time = TRUE;
+static int wiggle_count = 0;
 
 /*******************************************************************************
  * PUBLIC FUNCTIONS                                                            *
@@ -162,6 +175,7 @@ uint8_t InitFSMShoot(void) {
 
     CurrentState = InitPSubState;
     returnEvent = RunFSMShoot(INIT_EVENT);
+    wiggle_count = 0;
     if (returnEvent.EventType == ES_NO_EVENT) {
         return TRUE;
     }
@@ -330,7 +344,7 @@ ES_Event RunFSMShoot(ES_Event ThisEvent) {
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
                 case REN_BUMPER_RELEASE:
-                    if (ThisEvent.EventParam == REN_CENTER_PIN) {
+                    if ((ThisEvent.EventParam & REN_CENTER_PIN) == REN_CENTER_PIN) {
                         stop_trigger_motor();
                         if (mode == ATM6) {
                             ThisEvent.EventType = SHOT_ATM6;
@@ -342,7 +356,7 @@ ES_Event RunFSMShoot(ES_Event ThisEvent) {
                             //                            ThisEvent.EventParam = 0;
                             //                            PostTopHSM(ThisEvent);
                             //                            ThisEvent.EventType = ES_NO_EVENT;
-                            nextState = Stuck_Ball_State;
+                            nextState = Stuck_Ball_State_1;
                             makeTransition = TRUE;
                             ThisEvent.EventType = ES_NO_EVENT;
 
@@ -360,12 +374,136 @@ ES_Event RunFSMShoot(ES_Event ThisEvent) {
             }
             break;
 
-        case Stuck_Ball_State: // in the first state, replace this with correct names
+
+        case Stuck_Ball_State_1: // in the first state, replace this with correct names
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
                     ES_Timer_InitTimer(SHOOT_FSM_TIMER, STUCK_BALL_TIME);
 
                     start_ball_accelerator_med();
+                    stop();
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case ES_TIMEOUT:
+                    if (ThisEvent.EventParam == SHOOT_FSM_TIMER) {
+//                        nextState = Stuck_Ball_State_2;
+//                        //nextState = Stuck_Ball_State_1;
+//                        makeTransition = TRUE;
+//                        ThisEvent.EventType = ES_NO_EVENT;
+                        
+                        ThisEvent.EventType = SHOT_REN;
+                        ThisEvent.EventParam = 0;
+                        PostTopHSM(ThisEvent);
+                        ThisEvent.EventType = ES_NO_EVENT;
+
+                    }
+                    break;
+
+                case ES_TIMERACTIVE:
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
+                    break;
+            }
+            break;
+        case Stuck_Ball_State_2: // in the first state, replace this with correct names
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    ES_Timer_InitTimer(SHOOT_FSM_TIMER, STUCK_WIGGLE_LEFT_TIME);
+                    tank_turn_left();
+
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case ES_TIMEOUT:
+                    if (ThisEvent.EventParam == SHOOT_FSM_TIMER) {
+
+                        nextState = Stop2;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
+                    break;
+
+                case ES_TIMERACTIVE:
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
+                    break;
+            }
+            break;
+
+        case Stop2: // in the first state, replace this with correct names
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    ES_Timer_InitTimer(SHOOT_FSM_TIMER, LONG_STOP_TIME);
+                    stop();
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case ES_TIMEOUT:
+                    if (ThisEvent.EventParam == SHOOT_FSM_TIMER) {
+
+                        nextState = Stuck_Ball_State_3;
+
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                    }
+                    break;
+
+                case ES_TIMERACTIVE:
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
+                    break;
+            }
+            break;
+
+
+        case Stuck_Ball_State_3: // in the first state, replace this with correct names
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    ES_Timer_InitTimer(SHOOT_FSM_TIMER, STUCK_WIGGLE_RIGHT_TIME);
+                    tank_turn_right();
+
+
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case ES_TIMEOUT:
+                    if (ThisEvent.EventParam == SHOOT_FSM_TIMER) {
+
+
+                        //    if (wiggle_count > 1) {
+                        nextState = Stop3;
+                        makeTransition = TRUE;
+                        ThisEvent.EventType = ES_NO_EVENT;
+                        //                        } else {
+                        //                            wiggle_count++;
+                        //                            nextState = Stuck_Ball_State_2;
+                        //                            makeTransition = TRUE;
+                        //                            ThisEvent.EventType = ES_NO_EVENT;
+                        //                        }
+                    }
+                    break;
+
+                case ES_TIMERACTIVE:
+                case ES_TIMERSTOPPED:
+                    ThisEvent.EventType = ES_NO_EVENT;
+                    break;
+                case ES_NO_EVENT:
+                default: // all unhandled events pass the event back up to the next level
+                    break;
+            }
+            break;
+
+        case Stop3: // in the first state, replace this with correct names
+            switch (ThisEvent.EventType) {
+                case ES_ENTRY:
+                    ES_Timer_InitTimer(SHOOT_FSM_TIMER, LONG_STOP_TIME);
+                    stop();
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
                 case ES_TIMEOUT:
@@ -375,6 +513,7 @@ ES_Event RunFSMShoot(ES_Event ThisEvent) {
                         ThisEvent.EventParam = 0;
                         PostTopHSM(ThisEvent);
                         ThisEvent.EventType = ES_NO_EVENT;
+
                     }
                     break;
 

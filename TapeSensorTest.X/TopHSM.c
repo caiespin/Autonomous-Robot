@@ -93,7 +93,7 @@ static const char *StateNames[] = {
 
 
 
-static int Last_Top_State = 0;
+static int Last_Top_State = FindLineState;
 
 /*******************************************************************************
  * PRIVATE FUNCTION PROTOTYPES                                                 *
@@ -202,9 +202,9 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
                         case TOP_HSM_TIMER:
 
                             nextState = Start_War_State;
-                            //nextState = FindLineState;
+                           // nextState = FindLineState;
                             // nextState = Debug_Stop_State;
-                            // nextState = ATTACK_REN;
+                           //  nextState = ATTACK_REN;
                             //                            nextState=Shoot;
                             //                            set_ren_config();
 
@@ -566,6 +566,7 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
 
                 case GO_TO_ATTACK_REN:
                     nextState = ATTACK_REN;
+
                     makeTransition = TRUE;
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
@@ -620,7 +621,9 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
         case Unstuck_State:
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
-                    if (are_front_bumpers_pressed() == TRUE) {
+                    if (Last_Top_State == ATTACK_REN) {
+                        forwards();
+                    } else if (are_front_bumpers_pressed() == TRUE) {
                         reverse();
                         printf("Unstuck_state, front bumpers pressed reach if ---------->\r\n");
                     } else {
@@ -634,9 +637,16 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
 
                 case ES_TIMEOUT:
                     if (ThisEvent.EventParam == UNSTUCK_TIMER) {
-                        nextState = FindLineState;
-                        makeTransition = TRUE;
-                        ThisEvent.EventType = ES_NO_EVENT;
+                        if (Last_Top_State == ATTACK_REN) {
+                            set_ATTACK_REN_to_reverse();
+                            nextState = ATTACK_REN;
+                            makeTransition = TRUE;
+                            ThisEvent.EventType = ES_NO_EVENT;
+                        } else {
+                            nextState = FindLineState;
+                            makeTransition = TRUE;
+                            ThisEvent.EventType = ES_NO_EVENT;
+                        }
                     }
                     break;
 

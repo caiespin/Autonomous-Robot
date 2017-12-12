@@ -40,7 +40,7 @@
 /*******************************************************************************
  * PUBLIC FUNCTION PROTOTYPES                                                  *
  ******************************************************************************/
-
+void set_ATTACK_REN_to_reverse();
 /**
  * @Function InitTemplateSubHSM(void)
  * @param Priority - internal variable to track which event queue to use
