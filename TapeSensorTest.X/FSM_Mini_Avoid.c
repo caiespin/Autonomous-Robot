@@ -45,8 +45,8 @@
 //#define REVERSE_TIME 100
 
 #define REVERSE_TIME 150
-#define TANK_RIGHT_TIME 550
-#define TANK_RIGHT_SMALL_TIME 450
+#define TANK_RIGHT_TIME 600//550
+#define TANK_RIGHT_SMALL_TIME 400//350
 #define TANK_TURN_LEFT_TIME 450
 
 #define TANK_LEFT_TIME 1700
@@ -185,7 +185,7 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
     static int first_time_flag = 0;
     uint32_t difference_time = 0;
     static int forward_flag = 0;
-    first_time_flag = 0;
+
     ES_Tattle(); // trace call stack
 
     switch (CurrentState) {
@@ -197,6 +197,7 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
                 // initial state
 
                 // now put the machine into the actual initial state
+                first_time_flag = 0;
                 bumper_pressed_counter++;
                 nextState = ReverseState;
                 makeTransition = TRUE;
@@ -307,7 +308,13 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
 
-
+                case TAPE_LOST:
+                    if (ThisEvent.EventParam == FRONT_TAPE_SENSOR) {
+                        if (first_time_flag == 0) {
+                            ES_Timer_InitTimer(MINI_AVOID_TIMER, TANK_RIGHT_TIME);                           
+                        } 
+                    }
+                    break;
                 case ES_TIMEOUT:
                     if (ThisEvent.EventParam == MINI_AVOID_TIMER) {
                         nextState = Stop3State;
@@ -355,14 +362,14 @@ ES_Event RunFSMMiniAvoid(ES_Event ThisEvent) {
 
                 case ES_ENTRY:
                     if (first_time_flag == 0) {
-                       arc_left();
+                        arc_left();
                         first_time_flag = 1;
                     } else {
                         arc_steep_left();
                     }
                     //    if (get_ATM6_Counter() >= 3) {
                     ES_Timer_InitTimer(MINI_AVOID_TIMER, ARC_LEFT_TIME);
-                   
+
                     static int start_time;
                     start_time = ES_Timer_GetTime();
                     //                    } else {

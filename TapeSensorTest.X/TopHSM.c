@@ -666,6 +666,7 @@ ES_Event RunTopHSM(ES_Event ThisEvent) {
     if (makeTransition == TRUE) { // making a state transition, send EXIT and ENTRY
         // recursively call the current state with an exit event
         RunTopHSM(EXIT_EVENT); // <- rename to your own Run function
+        adjust_pwm();
         Last_Top_State = CurrentState;
         CurrentState = nextState;
         RunTopHSM(ENTRY_EVENT); // <- rename to your own Run function

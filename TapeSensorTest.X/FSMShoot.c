@@ -59,7 +59,7 @@
 static int start_motor_low_time = 5000;
 #define REVERSE_LITTLE_BIT_TIME 10
 #define STUCK_WIGGLE_RIGHT_TIME 150
-#define STUCK_WIGGLE_LEFT_TIME 150
+#define STUCK_WIGGLE_LEFT_TIME 80
 #define LONG_STOP_TIME 5000
 
 typedef enum {
@@ -386,15 +386,15 @@ ES_Event RunFSMShoot(ES_Event ThisEvent) {
                     break;
                 case ES_TIMEOUT:
                     if (ThisEvent.EventParam == SHOOT_FSM_TIMER) {
-//                        nextState = Stuck_Ball_State_2;
-//                        //nextState = Stuck_Ball_State_1;
-//                        makeTransition = TRUE;
-//                        ThisEvent.EventType = ES_NO_EVENT;
-                        
-                        ThisEvent.EventType = SHOT_REN;
-                        ThisEvent.EventParam = 0;
-                        PostTopHSM(ThisEvent);
+                        nextState = Stuck_Ball_State_2;
+                        //nextState = Stuck_Ball_State_1;
+                        makeTransition = TRUE;
                         ThisEvent.EventType = ES_NO_EVENT;
+
+                        //                        ThisEvent.EventType = SHOT_REN;
+                        //                        ThisEvent.EventParam = 0;
+                        //                        PostTopHSM(ThisEvent);
+                        //                        ThisEvent.EventType = ES_NO_EVENT;
 
                     }
                     break;
@@ -412,16 +412,19 @@ ES_Event RunFSMShoot(ES_Event ThisEvent) {
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
                     ES_Timer_InitTimer(SHOOT_FSM_TIMER, STUCK_WIGGLE_LEFT_TIME);
-                    tank_turn_left();
+                    tank_turn_right();
 
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
                 case ES_TIMEOUT:
                     if (ThisEvent.EventParam == SHOOT_FSM_TIMER) {
-
                         nextState = Stop2;
+
                         makeTransition = TRUE;
                         ThisEvent.EventType = ES_NO_EVENT;
+
+
+
                     }
                     break;
 
@@ -438,16 +441,16 @@ ES_Event RunFSMShoot(ES_Event ThisEvent) {
         case Stop2: // in the first state, replace this with correct names
             switch (ThisEvent.EventType) {
                 case ES_ENTRY:
-                    ES_Timer_InitTimer(SHOOT_FSM_TIMER, LONG_STOP_TIME);
+                    ES_Timer_InitTimer(SHOOT_FSM_TIMER, STOP_TIME);
                     stop();
                     ThisEvent.EventType = ES_NO_EVENT;
                     break;
                 case ES_TIMEOUT:
                     if (ThisEvent.EventParam == SHOOT_FSM_TIMER) {
 
-                        nextState = Stuck_Ball_State_3;
-
-                        makeTransition = TRUE;
+                        ThisEvent.EventType = SHOT_REN;
+                        ThisEvent.EventParam = 0;
+                        PostTopHSM(ThisEvent);
                         ThisEvent.EventType = ES_NO_EVENT;
                     }
                     break;
