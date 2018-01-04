@@ -24,7 +24,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
-PROJECTNAME=TapeSensorTest.X
+PROJECTNAME=autonomous_robots.X
 
 # Active Configuration
 DEFAULTCONF=default
